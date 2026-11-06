@@ -12,4 +12,4 @@
 **Por qué no un solo `/health`:** mezclar ambos haría que una base pausada reiniciara la API en bucle.
 **Por qué no `AspNetCore.HealthChecks.NpgSql`:** es de terceros y el `DbContext` ya existe; no aporta nada hoy.
 
-**Consecuencia a vigilar (Etapa 1):** con `EnableRetryOnFailure`, `/health/ready` puede tardar en responder 503 si la base no está disponible. Medir ese tiempo y, si hace falta, ponerle un timeout al check.
+**Timeout del check:** con `EnableRetryOnFailure`, `/health/ready` tardaba 58 s en responder 503 con la base caída. El check de la base tiene un timeout de 5 s; las consultas normales conservan los reintentos.

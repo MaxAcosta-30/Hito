@@ -52,9 +52,11 @@ public sealed class HealthTests(PostgresFixture db) : IClassFixture<PostgresFixt
         await using var factory = CreateFactory(UnreachableDatabase);
         using var client = factory.CreateClient();
 
+        var elapsed = System.Diagnostics.Stopwatch.StartNew();
         var response = await client.GetAsync("/health/ready");
 
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.True(elapsed.Elapsed < TimeSpan.FromSeconds(10), $"Tardó {elapsed.Elapsed.TotalSeconds:F1} s");
     }
 
     private static WebApplicationFactory<Program> CreateFactory(string connectionString) =>
