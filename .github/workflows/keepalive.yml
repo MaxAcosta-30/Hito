@@ -20,8 +20,9 @@ jobs:
         # Render puede tardar ~1 min en despertar y responder HTML mientras tanto: se espera "Healthy".
         run: |
           for intento in 1 2 3 4 5 6; do
-            body=$(curl -s --max-time 60 "$API_URL/health/ready" || true)
+            code=$(curl -s --max-time 60 -o respuesta.txt -w "%{http_code}" "$API_URL/health/ready" || true)
+            body=$(head -c 200 respuesta.txt 2>/dev/null || true)
             if [ "$body" = "Healthy" ]; then echo "Listo en el intento $intento"; exit 0; fi
-            echo "Intento $intento: aún no responde Healthy"; sleep 20
+            echo "Intento $intento: HTTP $code, respuesta: $body"; sleep 20
           done
           exit 1
