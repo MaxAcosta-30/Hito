@@ -8,9 +8,10 @@ on:
 permissions:
   contents: read
 
+# En main no se cancela: cortar un despliegue a media migración dejaría la base a medias.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   build-test:
@@ -29,3 +30,35 @@ jobs:
 
       # Las pruebas de integración usan Testcontainers; el runner ya trae Docker.
       - run: dotnet test -c Release --no-build
+
+  # La prueba en kind se inserta antes de este job en la Etapa 5.
+  deploy:
+    needs: build-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: produccion
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-dotnet@v6.0.0
+        with:
+          global-json-file: global.json
+
+      - run: dotnet tool restore
+
+      - name: Generar bundle de migraciones
+        run: dotnet ef migrations bundle -p src/Hito.Infrastructure -s src/Hito.Api -o efbundle --configuration Release
+        env:
+          # Solo para que Program arranque en tiempo de diseño; no se conecta a nada.
+          ConnectionStrings__Hito: Host=localhost;Database=diseno
+
+      - name: Aplicar migraciones en Supabase
+        run: ./efbundle
+        env:
+          ConnectionStrings__Hito: ${{ secrets.SUPABASE_CONNECTION_STRING }}
+
+      - name: Desplegar en Render
+        run: curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL" -o /dev/null
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}

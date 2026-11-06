@@ -1,0 +1,27 @@
+name: Mantener Supabase activa
+
+# Supabase Free se pausa tras una semana con poca actividad. Esto reduce el riesgo, no lo elimina.
+# GitHub desactiva los flujos programados de repos públicos tras 60 días sin actividad en el repo.
+on:
+  schedule:
+    - cron: "17 15 * * 1,4" # lunes y jueves, 15:17 UTC
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Llamar a /health/ready
+        env:
+          API_URL: ${{ vars.API_URL }}
+        # Render puede tardar ~1 min en despertar y responder HTML mientras tanto: se espera "Healthy".
+        run: |
+          for intento in 1 2 3 4 5 6; do
+            body=$(curl -s --max-time 60 "$API_URL/health/ready" || true)
+            if [ "$body" = "Healthy" ]; then echo "Listo en el intento $intento"; exit 0; fi
+            echo "Intento $intento: aún no responde Healthy"; sleep 20
+          done
+          exit 1
