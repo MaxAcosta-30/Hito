@@ -1,13 +1,13 @@
 using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Testcontainers.MsSql;
+using Testcontainers.PostgreSql;
 
 namespace Hito.IntegrationTests;
 
-public sealed class SqlServerFixture : IAsyncLifetime
+public sealed class PostgresFixture : IAsyncLifetime
 {
-    private readonly MsSqlContainer _container = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
+    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder("postgres:17-alpine")
         .Build();
 
     public string ConnectionString => _container.GetConnectionString();
@@ -17,11 +17,11 @@ public sealed class SqlServerFixture : IAsyncLifetime
     public Task DisposeAsync() => _container.DisposeAsync().AsTask();
 }
 
-public sealed class HealthTests(SqlServerFixture sql) : IClassFixture<SqlServerFixture>
+public sealed class HealthTests(PostgresFixture db) : IClassFixture<PostgresFixture>
 {
     // Puerto 1: nada escucha ahí, así simulamos una base caída sin esperar timeouts largos.
     private const string UnreachableDatabase =
-        "Server=127.0.0.1,1;Database=Hito;User Id=sa;Password=x;Connect Timeout=2;TrustServerCertificate=True";
+        "Host=127.0.0.1;Port=1;Database=hito;Username=x;Password=x;Timeout=2";
 
     [Fact]
     public async Task Live_responde_200_aunque_la_base_no_este_disponible()
@@ -35,9 +35,9 @@ public sealed class HealthTests(SqlServerFixture sql) : IClassFixture<SqlServerF
     }
 
     [Fact]
-    public async Task Ready_responde_200_con_sql_server_real()
+    public async Task Ready_responde_200_con_postgres_real()
     {
-        await using var factory = CreateFactory(sql.ConnectionString);
+        await using var factory = CreateFactory(db.ConnectionString);
         using var client = factory.CreateClient();
 
         var response = await client.GetAsync("/health/ready");

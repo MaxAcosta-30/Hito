@@ -17,7 +17,7 @@ Este es un proyecto de portafolio de Max Acosta para aplicar a puestos full stac
 5. Usa una rama por caso, commits pequeños y `main` siempre funcional.
 6. Registra las decisiones grandes en `docs/decisiones/` como ADR cortos y el avance por etapa en `docs/proyecto/`.
 7. Nunca guardes secretos en el repositorio. No inventes resultados: si algo no se probó, dilo.
-8. Antes de crear recursos en la nube, verifica precios y límites vigentes. Si algo puede generar un cobro, detente y pregunta.
+8. Antes de crear recursos en la nube, verifica precios y límites vigentes. Si un servicio pide tarjeta o puede generar un cobro, detente y pregunta.
 9. Si el proyecto va atrasado, recorta primero los casos "Debería" y avísale a Max.
 
 ## Punto de partida
@@ -79,16 +79,18 @@ git clone https://github.com/MaxAcosta-30/SafeLedger-API.git ../referencias/Safe
 
 ```text
 Navegador
-  └─ React en Vercel ── /api/* (rewrite) ──> API .NET en Azure Container Apps ──> Azure SQL
+  └─ React en Vercel Hobby ── /api/* (rewrite) ──> API .NET en Render Free ──> PostgreSQL en Supabase (session pooler)
 
-GitHub Actions: pruebas → imagen en GHCR → prueba en Kubernetes (kind) → despliegue
+GitHub Actions: pruebas → prueba en Kubernetes (kind) → migraciones (bundle de EF Core) contra Supabase → deploy hook de Render
+GitHub Actions programado: llama a /health/ready dos veces por semana
 ```
 
 ### Decisiones
 
 - **Backend: .NET 10 y ASP.NET Core** | Por qué: es lo que piden las vacantes y ya lo conoce | Por qué no otra: Go o Node no cubren esa brecha.
 - **Frontend: React, TypeScript, Vite y TanStack Query** | Por qué: en las vacantes se pide React con .NET | Por qué no Next.js: no se necesita renderizado en servidor, porque casi todo está detrás de un inicio de sesión.
-- **Datos: SQL Server y EF Core Code-First** | Por qué: están en la vacante y las migraciones quedan versionadas | Por qué no MongoDB: los datos son relacionales y el dinero exige transacciones.
+- **Datos: PostgreSQL en Supabase y EF Core Code-First con Npgsql** | Por qué: plan gratuito sin tarjeta y las migraciones quedan versionadas | Por qué no MongoDB: los datos son relacionales y el dinero exige transacciones.
+- **Supabase solo como base de datos** | No se usan Supabase Auth ni su API automática: la autenticación y las reglas de negocio viven en .NET.
 - **Autenticación: ASP.NET Core Identity y JWT** | Access token en memoria y refresh token en cookie `httpOnly` | Por qué no un proveedor externo: en entrevista debe poder explicar el flujo.
 - **Capas: Domain, Application, Infrastructure y Api** | Por qué: las reglas de estado quedan aisladas y se prueban sin base de datos | Por qué no MediatR ni CQRS: no resuelven un problema actual.
 - **Sin Redis ni microservicios en este proyecto** | Por qué: ningún caso los necesita | Los microservicios se practicarán en un proyecto posterior con una razón real.
@@ -98,7 +100,7 @@ GitHub Actions: pruebas → imagen en GHCR → prueba en Kubernetes (kind) → d
 `User`, `Client`, `Project`, `ProjectVersion`, `Milestone`, `ClientAccessLink`, `Payment`, `ProjectEvent`.
 
 - Toda entidad del freelancer tiene `OwnerId`, y cada consulta filtra por él.
-- El dinero usa `decimal(18,2)`, nunca `float`.
+- El dinero usa `numeric(18,2)` en la base y `decimal` en C#, nunca `float`.
 
 ### Estructura
 
@@ -128,29 +130,29 @@ hito/
 - Permisos validados en el servidor.
 - Límite de intentos en inicio de sesión, enlaces públicos y creación de demos.
 - Validación de entradas y URLs de evidencia solo con `http` o `https`.
-- Secretos en variables de entorno o en los secretos de Azure.
+- Secretos solo en GitHub Actions y en Render, nunca en el repositorio.
 
 ## Infraestructura a $0
 
-Datos revisados el 5 de noviembre de 2026. Verifícalos otra vez antes de crear recursos.
+Todo en plan gratuito y **sin registrar tarjeta**. Verifica precios y límites otra vez antes de crear recursos. Si un servicio pide tarjeta o puede generar un cobro, detente y pregunta.
 
-- **Cuenta: Azure for Students.** Microsoft indica $100 USD de crédito por 12 meses, sin tarjeta, para estudiantes universitarios de tiempo completo con correo escolar. Si no aprueba la verificación, detente y pregunta.
-- **API: Azure Container Apps (Consumption).** Usa `min-replicas 0`, `max-replicas 1` y el mínimo de CPU y memoria. Revisa el costo de los logs antes de activarlos.
-- **Base de datos: Azure SQL free offer.** Elige **pausar automáticamente hasta el siguiente mes** al agotar el límite, nunca seguir con cargos. Confirma que la oferta aplique a la suscripción de estudiante.
-- **Imágenes: GitHub Container Registry.**
+- **Base de datos: Supabase Free (PostgreSQL).** Conexión por el **session pooler** (puerto 5432) con un `Maximum Pool Size` bajo en la cadena de conexión.
+- **API: Render Free con el Dockerfile del repositorio.** Antes de crear el servicio, confirma que el plan gratuito acepte Dockerfile; si no, detente y propón otra opción gratuita.
 - **Frontend: Vercel Hobby.** Su uso es personal y no comercial, así que sirve para este portafolio, no para venderlo como negocio.
-- **Kubernetes: `kind` local y en GitHub Actions con `helm/kind-action`.** No uses AKS en este proyecto.
+- **Kubernetes: solo `kind`, en local y en GitHub Actions con `helm/kind-action`.**
 
-**Arranque en frío:** la API y la base de datos se apagan por inactividad. La interfaz debe mostrar "Despertando la demo, puede tardar hasta un minuto" y reintentar. Configura `EnableRetryOnFailure` en EF Core y no dejes conexiones abiertas que impidan la pausa.
+**Arranque en frío de Render:** se apaga tras 15 minutos sin tráfico y durante el arranque puede responder HTML en vez de JSON. La interfaz llama a `/api/health/live`, muestra "Despertando la demo, puede tardar hasta un minuto" y reintenta hasta recibir la respuesta esperada. EF Core usa `EnableRetryOnFailure`.
 
-**Migraciones:** genera un bundle de EF Core y ejecútalo en un Container Apps Job antes de activar la nueva versión. No las ejecutes al arrancar la API.
+**Pausa de Supabase:** se pausa tras una semana con poca actividad. Un flujo programado de GitHub Actions llama a `/health/ready` dos veces por semana. Como esto no garantiza evitar la pausa, el README explica cómo restaurar el proyecto y recrear los datos de la demo.
 
-**Acceso de GitHub a Azure:** usa OIDC. Si la cuenta escolar bloquea crear la identidad, detente y propone una alternativa sin exponer secretos.
+**Migraciones:** genera un bundle de EF Core y ejecútalo desde GitHub Actions contra Supabase antes de llamar al deploy hook de Render. No las ejecutes al arrancar la API.
+
+**Límites que se declaran:** Supabase Free no incluye respaldos automáticos y Render Free no es para producción. Este despliegue es solo una demo de portafolio. Este proyecto no demuestra Azure ni AWS; no lo presentes como experiencia en esas nubes.
 
 ## Pruebas
 
 - **Unitarias:** transiciones de estado, cálculo de totales y reglas de pago.
-- **Integración:** API con SQL Server real mediante Testcontainers, incluido el aislamiento entre usuarios.
+- **Integración:** API con PostgreSQL real mediante Testcontainers, incluido el aislamiento entre usuarios.
 - **E2E con Playwright:** un solo flujo crítico: crear proyecto → aceptar → entregar → aprobar → pagar.
 - **Kubernetes:** desplegar en `kind` y probar `/health/ready` y una llamada a la API.
 
@@ -161,15 +163,18 @@ Detente y espera aprobación al final de cada una.
 ### Etapa 0: preparación
 
 1. Clona las referencias y resume en 10 líneas qué se reutiliza.
-2. Verifica las herramientas instaladas: .NET 10, Node, Docker, Git, GitHub CLI y Azure CLI. Dile a Max qué falta.
-3. Crea el repositorio, la solución, `compose.yaml` con SQL Server y una API con `/health/live` y `/health/ready`.
+2. Verifica las herramientas instaladas: .NET 10, Node, Docker, Git y GitHub CLI. Dile a Max qué falta.
+3. Crea el repositorio, la solución, `compose.yaml` con PostgreSQL y una API con `/health/live` y `/health/ready`.
 4. Crea el primer flujo de CI: compilar y probar.
 
 ### Etapa 1: despliegue temprano
 
-1. Guía a Max para crear la cuenta de Azure. Él debe aceptar los términos y nunca debe pegarte contraseñas.
-2. Publica la API mínima en Container Apps y una página mínima en Vercel, conectadas entre sí.
-3. Configura una alerta de presupuesto y confirma que el costo estimado sea $0.
+1. Guía a Max para crear las cuentas de Supabase, Render y Vercel sin tarjeta. Él debe aceptar los términos y nunca debe pegarte contraseñas.
+2. Confirma que Render Free acepte el Dockerfile antes de crear el servicio.
+3. Publica la API mínima en Render y una página mínima en Vercel con el rewrite de `/api/*`, conectadas a Supabase.
+4. Crea el flujo de despliegue: pruebas → migraciones con bundle → deploy hook de Render. La prueba en `kind` se inserta antes de las migraciones en la Etapa 5.
+5. Crea el flujo programado que llama a `/health/ready` dos veces por semana.
+6. Confirma que ningún servicio tenga tarjeta registrada y que el costo sea $0.
 
 ### Etapa 2: diseño
 
@@ -188,13 +193,13 @@ Termina el flujo de cobro, el historial y la demo con datos realistas.
 
 ### Etapa 5: calidad y Kubernetes
 
-1. Completa las pruebas y agrega la prueba en `kind` al flujo de CI.
+1. Completa las pruebas y agrega la prueba en `kind` al flujo de despliegue, entre las pruebas y las migraciones.
 2. Revisa accesibilidad, rendimiento y seguridad. Usa `vercel-web-quality` y `code-review` si están disponibles.
 
 ### Etapa 6: presentación
 
 1. Escribe el README: problema, demo, capturas, arquitectura, decisiones, cómo correrlo y límites conocidos.
-2. Escribe 3 viñetas para el CV que digan solo lo que el repositorio demuestra. Kubernetes se describe como "probado en kind dentro de CI", no como producción.
+2. Escribe 3 viñetas para el CV que digan solo lo que el repositorio demuestra. Kubernetes se describe como "probado en kind dentro de CI", no como producción. No menciones Azure ni AWS.
 3. Haz con Max una entrevista simulada de 10 preguntas sobre el proyecto.
 
 ## Definición de terminado
@@ -202,6 +207,6 @@ Termina el flujo de cobro, el historial y la demo con datos realistas.
 - [ ] Los 10 casos Debe cumplen su criterio.
 - [ ] La demo pública funciona desde una ventana privada, después de un arranque en frío.
 - [ ] El CI pasa y el despliegue es automático.
-- [ ] El costo mensual es $0 y hay una alerta de presupuesto.
+- [ ] El costo mensual es $0 y ningún servicio tiene tarjeta registrada.
 - [ ] El README permite entender el proyecto en menos de 2 minutos.
 - [ ] Max puede explicar cada decisión sin ayuda.
