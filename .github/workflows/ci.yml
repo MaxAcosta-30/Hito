@@ -52,9 +52,74 @@ jobs:
 
       - run: npm run build
 
+  # Flujo crítico en el navegador contra la pila real: Vite → API → PostgreSQL desechable.
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: hito_e2e
+          POSTGRES_USER: hito
+          # Base desechable que solo vive en este job: la contraseña no protege nada.
+          POSTGRES_PASSWORD: e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U hito -d hito_e2e"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      E2E_CONNECTION_STRING: Host=localhost;Database=hito_e2e;Username=hito;Password=e2e
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-dotnet@v6.0.0
+        with:
+          global-json-file: global.json
+
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            web/package-lock.json
+            tests/e2e/package-lock.json
+
+      - run: dotnet tool restore
+
+      - run: dotnet restore
+
+      - name: Aplicar migraciones en la base desechable
+        run: dotnet ef database update -p src/Hito.Infrastructure -s src/Hito.Api
+        env:
+          ConnectionStrings__Hito: ${{ env.E2E_CONNECTION_STRING }}
+          Jwt__Clave: solo-para-tiempo-de-diseno-no-es-secreta-000
+
+      - run: npm ci
+        working-directory: web
+
+      - run: npm ci
+        working-directory: tests/e2e
+
+      - run: npx playwright install --with-deps chromium
+        working-directory: tests/e2e
+
+      - run: npx playwright test
+        working-directory: tests/e2e
+
+      - uses: actions/upload-artifact@v7.0.2
+        if: failure()
+        with:
+          name: reporte-e2e
+          path: tests/e2e/playwright-report/
+          retention-days: 7
+
   # La prueba en kind se inserta antes de este job en la Etapa 5.
   deploy:
-    needs: build-test
+    needs: [build-test, e2e]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
