@@ -19,20 +19,22 @@
 - API: `GET /cobros`. Pruebas: 5 unitarias y 2 de integración (los totales coinciden con los datos; aislamiento). Total: 48 + 42.
 - Web: cifra "Te deben", desglose y "Necesita tu atención", con esqueleto, vacío y error. Probado con Playwright.
 
-**Caso 9 · Historial:** terminado en la rama `caso-9/historial` (2026-11-06).
+**Caso 9 · Historial:** terminado y desplegado (2026-11-06, PR #20).
 - Cada método de `Proyecto` genera un `EventoDeProyecto` (actor, tipo, descripción en texto y fecha); `HitoDbContext` lo guarda al hacer `SaveChanges` y lanza error si un evento se modifica o se borra.
 - API: solo `GET /proyectos/{id}/eventos`; PUT/PATCH/DELETE/POST responden 405. Columna identidad `Secuencia` para el orden. Migración `AgregarHistorial`.
 - Pruebas: 3 unitarias y 4 de integración (incluida la de que ni el propio servidor puede editar o borrar). Total: 51 + 46.
 - Web: pestaña Historial de solo lectura. Probado con Playwright.
 
-**Caso 10 · Probar la demo:** terminado en la rama `caso-10/demo` (2026-11-06).
+**Caso 10 · Probar la demo:** terminado y desplegado (2026-11-06, PR #21).
 - `POST /demo` crea un usuario con `DemoExpiraEn` (24 h), siembra 3 clientes y 3 proyectos con los métodos del dominio y abre su sesión. Límite global: 10 por minuto.
 - Cada demo es un usuario distinto: el filtro por dueño la aísla. Cada `POST /demo` borra antes las demos vencidas en cascada.
 - Hallazgo: con `NO ACTION`, ese borrado fallaba (PostgreSQL revisa Términos → Hito antes de la cascada por Versiones). Términos y Pagos → Hito pasaron a `CASCADE` (migración `CascadaDeHitos`, ADR 0005 actualizado).
 - Pruebas: 4 de integración (datos coherentes: $76,000 por cobrar, $12,000 aprobado y $27,000 vencido; aislamiento; borrado en cascada de una demo vencida; límite 429). Total: 51 + 50.
 - Web: "Probar la demo" en `/entrar` y aviso de demo arriba. Probado con Playwright en dos contextos.
 
-**Estado de la Etapa 4:** casos 6 a 10 terminados. Pendiente: aprobación de Max, sus respuestas de entrevista y probar la demo en producción tras un arranque en frío.
+**Estado de la Etapa 4:** casos 6 a 10 terminados y desplegados (PR #17 a #21). Max probó la demo en producción el 2026-11-06 y funciona. Pendiente: sus respuestas de entrevista y la prueba tras un arranque en frío de Render.
+
+**Siguiente paso:** Etapa 5 (calidad y Kubernetes) en una sesión nueva: e2e con Playwright, prueba en `kind` entre las pruebas y las migraciones, y revisión de accesibilidad, rendimiento y seguridad.
 
 ## Preguntas de entrevista pendientes
 
