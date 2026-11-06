@@ -5,7 +5,9 @@ using System.Text.Json.Serialization;
 
 namespace Hito.IntegrationTests;
 
-public sealed record HitoDto(Guid Id, int Orden, string Titulo, decimal Monto, DateOnly FechaEntrega, string Entregable, string Estado);
+public sealed record HitoDto(
+    Guid Id, int Orden, string Titulo, decimal Monto, DateOnly FechaEntrega, string Entregable, string Estado,
+    string? EvidenciaUrl = null, string? ComentarioCambios = null);
 public sealed record VersionDto(int Numero, string Estado, DateTimeOffset? EnviadaEn, DateTimeOffset? AceptadaEn, decimal Total, List<HitoDto> Hitos);
 public sealed record ClienteResumenDto(Guid Id, string Nombre);
 public sealed record ProyectoDto(
@@ -37,6 +39,17 @@ public static class Proyectos
         });
         Assert.Equal(HttpStatusCode.Created, respuesta.StatusCode);
         return (await respuesta.Content.ReadFromJsonAsync<ProyectoDto>(Json))!;
+    }
+
+    // Crea un proyecto, lo envía y el cliente lo acepta. Devuelve el proyecto aceptado y el token del cliente.
+    public static async Task<(ProyectoDto Proyecto, string Token)> AceptadoAsync(HttpClient api, HttpClient anonimo, params object[] hitos)
+    {
+        var proyecto = await CrearAsync(api, hitos);
+        var enviar = await api.PostAsync($"/proyectos/{proyecto.Id}/enviar", null);
+        var token = (await enviar.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("token").GetString()!;
+        var aceptar = await anonimo.PostAsJsonAsync($"/publico/{token}/aceptar", new { version = 1 });
+        Assert.Equal(System.Net.HttpStatusCode.OK, aceptar.StatusCode);
+        return ((await api.GetFromJsonAsync<ProyectoDto>($"/proyectos/{proyecto.Id}", Json))!, token);
     }
 
     public static async Task<ProyectoDto> LeerAsync(HttpResponseMessage respuesta) =>

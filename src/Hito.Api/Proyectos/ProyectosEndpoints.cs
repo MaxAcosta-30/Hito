@@ -16,7 +16,9 @@ public static class ProyectosEndpoints
     public sealed record ProyectoResumen(
         Guid Id, string Nombre, ClienteResumen Cliente, EstadoProyecto Estado, decimal Total, int Version, DateTimeOffset ActualizadoEn);
     public sealed record HitoRespuesta(
-        Guid Id, int Orden, string Titulo, decimal Monto, DateOnly FechaEntrega, string Entregable, EstadoHito Estado);
+        Guid Id, int Orden, string Titulo, decimal Monto, DateOnly FechaEntrega, string Entregable, EstadoHito Estado,
+        string? EvidenciaUrl, DateTimeOffset? EntregadoEn, string? ComentarioCambios, DateTimeOffset? AprobadoEn);
+    public sealed record EntregarSolicitud(string? EvidenciaUrl);
     public sealed record VersionRespuesta(
         int Numero, EstadoVersion Estado, DateTimeOffset CreadaEn, DateTimeOffset? EnviadaEn, DateTimeOffset? AceptadaEn,
         decimal Total, List<HitoRespuesta> Hitos);
@@ -37,6 +39,7 @@ public static class ProyectosEndpoints
         proyectos.MapPut("/{id:guid}/alcance", DefinirAlcance);
         proyectos.MapPost("/{id:guid}/cancelar", Cancelar);
         proyectos.MapPost("/{id:guid}/versiones", NuevaVersion);
+        proyectos.MapPost("/{id:guid}/hitos/{hitoId:guid}/entregar", Entregar);
         proyectos.MapPost("/{id:guid}/enviar", Enviar);
         proyectos.MapPost("/{id:guid}/enlace", NuevoEnlace);
         proyectos.MapPost("/{id:guid}/enlace/revocar", RevocarEnlace);
@@ -100,6 +103,24 @@ public static class ProyectosEndpoints
         proyecto.Cancelar(ahora);
         // Un proyecto cancelado ya no se comparte.
         await RevocarEnlacesAsync(db, proyecto.Id, ahora, ct);
+        await db.SaveChangesAsync(ct);
+        return Results.Ok(await DetalleAsync(db, proyecto, ahora, ct));
+    }
+
+    private static async Task<IResult> Entregar(
+        Guid id, Guid hitoId, EntregarSolicitud solicitud, HitoDbContext db, TimeProvider reloj, CancellationToken ct)
+    {
+        var proyecto = await db.Proyectos.ConAgregado().FirstOrDefaultAsync(p => p.Id == id, ct);
+        if (proyecto is null) return NoEncontrado();
+        var url = solicitud.EvidenciaUrl?.Trim();
+        if (!HitoDeProyecto.UrlValida(url))
+            return Results.ValidationProblem(new Dictionary<string, string[]>
+            {
+                ["evidenciaUrl"] = ["Pega la dirección de la entrega; debe empezar con https:// o http://."],
+            });
+
+        var ahora = reloj.GetUtcNow();
+        proyecto.EntregarHito(hitoId, url!, ahora);
         await db.SaveChangesAsync(ct);
         return Results.Ok(await DetalleAsync(db, proyecto, ahora, ct));
     }
@@ -200,18 +221,22 @@ public static class ProyectosEndpoints
             .OrderByDescending(e => e.CreadoEn)
             .Select(e => new EnlaceRespuesta(e.CreadoEn, e.ExpiraEn))
             .FirstOrDefaultAsync(ct);
-        var estados = p.Hitos.ToDictionary(h => h.Id, h => h.Estado);
+        var hitos = p.Hitos.ToDictionary(h => h.Id);
         return new ProyectoDetalle(
             p.Id, p.Nombre, new ClienteResumen(p.ClienteId, clientes[p.ClienteId]), p.Estado, p.Total,
             p.VersionActual.Numero, p.UltimaVersion.Numero,
             p.Versiones.OrderByDescending(v => v.Numero).Select(v => new VersionRespuesta(
                 v.Numero, v.Estado, v.CreadaEn, v.EnviadaEn, v.AceptadaEn, v.Total,
                 v.Terminos.OrderBy(t => t.Orden)
-                    .Select(t => new HitoRespuesta(t.HitoId, t.Orden, t.Titulo, t.Monto, t.FechaEntrega, t.Entregable, estados[t.HitoId]))
+                    .Select(t => ARespuesta(t, hitos[t.HitoId]))
                     .ToList()))
                 .ToList(),
             enlace, p.CreadoEn, p.ActualizadoEn);
     }
+
+    private static HitoRespuesta ARespuesta(TerminosDeHito t, HitoDeProyecto h) =>
+        new(t.HitoId, t.Orden, t.Titulo, t.Monto, t.FechaEntrega, t.Entregable, h.Estado,
+            h.EvidenciaUrl, h.EntregadoEn, h.ComentarioCambios, h.AprobadoEn);
 
     // Incluye clientes archivados: un proyecto conserva el nombre de su cliente aunque se archive.
     private static Task<Dictionary<Guid, string>> NombresDeClientesAsync(HitoDbContext db, IEnumerable<Guid> ids, CancellationToken ct)

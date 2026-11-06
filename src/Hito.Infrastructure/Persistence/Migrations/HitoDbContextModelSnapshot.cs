@@ -102,13 +102,30 @@ namespace Hito.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTimeOffset?>("AprobadoEn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ComentarioCambios")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTimeOffset?>("EntregadoEn")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Estado")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
+                    b.Property<string>("EvidenciaUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("PagadoEn")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("ProyectoId")
                         .HasColumnType("uuid");
