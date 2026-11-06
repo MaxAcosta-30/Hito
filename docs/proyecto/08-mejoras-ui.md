@@ -20,3 +20,15 @@ Se revisó una lista de buenas prácticas de UI/UX contra Hito. Max aprobó 4 me
 - Solo describe lo que el código hace: una sola cookie (`hito_renovacion`, `httpOnly`), nada en `localStorage`, sin analítica ni correos, contraseña y token del enlace solo como hash, y datos en Oregón (Supabase y Render) con la página servida desde Vercel. La demo se borra tras 24 h.
 - Es un texto informativo de un proyecto de portafolio, **no asesoría legal**. El contacto es el perfil de GitHub de Max; si quiere un correo de contacto, se cambia ahí.
 - Probado con Playwright: carga con la API "dormida" y los enlaces llegan desde Entrar y Registro.
+
+**4 · Validar al salir del campo** (rama `ui/validacion-al-salir`)
+- `useValidacion` en `web/src/validacion.ts`: el error aparece al salir del campo con algo escrito, no mientras escribes ni por tabular por un campo vacío. Una vez marcado, se recalcula con cada tecla y desaparece en cuanto el valor es válido. Al enviar con errores no sale la petición y el foco va al primer campo con error.
+- Se aplica en registro (nombre, correo, contraseña ≥ 10), cliente (nombre, correo, teléfono), entrega (URL http/https) y pago (monto > 0 y ≤ lo pendiente). Las reglas y mensajes copian los del servidor, que sigue validando todo.
+- Si el foco pasa a un botón o un enlace, no se marca el campo. Así el mensaje no empuja "Cancelar" hacia abajo justo cuando se hace clic, que es el error clásico de validar al salir.
+- Probado con Playwright: los cuatro formularios, la corrección en vivo, cero peticiones con errores, el clic en "Cancelar" tras escribir una URL inválida y el flujo e2e completo.
+
+## Preguntas de entrevista
+
+1. ¿Por qué la pantalla "Despertando" no muestra un porcentaje y por qué espera 400 ms antes de aparecer?
+2. ¿Por qué el foco inicial del diálogo de cancelar está en "Volver" y no en la acción?
+3. Si el navegador ya valida el correo, ¿por qué el servidor lo vuelve a validar?
