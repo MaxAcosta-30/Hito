@@ -37,3 +37,10 @@ Solo dicen lo que el repositorio demuestra.
 - Contador accesible ("2 de 3 proyectos") y estado vacío con "Quitar filtros".
 - Probado con una prueba temporal de Playwright sobre los datos de la demo: búsqueda "CLINICA", filtro Aceptado, volver del detalle y quitar filtros.
 - Preguntas de entrevista: (1) ¿Por qué filtrar en el navegador y cuándo lo moverías al servidor? (2) ¿Por qué el filtro vive en la URL y no en `useState`? (3) ¿Cómo haces que "clinica" encuentre "Clínica"?
+
+**Exportar a PDF el resumen de un proyecto:** rama `deberia/exportar-pdf`.
+- Botón "Exportar PDF" en el detalle: abre el diálogo de impresión del navegador ("Guardar como PDF"). Hoja de estilo de impresión con tema claro forzado, sin navegación ni botones, márgenes de 16 mm y el pie "Resumen generado el … con Hito". El título de la página (`Proyecto · Cliente`) da nombre al archivo y se restaura con `afterprint`.
+- El PDF siempre resume los hitos, aunque se exporte desde Historial o Versiones.
+- Por qué no generar el PDF en el servidor: sería una dependencia nueva, más carga en Render Free y otra plantilla que mantener. El navegador ya produce un PDF fiel y con texto seleccionable.
+- Probado con una prueba temporal de Playwright: título del archivo, controles ocultos con el medio de impresión y en tema oscuro, y un PDF generado y revisado.
+- Preguntas de entrevista: (1) ¿Por qué imprimir desde el navegador y no generar el PDF en .NET? (2) ¿Qué limitación tiene este enfoque y cuándo cambiarías de opinión? (3) ¿Cómo garantizas que el PDF salga en claro aunque el usuario use el tema oscuro?

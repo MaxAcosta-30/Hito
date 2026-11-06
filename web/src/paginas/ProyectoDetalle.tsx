@@ -11,7 +11,7 @@ import { ErrorCarga, Esqueleto } from '../componentes/Estados'
 import { Sello } from '../componentes/Sello'
 import { useToast } from '../componentes/toast'
 import { useEnfocarError } from '../componentes/useEnfocarError'
-import { dinero, fechaCorta, horaCorta, hoyIso, leerMonto } from '../formato'
+import { dinero, fechaCorta, fechaLarga, horaCorta, hoyIso, leerMonto } from '../formato'
 
 const pestanas = [
   { clave: 'hitos', texto: 'Hitos' },
@@ -46,12 +46,24 @@ export function ProyectoDetalle() {
   const actual = versionDe(p, p.versionActual)
   const ultima = versionDe(p, p.ultimaVersion)
 
+  // Exportar a PDF con el diálogo de impresión del navegador ("Guardar como PDF").
+  // El título de la página da nombre al archivo; se restaura al cerrar el diálogo.
+  function exportar() {
+    const titulo = document.title
+    document.title = `${p.nombre} · ${p.cliente.nombre}`
+    window.addEventListener('afterprint', () => (document.title = titulo), { once: true })
+    window.print()
+  }
+
   return (
     <>
       <div className="cabecera-proyecto">
         <div className="meta">{p.cliente.nombre}</div>
         <h1>{p.nombre}</h1>
         <div className="meta">{lineaDeEstado(p, actual)}</div>
+        <button className="btn secundario no-imprimir" onClick={exportar}>
+          Exportar PDF
+        </button>
       </div>
 
       {ultima.numero !== actual.numero && (
@@ -80,12 +92,22 @@ export function ProyectoDetalle() {
         ))}
       </div>
 
-      <div id="panel-proyecto" role="tabpanel" aria-labelledby={`pestana-${pestana}`}>
+      {/* El PDF siempre resume los hitos, aunque se exporte desde otra pestaña. */}
+      <div id="panel-proyecto" role="tabpanel" aria-labelledby={`pestana-${pestana}`} className={pestana === 'hitos' ? undefined : 'no-imprimir'}>
         {pestana === 'hitos' ? <HojaDeHitos proyecto={p} version={actual} /> : pestana === 'historial' ? <Historial proyectoId={p.id} /> : <Versiones proyecto={p} />}
       </div>
 
-      <Compartir proyecto={p} />
-      <Acciones proyecto={p} />
+      {pestana !== 'hitos' && (
+        <div className="solo-impresion">
+          <HojaDeHitos proyecto={p} version={actual} />
+        </div>
+      )}
+      <p className="solo-impresion meta">Resumen generado el {fechaLarga(hoyIso())} con Hito.</p>
+
+      <div className="no-imprimir">
+        <Compartir proyecto={p} />
+        <Acciones proyecto={p} />
+      </div>
     </>
   )
 }
