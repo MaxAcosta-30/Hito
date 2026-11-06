@@ -18,11 +18,14 @@ public static class PublicoEndpoints
         string Freelancer, string Proyecto, string Cliente, EstadoProyecto Estado,
         VersionPublica? Vigente, VersionPublica? PorAceptar, DateTimeOffset EnlaceExpiraEn);
 
+    public sealed record AceptarSolicitud(int? Version);
+
     public static void MapPublico(this IEndpointRouteBuilder app)
     {
         // 43 caracteres: 32 bytes en base64url. Otra longitud ni siquiera llega a la base.
         var publico = app.MapGroup("/publico/{token:length(43)}").RequireRateLimiting(Politica);
         publico.MapGet("/", Ver);
+        publico.MapPost("/aceptar", Aceptar);
     }
 
     private static async Task<IResult> Ver(string token, HitoDbContext db, TimeProvider reloj, CancellationToken ct)
@@ -30,6 +33,21 @@ public static class PublicoEndpoints
         var ahora = reloj.GetUtcNow();
         var proyecto = await ProyectoDelEnlaceAsync(db, token, ahora, ct);
         return proyecto is null ? EnlaceNoValido() : Results.Ok(await VistaAsync(db, proyecto.Value.Proyecto, proyecto.Value.ExpiraEn, ct));
+    }
+
+    private static async Task<IResult> Aceptar(
+        string token, AceptarSolicitud solicitud, HitoDbContext db, TimeProvider reloj, CancellationToken ct)
+    {
+        var ahora = reloj.GetUtcNow();
+        var encontrado = await ProyectoDelEnlaceAsync(db, token, ahora, ct);
+        if (encontrado is null) return EnlaceNoValido();
+        if (solicitud.Version is not { } version)
+            return Results.ValidationProblem(new Dictionary<string, string[]> { ["version"] = ["Indica qué versión aceptas."] });
+
+        var (proyecto, expiraEn) = encontrado.Value;
+        proyecto.Aceptar(version, ahora);
+        await db.SaveChangesAsync(ct);
+        return Results.Ok(await VistaAsync(db, proyecto, expiraEn, ct));
     }
 
     internal static async Task<(Proyecto Proyecto, DateTimeOffset ExpiraEn)?> ProyectoDelEnlaceAsync(

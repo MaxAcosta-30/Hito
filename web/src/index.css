@@ -642,3 +642,13 @@ a.renglon:hover b {
   color: var(--grafito);
   margin: 0;
 }
+
+.hoja.exito {
+  text-align: center;
+  padding-block: 32px;
+}
+
+.hoja.exito h3 {
+  font-size: 20px;
+  margin-top: 24px;
+}

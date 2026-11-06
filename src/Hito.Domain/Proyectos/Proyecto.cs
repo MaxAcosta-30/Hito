@@ -112,6 +112,48 @@ public sealed class Proyecto : IPerteneceAUsuario
         ActualizadoEn = ahora;
     }
 
+    // El cliente acepta una versión concreta: si mientras tanto el freelancer creó otra, la aceptación se rechaza
+    // y nadie acepta algo distinto de lo que vio. Al aceptarse, sus términos quedan congelados.
+    public void Aceptar(int numeroDeVersion, DateTimeOffset ahora)
+    {
+        ExigirQueSigaAbierto();
+        var ultima = UltimaVersion;
+        if (ultima.Estado != EstadoVersion.Enviada || ultima.Numero != numeroDeVersion)
+            throw new ReglaDeNegocioException("Esta versión ya no está disponible para aceptar. Recarga la página.");
+
+        // Un hito pudo avanzar mientras esta versión esperaba respuesta: sus términos deben seguir iguales.
+        var vigente = VersionVigente;
+        foreach (var hito in _hitos.Where(h => h.Estado != EstadoHito.Pendiente))
+        {
+            var antes = vigente?.TerminosDe(hito.Id);
+            var despues = ultima.TerminosDe(hito.Id);
+            if (antes is not null && (despues is null || !despues.MismosTerminos(antes)))
+                throw new ReglaDeNegocioException($"«{antes.Titulo}» ya avanzó y esta versión lo cambia. Pide una versión nueva.");
+        }
+
+        ultima.Aceptar(ahora);
+        if (Estado == EstadoProyecto.Enviado) Estado = EstadoProyecto.Aceptado;
+        ActualizadoEn = ahora;
+    }
+
+    // Un cambio después de enviar crea una versión nueva en borrador, copiando la última.
+    // La versión vigente sigue rigiendo hasta que el cliente acepte la nueva.
+    public VersionDeProyecto NuevaVersion(DateTimeOffset ahora)
+    {
+        ExigirQueSigaAbierto();
+        var ultima = UltimaVersion;
+        if (ultima.Estado == EstadoVersion.Borrador)
+            throw new ReglaDeNegocioException("Ya hay una versión en borrador; edítala.");
+        if (ultima.Estado == EstadoVersion.Enviada) ultima.Reemplazar();
+
+        var nueva = new VersionDeProyecto(OwnerId, Id, ultima.Numero + 1, ahora);
+        foreach (var t in ultima.Terminos.OrderBy(t => t.Orden))
+            nueva.AgregarTerminos(t.HitoId, t.Orden, new DatosDeHito(t.HitoId, t.Titulo, t.Monto, t.FechaEntrega, t.Entregable));
+        _versiones.Add(nueva);
+        ActualizadoEn = ahora;
+        return nueva;
+    }
+
     // Para dar un enlace nuevo sin cambiar el alcance: el proyecto ya debe haberse enviado.
     public void ExigirQuePuedaCompartirse()
     {
