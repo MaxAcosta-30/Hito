@@ -12,7 +12,7 @@ public static class AuthEndpoints
 
     public sealed record RegistroSolicitud(string? Nombre, string? Email, string? Contrasena);
     public sealed record EntrarSolicitud(string? Email, string? Contrasena);
-    public sealed record UsuarioRespuesta(Guid Id, string Nombre, string Email);
+    public sealed record UsuarioRespuesta(Guid Id, string Nombre, string Email, bool EsDemo);
     public sealed record SesionRespuesta(string AccessToken, UsuarioRespuesta Usuario);
 
     public static void MapAuth(this IEndpointRouteBuilder app)
@@ -102,7 +102,7 @@ public static class AuthEndpoints
         return usuario is null ? Results.Unauthorized() : Results.Ok(ARespuesta(usuario));
     }
 
-    private static async Task<SesionRespuesta> IniciarSesionAsync(
+    internal static async Task<SesionRespuesta> IniciarSesionAsync(
         Usuario usuario, Sesiones sesiones, EmisorDeTokens emisor, HttpContext http, IConfiguration config, CancellationToken ct)
     {
         var (token, expira) = await sesiones.CrearAsync(usuario.Id, ct);
@@ -110,7 +110,7 @@ public static class AuthEndpoints
         return new SesionRespuesta(emisor.Emitir(usuario), ARespuesta(usuario));
     }
 
-    private static UsuarioRespuesta ARespuesta(Usuario u) => new(u.Id, u.Nombre, u.Email!);
+    private static UsuarioRespuesta ARespuesta(Usuario u) => new(u.Id, u.Nombre, u.Email!, u.DemoExpiraEn is not null);
 
     // httpOnly: JavaScript no puede leerla. Strict: el navegador no la manda desde otros sitios (CSRF).
     // La ruta es la que ve el navegador (/api/auth en Vercel), así la cookie no viaja en el resto de peticiones.

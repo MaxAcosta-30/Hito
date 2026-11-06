@@ -46,8 +46,8 @@ public sealed class PagoConfiguracion : IEntityTypeConfiguration<Pago>
         builder.Property(p => p.Monto).HasPrecision(18, 2);
         builder.Property(p => p.Nota).HasMaxLength(Pago.MaximoNota);
         builder.HasIndex(p => p.HitoId);
-        // Un pago siempre apunta a un hito existente (NO ACTION, igual que los términos).
-        builder.HasOne<HitoDeProyecto>().WithMany().HasForeignKey(p => p.HitoId).OnDelete(DeleteBehavior.ClientCascade);
+        // CASCADE por la misma razón que los términos. El dominio nunca borra un hito con pagos: solo se paga uno aprobado.
+        builder.HasOne<HitoDeProyecto>().WithMany().HasForeignKey(p => p.HitoId).OnDelete(DeleteBehavior.Cascade);
     }
 }
 
@@ -90,8 +90,9 @@ public sealed class TerminosDeHitoConfiguracion : IEntityTypeConfiguration<Termi
         // Dinero: numeric(18,2), nunca float.
         builder.Property(t => t.Monto).HasPrecision(18, 2);
         builder.HasIndex(t => new { t.VersionId, t.HitoId }).IsUnique();
-        // En la base es NO ACTION (por la misma razón que en Proyectos). ClientCascade solo le dice a EF que, si borra
-        // un hito que tiene cargado (uno quitado de un borrador), borre también sus términos en memoria.
-        builder.HasOne<HitoDeProyecto>().WithMany().HasForeignKey(t => t.HitoId).OnDelete(DeleteBehavior.ClientCascade);
+        // CASCADE: el dominio solo borra un hito que nunca avanzó (quitado de un borrador), y sus términos se van con él.
+        // NO ACTION no sirve aquí: al borrar un usuario de la demo, PostgreSQL revisa esta llave antes de que la cascada
+        // por Versiones → Términos borre esas filas, y el borrado falla.
+        builder.HasOne<HitoDeProyecto>().WithMany().HasForeignKey(t => t.HitoId).OnDelete(DeleteBehavior.Cascade);
     }
 }

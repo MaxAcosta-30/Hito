@@ -384,6 +384,9 @@ namespace Hito.Infrastructure.Persistence.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
+                    b.Property<DateTimeOffset?>("DemoExpiraEn")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -430,6 +433,9 @@ namespace Hito.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DemoExpiraEn")
+                        .HasFilter("\"DemoExpiraEn\" IS NOT NULL");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -546,7 +552,7 @@ namespace Hito.Infrastructure.Persistence.Migrations
                     b.HasOne("Hito.Domain.Proyectos.HitoDeProyecto", null)
                         .WithMany()
                         .HasForeignKey("HitoId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Hito.Domain.Proyectos.Proyecto", null)
@@ -576,7 +582,7 @@ namespace Hito.Infrastructure.Persistence.Migrations
                     b.HasOne("Hito.Domain.Proyectos.HitoDeProyecto", null)
                         .WithMany()
                         .HasForeignKey("HitoId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Hito.Domain.Proyectos.VersionDeProyecto", null)

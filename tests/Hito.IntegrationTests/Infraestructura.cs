@@ -27,6 +27,7 @@ public sealed class HitoApi(string connectionString) : WebApplicationFactory<Pro
         builder.UseSetting("Jwt:Clave", "clave-solo-para-pruebas-de-integracion-0123456789");
         builder.UseSetting("Auth:RegistrosPorMinuto", "1000");
         builder.UseSetting("Publico:PeticionesPorMinuto", "1000");
+        builder.UseSetting("Demo:PorMinuto", "1000");
     }
 
     // Sin manejo automático de cookies: las pruebas leen y mandan la cookie de renovación a mano.

@@ -12,4 +12,4 @@
 
 **Por qué no hitos dentro de cada versión:** al crear la versión 2 habría que copiar estado, evidencia y pagos de cada hito y sincronizarlos si cambian mientras la versión 2 espera aprobación.
 **Por qué no guardar el alcance como JSON:** los montos se suman y se validan contra pagos; en columnas `numeric(18,2)` la base los protege.
-**Detalles de EF:** los Id los genera el dominio (`ValueGeneratedNever`) y las llaves que se cruzan en cascadas usan `NO ACTION`/`ClientCascade` para que borrar un usuario de la demo no falle.
+**Detalles de EF:** los Id los genera el dominio (`ValueGeneratedNever`). Términos → Hito y Pago → Hito son `CASCADE`: con `NO ACTION`, borrar un usuario de la demo fallaba porque PostgreSQL revisa esa llave antes de que la cascada por Versiones borre los términos (probado el 2026-11-06). Proyecto → Cliente queda en `NO ACTION`: un cliente no se borra, se archiva.
