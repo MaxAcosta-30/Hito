@@ -4,6 +4,7 @@ import { api } from '../api/cliente'
 import { mensajeDeError } from '../api/errores'
 import { urlDelCliente, type EnlaceCreado, type Proyecto } from '../api/proyectos'
 import { fechaCorta } from '../formato'
+import { Confirmar } from './Confirmar'
 import { useToast } from './toast'
 
 // Enviar, ver, renovar y revocar el enlace privado del cliente.
@@ -11,6 +12,7 @@ export function Compartir({ proyecto }: { proyecto: Proyecto }) {
   const queryClient = useQueryClient()
   const toast = useToast()
   const [creado, setCreado] = useState<EnlaceCreado | null>(null)
+  const [confirmando, setConfirmando] = useState<'nuevo' | 'revocar' | null>(null)
   const borrador = proyecto.versiones.find((v) => v.numero === proyecto.ultimaVersion)!.estado === 'Borrador'
 
   const alCrear = (resultado: EnlaceCreado) => {
@@ -30,16 +32,21 @@ export function Compartir({ proyecto }: { proyecto: Proyecto }) {
     mutationFn: () => api<EnlaceCreado>(`/proyectos/${proyecto.id}/enlace`, { method: 'POST' }),
     onSuccess: (r) => {
       alCrear(r)
+      setConfirmando(null)
       toast('Enlace nuevo creado. El anterior ya no funciona.')
     },
+    // Si falla, se cierra el diálogo para que el error se vea en la hoja.
+    onError: () => setConfirmando(null),
   })
   const revocar = useMutation({
     mutationFn: () => api<void>(`/proyectos/${proyecto.id}/enlace/revocar`, { method: 'POST' }),
     onSuccess: () => {
       setCreado(null)
+      setConfirmando(null)
       queryClient.invalidateQueries({ queryKey: ['proyectos', proyecto.id] })
       toast('Enlace revocado. Tu cliente ya no puede abrirlo.')
     },
+    onError: () => setConfirmando(null),
   })
   const error = enviar.error ?? nuevo.error ?? revocar.error
 
@@ -67,29 +74,38 @@ export function Compartir({ proyecto }: { proyecto: Proyecto }) {
           </button>
         ) : (
           proyecto.estado !== 'Borrador' && (
-            <button
-              className="btn secundario"
-              onClick={() => {
-                if (window.confirm('¿Generar un enlace nuevo? El que tiene tu cliente dejará de funcionar.')) nuevo.mutate()
-              }}
-              disabled={nuevo.isPending}
-            >
+            <button className="btn secundario" onClick={() => setConfirmando('nuevo')} disabled={nuevo.isPending}>
               Generar enlace nuevo
             </button>
           )
         )}
         {(proyecto.enlace || creado) && (
-          <button
-            className="btn texto"
-            onClick={() => {
-              if (window.confirm('¿Revocar el enlace? Tu cliente ya no podrá abrir el proyecto hasta que le envíes uno nuevo.')) revocar.mutate()
-            }}
-            disabled={revocar.isPending}
-          >
+          <button className="btn peligro-contorno separado" onClick={() => setConfirmando('revocar')} disabled={revocar.isPending}>
             Revocar enlace
           </button>
         )}
       </div>
+      <Confirmar
+        titulo="¿Generar un enlace nuevo?"
+        textoConfirmar="Generar enlace nuevo"
+        abierto={confirmando === 'nuevo'}
+        pendiente={nuevo.isPending}
+        onConfirmar={() => nuevo.mutate()}
+        onCerrar={() => setConfirmando(null)}
+      >
+        El enlace que tiene tu cliente dejará de funcionar. Tendrás que compartirle el nuevo.
+      </Confirmar>
+      <Confirmar
+        titulo="¿Revocar el enlace?"
+        textoConfirmar="Sí, revocar enlace"
+        peligro
+        abierto={confirmando === 'revocar'}
+        pendiente={revocar.isPending}
+        onConfirmar={() => revocar.mutate()}
+        onCerrar={() => setConfirmando(null)}
+      >
+        Tu cliente ya no podrá abrir el proyecto ni aprobar entregas hasta que le envíes un enlace nuevo.
+      </Confirmar>
     </div>
   )
 }

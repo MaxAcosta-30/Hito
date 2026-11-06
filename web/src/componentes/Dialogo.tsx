@@ -9,7 +9,11 @@ export function Dialogo({ titulo, abierto, onCerrar, children }: { titulo: strin
   useEffect(() => {
     const dialogo = ref.current
     if (!dialogo) return
-    if (abierto && !dialogo.open) dialogo.showModal()
+    if (abierto && !dialogo.open) {
+      dialogo.showModal()
+      // showModal enfoca el primer control; un diálogo puede pedir otro (por ejemplo, la opción segura).
+      dialogo.querySelector<HTMLElement>('[data-foco-inicial]')?.focus()
+    }
     if (!abierto && dialogo.open) dialogo.close()
   }, [abierto])
 

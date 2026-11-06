@@ -7,6 +7,7 @@ import { useEventos, useProyecto, versionDe, type Hito, type Proyecto, type Vers
 import { Campo } from '../componentes/Campo'
 import { Dialogo } from '../componentes/Dialogo'
 import { Compartir } from '../componentes/Compartir'
+import { Confirmar } from '../componentes/Confirmar'
 import { ErrorCarga, Esqueleto } from '../componentes/Estados'
 import { Sello } from '../componentes/Sello'
 import { useToast } from '../componentes/toast'
@@ -367,6 +368,7 @@ function Acciones({ proyecto }: { proyecto: Proyecto }) {
   const toast = useToast()
   const ultima = versionDe(proyecto, proyecto.ultimaVersion)
   const abierto = proyecto.estado !== 'Cancelado' && proyecto.estado !== 'Completado'
+  const [confirmando, setConfirmando] = useState<'version' | 'cancelar' | null>(null)
 
   const navegar = useNavigate()
   const nuevaVersion = useMutation({
@@ -378,6 +380,7 @@ function Acciones({ proyecto }: { proyecto: Proyecto }) {
       toast(`Versión ${p.ultimaVersion} creada en borrador`)
       navegar(`/proyectos/${p.id}/alcance`)
     },
+    onError: () => setConfirmando(null),
   })
 
   const cancelar = useMutation({
@@ -386,8 +389,10 @@ function Acciones({ proyecto }: { proyecto: Proyecto }) {
       queryClient.setQueryData(['proyectos', p.id], p)
       queryClient.invalidateQueries({ queryKey: ['proyectos'] })
       queryClient.invalidateQueries({ queryKey: ['cobros'] })
+      setConfirmando(null)
       toast('Proyecto cancelado. Su historial se conserva.')
     },
+    onError: () => setConfirmando(null),
   })
 
   if (!abierto) return null
@@ -399,24 +404,12 @@ function Acciones({ proyecto }: { proyecto: Proyecto }) {
         </Link>
       )}
       {ultima.estado !== 'Borrador' && (
-        <button
-          className="btn secundario"
-          disabled={nuevaVersion.isPending}
-          onClick={() => {
-            const aviso = ultima.estado === 'Enviada' ? ' La versión enviada dejará de poder aceptarse.' : ''
-            if (window.confirm(`¿Crear la versión ${ultima.numero + 1}? Tu cliente tendrá que aceptarla.${aviso}`)) nuevaVersion.mutate()
-          }}
-        >
+        <button className="btn secundario" disabled={nuevaVersion.isPending} onClick={() => setConfirmando('version')}>
           Cambiar alcance
         </button>
       )}
-      <button
-        className="btn texto"
-        disabled={cancelar.isPending}
-        onClick={() => {
-          if (window.confirm('¿Cancelar este proyecto? Se conserva su historial, pero ya no podrás cambiarlo.')) cancelar.mutate()
-        }}
-      >
+      {/* Destructiva: separada del resto y en rojo. */}
+      <button className="btn peligro-contorno separado" disabled={cancelar.isPending} onClick={() => setConfirmando('cancelar')}>
         Cancelar proyecto
       </button>
       {(cancelar.isError || nuevaVersion.isError) && (
@@ -424,6 +417,28 @@ function Acciones({ proyecto }: { proyecto: Proyecto }) {
           {mensajeDeError(cancelar.error ?? nuevaVersion.error)}
         </p>
       )}
+      <Confirmar
+        titulo={`¿Crear la versión ${ultima.numero + 1}?`}
+        textoConfirmar={`Crear versión ${ultima.numero + 1}`}
+        abierto={confirmando === 'version'}
+        pendiente={nuevaVersion.isPending}
+        onConfirmar={() => nuevaVersion.mutate()}
+        onCerrar={() => setConfirmando(null)}
+      >
+        Tu cliente tendrá que aceptarla. Mientras tanto sigue vigente la versión {proyecto.versionActual}.
+        {ultima.estado === 'Enviada' && ' La versión que ya enviaste dejará de poder aceptarse.'}
+      </Confirmar>
+      <Confirmar
+        titulo="¿Cancelar este proyecto?"
+        textoConfirmar="Sí, cancelar proyecto"
+        peligro
+        abierto={confirmando === 'cancelar'}
+        pendiente={cancelar.isPending}
+        onConfirmar={() => cancelar.mutate()}
+        onCerrar={() => setConfirmando(null)}
+      >
+        No se puede deshacer. Ya no podrás cambiar el alcance, entregar ni registrar pagos, y el enlace del cliente dejará de funcionar. El historial y los pagos registrados se conservan.
+      </Confirmar>
     </div>
   )
 }

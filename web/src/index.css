@@ -11,6 +11,7 @@
   --sobre-firma: #ffffff;
   --sello-pagado: #2f6b3f;
   --sello-vencido: #b23a2e;
+  --sobre-peligro: #ffffff;
   --sello-cambios: #8f5400;
   --sombra-hoja: 0 1px 2px rgba(29, 43, 79, 0.06);
   --r-control: 4px;
@@ -32,6 +33,7 @@
     --sobre-firma: #151824;
     --sello-pagado: #86c595;
     --sello-vencido: #ee9184;
+    --sobre-peligro: #151824;
     --sello-cambios: #e2b060;
     --sombra-hoja: none;
   }
@@ -959,4 +961,21 @@ a.renglon:hover b {
   .despertando .sello-marca {
     animation: none;
   }
+}
+
+/* Acciones destructivas: rojo solo aquí, separadas del resto de la botonera */
+.btn.peligro {
+  background: var(--sello-vencido);
+  border-color: var(--sello-vencido);
+  color: var(--sobre-peligro);
+}
+
+.btn.peligro-contorno {
+  background: transparent;
+  border: 1px solid var(--sello-vencido);
+  color: var(--sello-vencido);
+}
+
+.botonera .separado {
+  margin-left: auto;
 }
