@@ -10,7 +10,7 @@ import { Compartir } from '../componentes/Compartir'
 import { ErrorCarga, Esqueleto } from '../componentes/Estados'
 import { Sello } from '../componentes/Sello'
 import { useToast } from '../componentes/toast'
-import { dinero, fechaCorta, hoyIso } from '../formato'
+import { dinero, fechaCorta, hoyIso, leerMonto } from '../formato'
 
 type Pestana = 'hitos' | 'versiones'
 
@@ -75,6 +75,14 @@ export function HojaDeHitos({ proyecto, version }: { proyecto: Proyecto; version
         <RenglonHito key={h.id} proyecto={proyecto} hito={h} accionable={vigente} vencido={vigente && h.estado !== 'Pagado' && h.fechaEntrega < hoy} />
       ))}
       <div className="totales">
+        {vigente && (
+          <>
+            <span>Pagado</span>
+            <span className="monto">{dinero(proyecto.pagado)}</span>
+            <span>Por cobrar</span>
+            <span className="monto">{dinero(version.total - proyecto.pagado)}</span>
+          </>
+        )}
         <span className="final">Total</span>
         <span className="final monto">{dinero(version.total)}</span>
       </div>
@@ -83,6 +91,8 @@ export function HojaDeHitos({ proyecto, version }: { proyecto: Proyecto; version
 }
 
 function detalleDeHito(h: Hito) {
+  if (h.estado === 'Pagado') return 'Pagado completo'
+  if (h.estado === 'Aprobado' && h.pagado > 0) return `Pagado ${dinero(h.pagado)} de ${dinero(h.monto)}`
   if (h.estado === 'Aprobado' && h.aprobadoEn) return `Aprobado el ${fechaCorta(h.aprobadoEn)}`
   if (h.estado === 'Entregado' && h.entregadoEn) return `Entregado el ${fechaCorta(h.entregadoEn)}, esperando revisión`
   if (h.estado === 'CambiosSolicitados') return 'El cliente pidió cambios'
@@ -91,7 +101,9 @@ function detalleDeHito(h: Hito) {
 
 function RenglonHito({ proyecto, hito, accionable, vencido }: { proyecto: Proyecto; hito: Hito; accionable: boolean; vencido: boolean }) {
   const [entregando, setEntregando] = useState(false)
+  const [pagando, setPagando] = useState(false)
   const puedeEntregar = accionable && (hito.estado === 'Pendiente' || hito.estado === 'CambiosSolicitados')
+  const puedePagar = accionable && hito.estado === 'Aprobado'
   return (
     <div className="renglon">
       <b>{hito.titulo}</b>
@@ -116,6 +128,16 @@ function RenglonHito({ proyecto, hito, accionable, vencido }: { proyecto: Proyec
           </button>
         </div>
       )}
+      {puedePagar && (
+        <div className="acciones">
+          <button className="btn primario" onClick={() => setPagando(true)}>
+            Registrar pago
+          </button>
+        </div>
+      )}
+      <Dialogo titulo="Registrar pago" abierto={pagando} onCerrar={() => setPagando(false)}>
+        <FormularioPago proyectoId={proyecto.id} hito={hito} onListo={() => setPagando(false)} />
+      </Dialogo>
       <Dialogo titulo={`Entregar «${hito.titulo}»`} abierto={entregando} onCerrar={() => setEntregando(false)}>
         <FormularioEntrega proyectoId={proyecto.id} hito={hito} onListo={() => setEntregando(false)} />
       </Dialogo>
@@ -154,6 +176,71 @@ function FormularioEntrega({ proyectoId, hito, onListo }: { proyectoId: string; 
       <div className="botonera columna">
         <button className="btn primario ancho" type="submit" disabled={entregar.isPending}>
           {entregar.isPending ? 'Entregando…' : 'Entregar'}
+        </button>
+        <button className="btn secundario ancho" type="button" onClick={onListo}>
+          Cancelar
+        </button>
+      </div>
+    </form>
+  )
+}
+
+function FormularioPago({ proyectoId, hito, onListo }: { proyectoId: string; hito: Hito; onListo: () => void }) {
+  const queryClient = useQueryClient()
+  const toast = useToast()
+  const pendiente = Math.round((hito.monto - hito.pagado) * 100) / 100
+  const [datos, setDatos] = useState({ monto: pendiente.toFixed(2), fecha: hoyIso(), nota: '' })
+  const [errorMonto, setErrorMonto] = useState<string>()
+  const monto = leerMonto(datos.monto)
+  const pagar = useMutation({
+    mutationFn: () => api<Proyecto>(`/proyectos/${proyectoId}/hitos/${hito.id}/pagos`, { method: 'POST', body: JSON.stringify({ monto, fecha: datos.fecha || null, nota: datos.nota }) }),
+    onSuccess: (p) => {
+      queryClient.setQueryData(['proyectos', p.id], p)
+      queryClient.invalidateQueries({ queryKey: ['proyectos'] })
+      queryClient.invalidateQueries({ queryKey: ['cobros'] })
+      toast(`Pago registrado · ${dinero(monto)}`)
+      onListo()
+    },
+  })
+  const errores = erroresDeFormulario(pagar.error)
+
+  function enviar(e: FormEvent) {
+    e.preventDefault()
+    // Se revisa antes de enviar para dar el mensaje al instante; el servidor vuelve a validarlo.
+    if (!(monto > 0)) return setErrorMonto('Escribe el monto recibido.')
+    if (monto > pendiente) return setErrorMonto(`No puede ser mayor que lo pendiente: ${dinero(pendiente)}`)
+    pagar.mutate()
+  }
+
+  return (
+    <form onSubmit={enviar} noValidate>
+      <div className="meta">
+        {hito.titulo} · {hito.aprobadoEn ? `aprobado el ${fechaCorta(hito.aprobadoEn)}` : 'aprobado'}
+      </div>
+      {errores.general && (
+        <p className="mensaje-error" role="alert">
+          {errores.general}
+        </p>
+      )}
+      <Campo
+        id="monto"
+        etiqueta="Monto recibido (MXN)"
+        className="num"
+        inputMode="decimal"
+        autoFocus
+        value={datos.monto}
+        onChange={(e) => {
+          setDatos((d) => ({ ...d, monto: e.target.value }))
+          setErrorMonto(undefined)
+        }}
+        error={errorMonto ?? errores.campo('monto')}
+        ayuda={`Pendiente: ${dinero(pendiente)}`}
+      />
+      <Campo id="fecha" etiqueta="Fecha del pago" type="date" value={datos.fecha} onChange={(e) => setDatos((d) => ({ ...d, fecha: e.target.value }))} error={errores.campo('fecha')} />
+      <Campo id="nota" etiqueta="Nota (opcional)" maxLength={200} placeholder="Transferencia, referencia…" value={datos.nota} onChange={(e) => setDatos((d) => ({ ...d, nota: e.target.value }))} error={errores.campo('nota')} />
+      <div className="botonera columna">
+        <button className="btn primario ancho" type="submit" disabled={pagar.isPending}>
+          {pagar.isPending ? 'Registrando…' : `Registrar ${monto > 0 ? dinero(monto) : 'pago'}`}
         </button>
         <button className="btn secundario ancho" type="button" onClick={onListo}>
           Cancelar
