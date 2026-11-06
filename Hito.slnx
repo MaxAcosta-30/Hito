@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Hito.Api/Hito.Api.csproj" />
+    <Project Path="src/Hito.Application/Hito.Application.csproj" />
+    <Project Path="src/Hito.Domain/Hito.Domain.csproj" />
+    <Project Path="src/Hito.Infrastructure/Hito.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Hito.IntegrationTests/Hito.IntegrationTests.csproj" />
+  </Folder>
+</Solution>
