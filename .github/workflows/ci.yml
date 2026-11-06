@@ -117,16 +117,11 @@ jobs:
           path: tests/e2e/playwright-report/
           retention-days: 7
 
-  # La prueba en kind se inserta antes de este job en la Etapa 5.
-  deploy:
-    needs: [build-test, e2e]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  # Kubernetes local: la imagen del Dockerfile y el bundle de migraciones contra PostgreSQL dentro de kind.
+  kind:
+    needs: build-test
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    environment: produccion
-    env:
-      # Program exige una clave al arrancar; el bundle no emite tokens, así que esta no es secreta.
-      Jwt__Clave: solo-para-tiempo-de-diseno-no-es-secreta-000
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7.0.1
 
@@ -144,9 +139,52 @@ jobs:
         env:
           # Solo para que Program arranque en tiempo de diseño; no se conecta a nada.
           ConnectionStrings__Hito: Host=localhost;Database=diseno
+          Jwt__Clave: solo-para-tiempo-de-diseno-no-es-secreta-000
+
+      - name: Construir la imagen de la API
+        run: docker build -t hito-api:ci .
+
+      - uses: helm/kind-action@v1.15.1
+        with:
+          cluster_name: hito
+
+      - run: kind load docker-image hito-api:ci --name hito
+
+      - name: Desplegar en kind y probar
+        run: k8s/probar.sh ./efbundle
+
+      # El deploy aplica en Supabase este mismo bundle, el que ya se probó en kind.
+      - uses: actions/upload-artifact@v7.0.2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        with:
+          name: efbundle
+          path: efbundle
+          retention-days: 1
+
+  deploy:
+    needs: [build-test, e2e, kind]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: produccion
+    env:
+      # Program exige una clave al arrancar; el bundle no emite tokens, así que esta no es secreta.
+      Jwt__Clave: solo-para-tiempo-de-diseno-no-es-secreta-000
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      # El bundle depende del runtime de .NET 10.
+      - uses: actions/setup-dotnet@v6.0.0
+        with:
+          global-json-file: global.json
+
+      - uses: actions/download-artifact@v8.0.2
+        with:
+          name: efbundle
 
       - name: Aplicar migraciones en Supabase
-        run: ./efbundle
+        # Los artefactos no conservan el permiso de ejecución.
+        run: chmod +x efbundle && ./efbundle
         env:
           ConnectionStrings__Hito: ${{ secrets.SUPABASE_CONNECTION_STRING }}
 

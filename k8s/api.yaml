@@ -1,0 +1,88 @@
+# API de Hito en kind, con la misma imagen del Dockerfile que usa Render.
+# La cadena de conexión y la clave JWT vienen del Secret hito-api, que crea el flujo de CI; no viven en el repositorio.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hito-api
+  labels:
+    app: hito-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hito-api
+  template:
+    metadata:
+      labels:
+        app: hito-api
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: api
+          # Se carga en kind con "kind load docker-image"; nunca se descarga de un registro.
+          image: hito-api:ci
+          imagePullPolicy: Never
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            # En un contenedor appsettings.json no cambia: vigilarlo gasta un inotify por proceso,
+            # y en un nodo con muchos pods ese límite se agota y la API no arranca.
+            - name: DOTNET_hostBuilder__reloadConfigOnChange
+              value: "false"
+            - name: ConnectionStrings__Hito
+              valueFrom:
+                secretKeyRef:
+                  name: hito-api
+                  key: connection-string
+            - name: Jwt__Clave
+              valueFrom:
+                secretKeyRef:
+                  name: hito-api
+                  key: jwt-clave
+          # live no toca la base: si PostgreSQL cae, el pod sale del Service pero no se reinicia en bucle.
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+          # ready sí revisa la base: sin ella, el pod no recibe tráfico.
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            periodSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 384Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hito-api
+spec:
+  selector:
+    app: hito-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
