@@ -13,6 +13,10 @@ export type Hito = {
   fechaEntrega: string
   entregable: string
   estado: EstadoHito
+  evidenciaUrl: string | null
+  entregadoEn: string | null
+  comentarioCambios: string | null
+  aprobadoEn: string | null
 }
 
 export type Version = {

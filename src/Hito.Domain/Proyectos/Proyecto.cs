@@ -154,6 +154,35 @@ public sealed class Proyecto : IPerteneceAUsuario
         return nueva;
     }
 
+    public void EntregarHito(Guid hitoId, string evidenciaUrl, DateTimeOffset ahora)
+    {
+        HitoVigente(hitoId).Entregar(evidenciaUrl, ahora);
+        ActualizadoEn = ahora;
+    }
+
+    public void AprobarHito(Guid hitoId, DateTimeOffset ahora)
+    {
+        HitoVigente(hitoId).Aprobar(ahora);
+        ActualizadoEn = ahora;
+    }
+
+    public void PedirCambios(Guid hitoId, string comentario, DateTimeOffset ahora)
+    {
+        HitoVigente(hitoId).PedirCambios(comentario);
+        ActualizadoEn = ahora;
+    }
+
+    // Solo se trabaja sobre hitos del alcance aceptado y vigente.
+    private HitoDeProyecto HitoVigente(Guid hitoId)
+    {
+        ExigirQueSigaAbierto();
+        if (Estado != EstadoProyecto.Aceptado || VersionVigente is not { } vigente)
+            throw new ReglaDeNegocioException("El cliente aún no acepta el alcance.");
+        if (vigente.TerminosDe(hitoId) is null)
+            throw new ReglaDeNegocioException("Ese hito no forma parte del alcance vigente.");
+        return _hitos.First(h => h.Id == hitoId);
+    }
+
     // Para dar un enlace nuevo sin cambiar el alcance: el proyecto ya debe haberse enviado.
     public void ExigirQuePuedaCompartirse()
     {
