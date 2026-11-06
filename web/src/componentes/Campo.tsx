@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes } from 'react'
+import type { InputHTMLAttributes, TextareaHTMLAttributes } from 'react'
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   id: string
@@ -23,6 +23,22 @@ export function Campo({ id, etiqueta, error, ayuda, ...input }: Props) {
             {ayuda}
           </span>
         )
+      )}
+    </div>
+  )
+}
+
+type PropsArea = TextareaHTMLAttributes<HTMLTextAreaElement> & { id: string; etiqueta: string; error?: string }
+
+export function CampoArea({ id, etiqueta, error, ...area }: PropsArea) {
+  return (
+    <div className={error ? 'campo error' : 'campo'}>
+      <label htmlFor={id}>{etiqueta}</label>
+      <textarea id={id} name={id} rows={3} aria-invalid={error ? true : undefined} aria-describedby={error ? `${id}-error` : undefined} {...area} />
+      {error && (
+        <span id={`${id}-error`} className="mensaje-error">
+          {error}
+        </span>
       )}
     </div>
   )

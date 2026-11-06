@@ -16,9 +16,21 @@
 - Web: `/clientes` (activos y archivados), `/clientes/nuevo` y `/clientes/:id`, con esqueleto, vacío, error con "Reintentar" y toast.
 - Probado en local con Playwright (Chromium, 390 px y 1280 px, claro y oscuro): crear con validación → editar → archivar → restaurar.
 
+**Caso 3 · Proyecto con hitos:** terminado en la rama `caso-3/proyectos` (2026-11-06), sin subir ni desplegar. ADR 0005.
+- API: `GET/POST /proyectos`, `GET /proyectos/{id}`, `PUT /proyectos/{id}/alcance` y `POST /proyectos/{id}/cancelar`. Migración `AgregarProyectos`.
+- Cada hito tiene título, monto en MXN (`numeric(18,2)`), fecha y entregable. El total lo calcula el dominio; un `total` enviado por el navegador se ignora.
+- 409 para reglas de negocio y choques de concurrencia (`ManejadorDeReglas`).
+- Nuevo `tests/Hito.UnitTests`: 12 pruebas del agregado. Integración: 6 nuevas (22 en total), incluido el aislamiento de proyectos.
+- Web: `/proyectos`, `/proyectos/nuevo`, `/proyectos/:id` (pestañas Hitos y Versiones) y `/proyectos/:id/alcance`. Probado con Playwright en 390 px.
+
 ## Preguntas de entrevista pendientes
 
 **Caso 2**
 1. ¿Por qué un cliente de otro usuario responde 404 y no 403? ¿Dónde se aplica ese filtro y qué pasaría si se te olvida en una consulta nueva?
 2. ¿Por qué se archiva en lugar de borrar? ¿Qué problema aparecería con los pagos si borraras clientes?
 3. El `OwnerId` sale del token y no del cuerpo de la petición. ¿Qué ataque evita eso?
+
+**Caso 3**
+1. ¿Por qué el hito y sus términos son entidades distintas? ¿Qué pasaría con los pagos si los hitos vivieran dentro de cada versión?
+2. ¿Por qué `decimal` y `numeric(18,2)` y no `double`? Da un ejemplo de error con `double`.
+3. ¿Qué hace `xmin` en este proyecto y qué ve el usuario si dos pestañas editan el mismo proyecto a la vez?
