@@ -52,3 +52,27 @@ dotnet ef migrations bundle -p src/Hito.Infrastructure -s src/Hito.Api -o efbund
 k8s/probar.sh ./efbundle
 kind delete cluster --name hito
 ```
+
+## Estado de la Etapa 5
+
+E2E, prueba en kind y revisión terminados (PR #23, #24 y #25, encadenados). CI en verde en los tres: `build-test`, `web`, `e2e` y `kind`. Pendiente:
+- Aprobación de Max y fusión en orden (#22 → #23 → #24 → #25, con merge commit).
+- Tras fusionar, en `main`: comprobar que `deploy` descarga el bundle de `kind` y lo aplica en Supabase, y revisar las cabeceras en producción con `curl -sI https://<dominio>/entrar`. El preview de Vercel pide inicio de sesión y no se pudo revisar.
+- Las respuestas de entrevista de las Etapas 3, 4 y 5.
+
+## Preguntas de entrevista pendientes
+
+**E2E**
+1. ¿Por qué el cliente corre en un contexto de navegador distinto al del freelancer? ¿Qué dejaría de probar si compartieran contexto?
+2. ¿Por qué el e2e usa la API y PostgreSQL reales en lugar de simular la API? ¿Qué cuesta esa decisión?
+3. El e2e encontró que todos los diálogos compartían un id. ¿Qué escuchaba un usuario de lector de pantalla y cómo lo resuelve `useId`?
+
+**Kubernetes (kind)**
+1. ¿Por qué `/health/live` no revisa la base y `/health/ready` sí? ¿Qué pasaría en Kubernetes si las dos la revisaran?
+2. ¿Por qué el deploy aplica el mismo bundle que se probó en kind en vez de generar otro? ¿Qué no garantiza esto sobre la imagen de Render?
+3. Con 2 réplicas, el token de `POST /demo` puede validarse en otro pod. ¿Por qué funciona sin compartir sesión entre pods?
+
+**Revisión**
+1. ¿Qué ataque frena `frame-ancestors 'none'` y por qué la CSP puede ser `script-src 'self'` sin `'unsafe-inline'`?
+2. Los límites de `/publico` y `/demo` son globales. ¿Cómo los aprovecharía un atacante y por qué particionar por IP detrás de Vercel y Render no es trivial?
+3. ¿Por qué un `role="tab"` sin flechas ni `tabIndex` es peor que unos botones normales?
