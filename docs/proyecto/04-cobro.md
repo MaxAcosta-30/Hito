@@ -14,6 +14,13 @@
 - API: `POST /proyectos/{id}/hitos/{hitoId}/pagos`. Migración `AgregarPagos`. Pruebas: 8 unitarias y 5 de integración. Total: 43 + 40.
 - Web: diálogo "Registrar pago" con el pendiente prellenado y validación al instante; totales Pagado, Por cobrar y Total. Probado con Playwright.
 
+**Caso 8 · Panel de cobros:** terminado en la rama `caso-8/panel` (2026-11-06), sin subir ni desplegar.
+- `ResumenDeCobros.Calcular` (dominio, función pura): por cobrar, aprobado sin pagar y vencido sobre lo pendiente de la versión vigente de proyectos aceptados. "Hoy" en `America/Mexico_City`.
+- API: `GET /cobros`. Pruebas: 5 unitarias y 2 de integración (los totales coinciden con los datos; aislamiento). Total: 48 + 42.
+- Web: cifra "Te deben", desglose y "Necesita tu atención", con esqueleto, vacío y error. Probado con Playwright.
+
+**Pendiente de la Etapa 4:** caso 9 (historial) y caso 10 (demo).
+
 ## Preguntas de entrevista pendientes
 
 **Caso 6**
@@ -25,3 +32,8 @@
 1. Dos pestañas registran el pago completo a la vez. Explica paso a paso por qué solo una lo logra.
 2. ¿Por qué la regla de "no pagar de más" vive en el dominio y no solo en la web?
 3. ¿Qué cambiarías si el cliente pudiera pagar con tarjeta? (Fuera de alcance; interesa el razonamiento.)
+
+**Caso 8**
+1. ¿Por qué "hoy" se calcula en la zona horaria de México y no en UTC?
+2. ¿Por qué el cálculo vive en el dominio y no en una consulta SQL?
+3. Un hito aprobado y vencido, ¿cuenta dos veces en "Te deben"? ¿Por qué no?

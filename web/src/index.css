@@ -708,3 +708,58 @@ a.renglon:hover b {
   display: grid;
   margin-top: 8px;
 }
+
+/* Panel de cobros */
+.cifra {
+  font: 600 39px/1.1 'IBM Plex Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  margin: 8px 0 4px;
+}
+
+.esqueleto.cifra-e {
+  height: 40px;
+  width: 60%;
+}
+
+.desglose {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--renglon);
+}
+
+.desglose strong {
+  display: block;
+  font: 600 16px 'IBM Plex Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  margin-top: 4px;
+}
+
+.desglose .alerta strong {
+  color: var(--sello-vencido);
+}
+
+.renglon b a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.renglon b a:hover {
+  text-decoration: underline;
+}
+
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.rotulo + .renglon {
+  border-top: 0;
+}
