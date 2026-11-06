@@ -4,6 +4,9 @@ import { esperarApi } from './api/esperarApi'
 import { useSesion } from './auth/contexto'
 import { SesionProvider } from './auth/SesionProvider'
 import { Despertando } from './componentes/Despertando'
+import { ToastProvider } from './componentes/ToastProvider'
+import { ClienteFormulario } from './paginas/ClienteFormulario'
+import { Clientes } from './paginas/Clientes'
 import { Cobros } from './paginas/Cobros'
 import { Entrar } from './paginas/Entrar'
 import { Registro } from './paginas/Registro'
@@ -35,16 +38,21 @@ export default function App() {
 
   return (
     <SesionProvider>
-      <Routes>
-        <Route element={<SoloAnonimo />}>
-          <Route path="/entrar" element={<Entrar />} />
-          <Route path="/registro" element={<Registro />} />
-        </Route>
-        <Route element={<Protegida />}>
-          <Route path="/cobros" element={<Cobros />} />
-        </Route>
-        <Route path="*" element={<Navigate to="/cobros" replace />} />
-      </Routes>
+      <ToastProvider>
+        <Routes>
+          <Route element={<SoloAnonimo />}>
+            <Route path="/entrar" element={<Entrar />} />
+            <Route path="/registro" element={<Registro />} />
+          </Route>
+          <Route element={<Protegida />}>
+            <Route path="/cobros" element={<Cobros />} />
+            <Route path="/clientes" element={<Clientes />} />
+            <Route path="/clientes/nuevo" element={<ClienteFormulario />} />
+            <Route path="/clientes/:id" element={<ClienteFormulario />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/cobros" replace />} />
+        </Routes>
+      </ToastProvider>
     </SesionProvider>
   )
 }
@@ -78,6 +86,7 @@ function Protegida() {
         <span className="marca">Hito</span>
         <nav aria-label="Principal">
           <NavLink to="/cobros">Cobros</NavLink>
+          <NavLink to="/clientes">Clientes</NavLink>
         </nav>
         <button className="btn texto" onClick={salir}>
           Salir
