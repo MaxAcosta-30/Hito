@@ -65,6 +65,9 @@ export function Entrar() {
       <p className="pie-formulario">
         ¿No tienes cuenta? <Link to="/registro">Crea una</Link>
       </p>
+      <p className="pie-formulario">
+        <Link to="/privacidad">Aviso de privacidad</Link>
+      </p>
     </main>
   )
 }

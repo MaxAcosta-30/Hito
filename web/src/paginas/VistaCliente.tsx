@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
-import { useParams } from 'react-router'
+import { Link, useParams } from 'react-router'
 import { api, ErrorApi } from '../api/cliente'
 import { mensajeDeError } from '../api/errores'
 import { useVistaCliente, type HitoPublico, type VersionPublica, type VistaCliente as Vista } from '../api/publico'
@@ -98,7 +98,9 @@ export function VistaCliente() {
         </div>
       )}
 
-      <p className="meta pie-cliente">Este enlace vence el {fechaCorta(v.enlaceExpiraEn)}.</p>
+      <p className="meta pie-cliente">
+        Este enlace vence el {fechaCorta(v.enlaceExpiraEn)} · <Link to="/privacidad">Aviso de privacidad</Link>
+      </p>
 
       {v.porAceptar && !cancelado && (
         <div className="barra-accion">
