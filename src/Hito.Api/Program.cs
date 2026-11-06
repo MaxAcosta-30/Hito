@@ -2,6 +2,9 @@ using System.Text;
 using Microsoft.AspNetCore.RateLimiting;
 using Hito.Api.Auth;
 using Hito.Api.Clientes;
+using Hito.Api.Comun;
+using Hito.Api.Proyectos;
+using System.Text.Json.Serialization;
 using Hito.Application.Comun;
 using Hito.Infrastructure;
 using Hito.Infrastructure.Persistence;
@@ -30,6 +33,9 @@ builder.Services.AddScoped<Sesiones>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUsuarioActual, UsuarioActual>();
 builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<ManejadorDeReglas>();
+// Los estados viajan como texto ("Borrador"), no como números: la API se lee sin conocer los enums.
+builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -68,6 +74,7 @@ builder.Services.Configure<HealthCheckServiceOptions>(options =>
 
 var app = builder.Build();
 
+app.UseExceptionHandler();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
@@ -80,5 +87,6 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = check 
 
 app.MapAuth();
 app.MapClientes();
+app.MapProyectos();
 
 app.Run();

@@ -61,6 +61,155 @@ namespace Hito.Infrastructure.Persistence.Migrations
                     b.ToTable("Clientes", (string)null);
                 });
 
+            modelBuilder.Entity("Hito.Domain.Proyectos.HitoDeProyecto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProyectoId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProyectoId");
+
+                    b.ToTable("Hitos", (string)null);
+                });
+
+            modelBuilder.Entity("Hito.Domain.Proyectos.Proyecto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("ActualizadoEn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ClienteId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreadoEn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("VersionDeFila")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClienteId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Proyectos", (string)null);
+                });
+
+            modelBuilder.Entity("Hito.Domain.Proyectos.TerminosDeHito", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Entregable")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateOnly>("FechaEntrega")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("HitoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Monto")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<int>("Orden")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<Guid>("VersionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HitoId");
+
+                    b.HasIndex("VersionId", "HitoId")
+                        .IsUnique();
+
+                    b.ToTable("TerminosDeHito", (string)null);
+                });
+
+            modelBuilder.Entity("Hito.Domain.Proyectos.VersionDeProyecto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("AceptadaEn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("CreadaEn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("EnviadaEn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("Numero")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProyectoId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProyectoId", "Numero")
+                        .IsUnique();
+
+                    b.ToTable("VersionesDeProyecto", (string)null);
+                });
+
             modelBuilder.Entity("Hito.Infrastructure.Identidad.SesionDeRenovacion", b =>
                 {
                     b.Property<Guid>("Id")
@@ -237,6 +386,54 @@ namespace Hito.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Hito.Domain.Proyectos.HitoDeProyecto", b =>
+                {
+                    b.HasOne("Hito.Domain.Proyectos.Proyecto", null)
+                        .WithMany("Hitos")
+                        .HasForeignKey("ProyectoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Hito.Domain.Proyectos.Proyecto", b =>
+                {
+                    b.HasOne("Hito.Domain.Clientes.Cliente", null)
+                        .WithMany()
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Hito.Infrastructure.Identidad.Usuario", null)
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Hito.Domain.Proyectos.TerminosDeHito", b =>
+                {
+                    b.HasOne("Hito.Domain.Proyectos.HitoDeProyecto", null)
+                        .WithMany()
+                        .HasForeignKey("HitoId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Hito.Domain.Proyectos.VersionDeProyecto", null)
+                        .WithMany("Terminos")
+                        .HasForeignKey("VersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Hito.Domain.Proyectos.VersionDeProyecto", b =>
+                {
+                    b.HasOne("Hito.Domain.Proyectos.Proyecto", null)
+                        .WithMany("Versiones")
+                        .HasForeignKey("ProyectoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Hito.Infrastructure.Identidad.SesionDeRenovacion", b =>
                 {
                     b.HasOne("Hito.Infrastructure.Identidad.Usuario", null)
@@ -271,6 +468,18 @@ namespace Hito.Infrastructure.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Hito.Domain.Proyectos.Proyecto", b =>
+                {
+                    b.Navigation("Hitos");
+
+                    b.Navigation("Versiones");
+                });
+
+            modelBuilder.Entity("Hito.Domain.Proyectos.VersionDeProyecto", b =>
+                {
+                    b.Navigation("Terminos");
                 });
 #pragma warning restore 612, 618
         }
