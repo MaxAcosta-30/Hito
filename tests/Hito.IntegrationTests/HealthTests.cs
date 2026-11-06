@@ -1,21 +1,6 @@
 using System.Net;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Testcontainers.PostgreSql;
 
 namespace Hito.IntegrationTests;
-
-public sealed class PostgresFixture : IAsyncLifetime
-{
-    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder("postgres:17-alpine")
-        .Build();
-
-    public string ConnectionString => _container.GetConnectionString();
-
-    public Task InitializeAsync() => _container.StartAsync();
-
-    public Task DisposeAsync() => _container.DisposeAsync().AsTask();
-}
 
 public sealed class HealthTests(PostgresFixture db) : IClassFixture<PostgresFixture>
 {
@@ -59,7 +44,5 @@ public sealed class HealthTests(PostgresFixture db) : IClassFixture<PostgresFixt
         Assert.True(elapsed.Elapsed < TimeSpan.FromSeconds(10), $"Tardó {elapsed.Elapsed.TotalSeconds:F1} s");
     }
 
-    private static WebApplicationFactory<Program> CreateFactory(string connectionString) =>
-        new WebApplicationFactory<Program>()
-            .WithWebHostBuilder(builder => builder.UseSetting("ConnectionStrings:Hito", connectionString));
+    private static HitoApi CreateFactory(string connectionString) => new(connectionString);
 }

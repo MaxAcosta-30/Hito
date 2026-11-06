@@ -1,40 +1,91 @@
 import { useEffect, useState } from 'react'
+import { Navigate, NavLink, Outlet, Route, Routes, useLocation } from 'react-router'
 import { esperarApi } from './api/esperarApi'
-
-type Estado = 'despertando' | 'lista' | 'sin-base' | 'error'
-
-const MENSAJES: Record<Estado, string> = {
-  despertando: 'Despertando la demo, puede tardar hasta un minuto',
-  lista: 'API y base de datos conectadas',
-  'sin-base': 'La API responde, pero la base de datos no está disponible',
-  error: 'No se pudo despertar la demo',
-}
+import { useSesion } from './auth/contexto'
+import { SesionProvider } from './auth/SesionProvider'
+import { Despertando } from './componentes/Despertando'
+import { Cobros } from './paginas/Cobros'
+import { Entrar } from './paginas/Entrar'
+import { Registro } from './paginas/Registro'
 
 export default function App() {
-  const [estado, setEstado] = useState<Estado>('despertando')
+  const [api, setApi] = useState<'despertando' | 'lista' | 'error'>('despertando')
   const [intento, setIntento] = useState(0)
 
+  // Render Free se apaga sin tráfico: antes de todo, esperar a que la API responda.
   useEffect(() => {
     const control = new AbortController()
-    ;(async () => {
-      if (!(await esperarApi('/api/health/live', control.signal))) {
-        if (!control.signal.aborted) setEstado('error')
-        return
-      }
-      const res = await fetch('/api/health/ready', { signal: control.signal, cache: 'no-store' }).catch(() => null)
-      if (!control.signal.aborted) setEstado(res?.ok ? 'lista' : 'sin-base')
-    })()
+    esperarApi('/api/health/live', control.signal).then((lista) => {
+      if (!control.signal.aborted) setApi(lista ? 'lista' : 'error')
+    })
     return () => control.abort()
   }, [intento])
 
+  if (api !== 'lista') {
+    return (
+      <Despertando
+        estado={api}
+        onReintentar={() => {
+          setApi('despertando')
+          setIntento((n) => n + 1)
+        }}
+      />
+    )
+  }
+
   return (
-    <main>
-      <h1>Hito</h1>
-      <p>Cada entrega aprobada, cada cobro claro.</p>
-      <p role="status" aria-live="polite" data-estado={estado}>
-        {MENSAJES[estado]}
-      </p>
-      {estado === 'error' && <button onClick={() => { setEstado('despertando'); setIntento((n) => n + 1) }}>Reintentar</button>}
+    <SesionProvider>
+      <Routes>
+        <Route element={<SoloAnonimo />}>
+          <Route path="/entrar" element={<Entrar />} />
+          <Route path="/registro" element={<Registro />} />
+        </Route>
+        <Route element={<Protegida />}>
+          <Route path="/cobros" element={<Cobros />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/cobros" replace />} />
+      </Routes>
+    </SesionProvider>
+  )
+}
+
+function Cargando() {
+  return (
+    <main className="contenido" aria-busy="true">
+      <div className="hoja">
+        <div className="esqueleto" />
+        <div className="esqueleto corto" />
+      </div>
     </main>
+  )
+}
+
+function SoloAnonimo() {
+  const { estado } = useSesion()
+  if (estado.tipo === 'cargando') return <Cargando />
+  return estado.tipo === 'autenticado' ? <Navigate to="/cobros" replace /> : <Outlet />
+}
+
+function Protegida() {
+  const { estado, salir } = useSesion()
+  const ubicacion = useLocation()
+  if (estado.tipo === 'cargando') return <Cargando />
+  if (estado.tipo === 'anonimo') return <Navigate to="/entrar" replace state={{ desde: ubicacion.pathname }} />
+
+  return (
+    <>
+      <header className="barra">
+        <span className="marca">Hito</span>
+        <nav aria-label="Principal">
+          <NavLink to="/cobros">Cobros</NavLink>
+        </nav>
+        <button className="btn texto" onClick={salir}>
+          Salir
+        </button>
+      </header>
+      <main className="contenido">
+        <Outlet />
+      </main>
+    </>
   )
 }

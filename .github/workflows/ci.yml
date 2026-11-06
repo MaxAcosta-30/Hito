@@ -59,6 +59,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: produccion
+    env:
+      # Program exige una clave al arrancar; el bundle no emite tokens, así que esta no es secreta.
+      Jwt__Clave: solo-para-tiempo-de-diseno-no-es-secreta-000
     steps:
       - uses: actions/checkout@v7.0.1
 
