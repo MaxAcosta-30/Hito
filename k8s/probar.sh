@@ -4,7 +4,8 @@
 # Uso: k8s/probar.sh ./efbundle   (requiere un clúster kind activo y la imagen hito-api:ci cargada)
 set -euo pipefail
 
-bundle="${1:?Indica la ruta del bundle de migraciones}"
+# Ruta absoluta antes del cd: así funciona igual con ./efbundle que con una ruta completa.
+bundle="$(realpath "${1:?Indica la ruta del bundle de migraciones}")"
 cd "$(dirname "$0")"
 
 pids=()
