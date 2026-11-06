@@ -9,5 +9,6 @@ public sealed class UsuarioConfiguracion : IEntityTypeConfiguration<Usuario>
     public void Configure(EntityTypeBuilder<Usuario> builder)
     {
         builder.Property(u => u.Nombre).HasMaxLength(100).IsRequired();
+        builder.HasIndex(u => u.DemoExpiraEn).HasFilter("\"DemoExpiraEn\" IS NOT NULL");
     }
 }

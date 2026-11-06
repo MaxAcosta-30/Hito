@@ -796,3 +796,22 @@ a.renglon:hover b {
 .evento div {
   overflow-wrap: anywhere;
 }
+
+/* Demo */
+.hoja.demo p {
+  margin: 0;
+}
+
+.hoja.demo .btn {
+  margin-top: 16px;
+}
+
+.aviso-demo {
+  margin: 0;
+  padding: 8px 16px;
+  text-align: center;
+  font-size: 14px;
+  background: var(--hoja);
+  border-bottom: 1px solid var(--renglon);
+  color: var(--grafito);
+}

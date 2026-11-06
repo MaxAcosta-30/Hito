@@ -4,6 +4,7 @@ using Hito.Api.Auth;
 using Hito.Api.Clientes;
 using Hito.Api.Cobros;
 using Hito.Api.Comun;
+using Hito.Api.Demo;
 using Hito.Api.Proyectos;
 using Hito.Api.Publico;
 using System.Text.Json.Serialization;
@@ -65,6 +66,13 @@ builder.Services.AddRateLimiter(options =>
         limite.Window = TimeSpan.FromMinutes(1);
         limite.QueueLimit = 0;
     });
+    // Límite global de demos por minuto: cada una crea un usuario y datos en la base gratuita.
+    options.AddFixedWindowLimiter(DemoEndpoints.Politica, limite =>
+    {
+        limite.PermitLimit = builder.Configuration.GetValue("Demo:PorMinuto", 10);
+        limite.Window = TimeSpan.FromMinutes(1);
+        limite.QueueLimit = 0;
+    });
     // Límite global para los enlaces públicos: frena a quien intente adivinar tokens.
     options.AddFixedWindowLimiter(PublicoEndpoints.Politica, limite =>
     {
@@ -99,5 +107,6 @@ app.MapClientes();
 app.MapProyectos();
 app.MapPublico();
 app.MapCobros();
+app.MapDemo();
 
 app.Run();
