@@ -8,6 +8,7 @@ import { CampoArea } from '../componentes/Campo'
 import { Dialogo } from '../componentes/Dialogo'
 import { ErrorCarga } from '../componentes/Estados'
 import { Sello } from '../componentes/Sello'
+import { useEnfocarError } from '../componentes/useEnfocarError'
 import { dinero, fechaCorta } from '../formato'
 
 // Lo que ve el cliente desde su enlace, normalmente en el celular y sin cuenta.
@@ -189,16 +190,20 @@ function PedirCambios({ hito, token, freelancer, onListo, onCancelar }: { hito: 
     mutationFn: () => api<Vista>(`/publico/${token}/hitos/${hito.id}/cambios`, { method: 'POST', body: JSON.stringify({ comentario }) }),
     onSuccess: onListo,
   })
+  const formulario = useEnfocarError(enviar.error)
 
   function alEnviar(e: FormEvent) {
     e.preventDefault()
     // El comentario es obligatorio: se valida antes de enviar (y el servidor lo vuelve a validar).
-    if (!comentario.trim()) return setFaltaComentario(true)
+    if (!comentario.trim()) {
+      setFaltaComentario(true)
+      return document.getElementById('comentario')?.focus()
+    }
     enviar.mutate()
   }
 
   return (
-    <form onSubmit={alEnviar} noValidate>
+    <form ref={formulario} onSubmit={alEnviar} noValidate>
       {enviar.isError && (
         <p className="mensaje-error" role="alert">
           {mensajeDeError(enviar.error)}

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState, type FormEvent } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
 import { api } from '../api/cliente'
 import { erroresDeFormulario, mensajeDeError } from '../api/errores'
 import { useEventos, useProyecto, versionDe, type Hito, type Proyecto, type Version } from '../api/proyectos'
@@ -10,14 +10,34 @@ import { Compartir } from '../componentes/Compartir'
 import { ErrorCarga, Esqueleto } from '../componentes/Estados'
 import { Sello } from '../componentes/Sello'
 import { useToast } from '../componentes/toast'
+import { useEnfocarError } from '../componentes/useEnfocarError'
 import { dinero, fechaCorta, horaCorta, hoyIso, leerMonto } from '../formato'
 
-type Pestana = 'hitos' | 'historial' | 'versiones'
+const pestanas = [
+  { clave: 'hitos', texto: 'Hitos' },
+  { clave: 'historial', texto: 'Historial' },
+  { clave: 'versiones', texto: 'Versiones' },
+] as const
+type Pestana = (typeof pestanas)[number]['clave']
 
 export function ProyectoDetalle() {
   const { id } = useParams()
   const proyecto = useProyecto(id)
-  const [pestana, setPestana] = useState<Pestana>('hitos')
+  // La pestaña vive en la URL: se puede recargar o compartir. Con replace, cambiar de pestaña no llena el historial.
+  const [parametros, setParametros] = useSearchParams()
+  const pestana: Pestana = pestanas.find((t) => t.clave === parametros.get('pestana'))?.clave ?? 'hitos'
+  const botones = useRef<(HTMLButtonElement | null)[]>([])
+  const elegir = (clave: Pestana) => setParametros(clave === 'hitos' ? {} : { pestana: clave }, { replace: true })
+
+  // Patrón ARIA de pestañas: flechas, Inicio y Fin mueven el foco y la selección.
+  function alTeclear(e: KeyboardEvent, i: number) {
+    const destino = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: pestanas.length - 1 }[e.key]
+    if (destino === undefined) return
+    e.preventDefault()
+    const j = (destino + pestanas.length) % pestanas.length
+    elegir(pestanas[j].clave)
+    botones.current[j]?.focus()
+  }
 
   if (proyecto.isPending) return <Esqueleto renglones={6} />
   if (proyecto.isError) return <ErrorCarga error={proyecto.error} onReintentar={() => proyecto.refetch()} />
@@ -40,19 +60,29 @@ export function ProyectoDetalle() {
         </p>
       )}
 
-      <div className="pestanas" role="tablist">
-        <button role="tab" aria-selected={pestana === 'hitos'} onClick={() => setPestana('hitos')}>
-          Hitos
-        </button>
-        <button role="tab" aria-selected={pestana === 'historial'} onClick={() => setPestana('historial')}>
-          Historial
-        </button>
-        <button role="tab" aria-selected={pestana === 'versiones'} onClick={() => setPestana('versiones')}>
-          Versiones
-        </button>
+      <div className="pestanas" role="tablist" aria-label="Detalle del proyecto">
+        {pestanas.map((t, i) => (
+          <button
+            key={t.clave}
+            ref={(b) => {
+              botones.current[i] = b
+            }}
+            id={`pestana-${t.clave}`}
+            role="tab"
+            aria-selected={pestana === t.clave}
+            aria-controls="panel-proyecto"
+            tabIndex={pestana === t.clave ? 0 : -1}
+            onClick={() => elegir(t.clave)}
+            onKeyDown={(e) => alTeclear(e, i)}
+          >
+            {t.texto}
+          </button>
+        ))}
       </div>
 
-      {pestana === 'hitos' ? <HojaDeHitos proyecto={p} version={actual} /> : pestana === 'historial' ? <Historial proyectoId={p.id} /> : <Versiones proyecto={p} />}
+      <div id="panel-proyecto" role="tabpanel" aria-labelledby={`pestana-${pestana}`}>
+        {pestana === 'hitos' ? <HojaDeHitos proyecto={p} version={actual} /> : pestana === 'historial' ? <Historial proyectoId={p.id} /> : <Versiones proyecto={p} />}
+      </div>
 
       <Compartir proyecto={p} />
       <Acciones proyecto={p} />
@@ -163,6 +193,7 @@ function FormularioEntrega({ proyectoId, hito, onListo }: { proyectoId: string; 
     },
   })
   const errores = erroresDeFormulario(entregar.error)
+  const formEntrega = useEnfocarError(entregar.error)
 
   function enviar(e: FormEvent) {
     e.preventDefault()
@@ -170,7 +201,7 @@ function FormularioEntrega({ proyectoId, hito, onListo }: { proyectoId: string; 
   }
 
   return (
-    <form onSubmit={enviar} noValidate>
+    <form ref={formEntrega} onSubmit={enviar} noValidate>
       {errores.general && (
         <p className="mensaje-error" role="alert">
           {errores.general}
@@ -207,17 +238,21 @@ function FormularioPago({ proyectoId, hito, onListo }: { proyectoId: string; hit
     },
   })
   const errores = erroresDeFormulario(pagar.error)
+  const formPago = useEnfocarError(pagar.error)
 
   function enviar(e: FormEvent) {
     e.preventDefault()
     // Se revisa antes de enviar para dar el mensaje al instante; el servidor vuelve a validarlo.
-    if (!(monto > 0)) return setErrorMonto('Escribe el monto recibido.')
-    if (monto > pendiente) return setErrorMonto(`No puede ser mayor que lo pendiente: ${dinero(pendiente)}`)
+    const error = !(monto > 0) ? 'Escribe el monto recibido.' : monto > pendiente ? `No puede ser mayor que lo pendiente: ${dinero(pendiente)}` : undefined
+    if (error) {
+      setErrorMonto(error)
+      return document.getElementById('monto')?.focus()
+    }
     pagar.mutate()
   }
 
   return (
-    <form onSubmit={enviar} noValidate>
+    <form ref={formPago} onSubmit={enviar} noValidate>
       <div className="meta">
         {hito.titulo} · {hito.aprobadoEn ? `aprobado el ${fechaCorta(hito.aprobadoEn)}` : 'aprobado'}
       </div>

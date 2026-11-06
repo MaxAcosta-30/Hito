@@ -19,11 +19,11 @@ export function Clientes() {
           Nuevo cliente
         </Link>
       </div>
-      <div className="pestanas">
-        <button aria-pressed={!archivados} aria-selected={!archivados} onClick={() => setArchivados(false)}>
+      <div className="pestanas" role="group" aria-label="Mostrar clientes">
+        <button aria-pressed={!archivados} onClick={() => setArchivados(false)}>
           Activos
         </button>
-        <button aria-pressed={archivados} aria-selected={archivados} onClick={() => setArchivados(true)}>
+        <button aria-pressed={archivados} onClick={() => setArchivados(true)}>
           Archivados
         </button>
       </div>

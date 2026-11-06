@@ -7,6 +7,7 @@ import { erroresDeFormulario } from '../api/errores'
 import { Campo } from '../componentes/Campo'
 import { ErrorCarga, Esqueleto } from '../componentes/Estados'
 import { useToast } from '../componentes/toast'
+import { useEnfocarError } from '../componentes/useEnfocarError'
 
 // Crear (/clientes/nuevo) y editar (/clientes/:id) usan el mismo formulario.
 export function ClienteFormulario() {
@@ -42,6 +43,7 @@ function Formulario({ cliente }: { cliente?: Cliente }) {
   })
 
   const errores = erroresDeFormulario(guardar.error)
+  const formulario = useEnfocarError(guardar.error)
   const cambiar = (campo: keyof DatosCliente) => (e: { target: { value: string } }) =>
     setDatos((d) => ({ ...d, [campo]: e.target.value }))
 
@@ -51,8 +53,8 @@ function Formulario({ cliente }: { cliente?: Cliente }) {
   }
 
   return (
-    <form className="hoja" onSubmit={enviar} noValidate>
-      <h2>{cliente ? 'Editar cliente' : 'Nuevo cliente'}</h2>
+    <form ref={formulario} className="hoja" onSubmit={enviar} noValidate>
+      <h1 className="titulo-hoja">{cliente ? 'Editar cliente' : 'Nuevo cliente'}</h1>
       {errores.general && (
         <p className="mensaje-error" role="alert">
           {errores.general}

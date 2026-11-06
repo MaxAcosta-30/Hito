@@ -12,7 +12,7 @@ export function Campo({ id, etiqueta, error, ayuda, ...input }: Props) {
   return (
     <div className={error ? 'campo error' : 'campo'}>
       <label htmlFor={id}>{etiqueta}</label>
-      <input id={id} name={id} aria-invalid={error ? true : undefined} aria-describedby={descripcion} {...input} />
+      <input id={id} name={id} spellCheck={input.type === 'email' || input.type === 'url' ? false : undefined} aria-invalid={error ? true : undefined} aria-describedby={descripcion} {...input} />
       {error ? (
         <span id={`${id}-error`} className="mensaje-error">
           {error}

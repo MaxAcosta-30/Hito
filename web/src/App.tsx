@@ -100,6 +100,9 @@ function Protegida() {
 
   return (
     <>
+      <a className="saltar" href="#contenido">
+        Saltar al contenido
+      </a>
       <header className="barra">
         <span className="marca">Hito</span>
         <nav aria-label="Principal">
@@ -116,7 +119,7 @@ function Protegida() {
           Estás en la demo: los datos son de ejemplo y se borran en 24 horas.
         </p>
       )}
-      <main className="contenido">
+      <main id="contenido" className="contenido" tabIndex={-1}>
         <Outlet />
       </main>
     </>

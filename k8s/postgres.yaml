@@ -33,7 +33,8 @@ spec:
                   key: password
           readinessProbe:
             exec:
-              command: ["pg_isready", "-U", "hito", "-d", "hito"]
+              # Por TCP y no por el socket: durante initdb, PostgreSQL solo escucha en el socket y aún no acepta conexiones de red.
+              command: ["pg_isready", "-h", "127.0.0.1", "-U", "hito", "-d", "hito"]
             periodSeconds: 3
           resources:
             requests:

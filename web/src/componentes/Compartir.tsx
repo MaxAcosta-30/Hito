@@ -67,13 +67,25 @@ export function Compartir({ proyecto }: { proyecto: Proyecto }) {
           </button>
         ) : (
           proyecto.estado !== 'Borrador' && (
-            <button className="btn secundario" onClick={() => nuevo.mutate()} disabled={nuevo.isPending}>
+            <button
+              className="btn secundario"
+              onClick={() => {
+                if (window.confirm('¿Generar un enlace nuevo? El que tiene tu cliente dejará de funcionar.')) nuevo.mutate()
+              }}
+              disabled={nuevo.isPending}
+            >
               Generar enlace nuevo
             </button>
           )
         )}
         {(proyecto.enlace || creado) && (
-          <button className="btn texto" onClick={() => revocar.mutate()} disabled={revocar.isPending}>
+          <button
+            className="btn texto"
+            onClick={() => {
+              if (window.confirm('¿Revocar el enlace? Tu cliente ya no podrá abrir el proyecto hasta que le envíes uno nuevo.')) revocar.mutate()
+            }}
+            disabled={revocar.isPending}
+          >
             Revocar enlace
           </button>
         )}
