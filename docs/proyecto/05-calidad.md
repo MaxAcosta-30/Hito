@@ -8,6 +8,12 @@
 - Hallazgo: todos los `<dialog>` compartían `id="dialogo-titulo"`, así que el lector de pantalla anunciaba "Registrar pago" en el diálogo de entrega. Se corrigió con `useId`.
 - Probado en local: 3 de 3 corridas en verde (`--repeat-each 3`).
 
+**Prueba en Kubernetes (kind):** rama `etapa-5/kind`. ADR 0006.
+- `k8s/postgres.yaml` y `k8s/api.yaml` (2 réplicas, sondas live/ready, sin root, solo lectura). `k8s/probar.sh` crea secretos aleatorios, migra con el bundle y prueba `/health/ready` y `POST /demo` → `GET /cobros` ($76,000).
+- CI: job `kind` entre `build-test` y `deploy`. `deploy` aplica en Supabase el mismo bundle que se probó en kind.
+- Hallazgo: la API no arrancaba por el límite de inotify del nodo; se desactivó la recarga de `appsettings.json` en el contenedor.
+- Probado en local con kind v0.33.0 sobre Podman sin root: `Prueba en kind: OK`.
+
 ## Cómo correr el e2e en local
 
 ```bash
@@ -19,3 +25,14 @@ cd tests/e2e && npm ci && npx playwright install chromium && npx playwright test
 ```
 
 Playwright levanta la API y Vite por su cuenta; en local reutiliza los que ya estén corriendo.
+
+## Cómo correr la prueba en kind en local
+
+```bash
+docker build -t hito-api:ci .          # con Podman: etiquetarla como docker.io/library/hito-api:ci
+kind create cluster --name hito
+kind load docker-image hito-api:ci --name hito
+dotnet ef migrations bundle -p src/Hito.Infrastructure -s src/Hito.Api -o efbundle   # con Jwt__Clave y ConnectionStrings__Hito de diseño
+k8s/probar.sh ./efbundle
+kind delete cluster --name hito
+```
