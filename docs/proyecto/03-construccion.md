@@ -8,7 +8,7 @@
 - Max lo probó en producción: crear cuenta, recargar sin perder la sesión, salir y volver a entrar. `Jwt__Clave` está en Render.
 - Entrevista: Max falló las 3 preguntas (tokens en memoria vs cookie, rotación, SHA-256 vs hash lento). El repaso se hizo el 2026-11-06; **las 3 preguntas nuevas siguen sin respuesta**.
 
-**Caso 2 · Administrar clientes:** terminado en la rama `caso-2/clientes` (2026-11-06), **sin subir ni desplegar** (ver "Trabajo autónomo"). ADR 0004.
+**Caso 2 · Administrar clientes:** terminado y desplegado (2026-11-06, rama `caso-2/clientes`). ADR 0004.
 - API: `GET/POST /clientes`, `GET/PUT /clientes/{id}`, `POST /clientes/{id}/archivar` y `/restaurar`. Migración `AgregarClientes`.
 - Se archiva con fecha en lugar de borrar: los proyectos y pagos del cliente conservan su historial.
 - Validación: nombre obligatorio, empresa opcional, correo y teléfono opcionales con formato. 400 con el error en su campo.
@@ -16,14 +16,14 @@
 - Web: `/clientes` (activos y archivados), `/clientes/nuevo` y `/clientes/:id`, con esqueleto, vacío, error con "Reintentar" y toast.
 - Probado en local con Playwright (Chromium, 390 px y 1280 px, claro y oscuro): crear con validación → editar → archivar → restaurar.
 
-**Caso 3 · Proyecto con hitos:** terminado en la rama `caso-3/proyectos` (2026-11-06), sin subir ni desplegar. ADR 0005.
+**Caso 3 · Proyecto con hitos:** terminado y desplegado (2026-11-06, rama `caso-3/proyectos`). ADR 0005.
 - API: `GET/POST /proyectos`, `GET /proyectos/{id}`, `PUT /proyectos/{id}/alcance` y `POST /proyectos/{id}/cancelar`. Migración `AgregarProyectos`.
 - Cada hito tiene título, monto en MXN (`numeric(18,2)`), fecha y entregable. El total lo calcula el dominio; un `total` enviado por el navegador se ignora.
 - 409 para reglas de negocio y choques de concurrencia (`ManejadorDeReglas`).
 - Nuevo `tests/Hito.UnitTests`: 12 pruebas del agregado. Integración: 6 nuevas (22 en total), incluido el aislamiento de proyectos.
 - Web: `/proyectos`, `/proyectos/nuevo`, `/proyectos/:id` (pestañas Hitos y Versiones) y `/proyectos/:id/alcance`. Probado con Playwright en 390 px.
 
-**Caso 4 · Enviar el proyecto al cliente:** terminado en la rama `caso-4/enlaces` (2026-11-06), sin subir ni desplegar.
+**Caso 4 · Enviar el proyecto al cliente:** terminado y desplegado (2026-11-06, rama `caso-4/enlaces`).
 - API: `POST /proyectos/{id}/enviar`, `/enlace` (uno nuevo) y `/enlace/revocar`; `GET /publico/{token}`. Migración `AgregarEnlacesDeCliente`.
 - Token de 256 bits; en la base solo su SHA-256 (`TokenAleatorio`, compartido con los refresh tokens). Vence a los 30 días; generar uno nuevo o cancelar el proyecto revoca el anterior.
 - Inexistente, expirado o revocado: el mismo 404. `/publico` tiene límite global de 120 peticiones por minuto.
@@ -31,21 +31,21 @@
 - Pruebas: 4 unitarias y 6 de integración nuevas, incluida la expiración con reloj ajustable y "en la base solo está el hash".
 - Web: enviar, copiar, WhatsApp y revocar en el detalle; `/p/:token` sin sesión. Probado con Playwright.
 
-**Caso 5 · Aceptar el alcance:** terminado en la rama `caso-5/aceptar` (2026-11-06), sin subir ni desplegar.
+**Caso 5 · Aceptar el alcance:** terminado y desplegado (2026-11-06, rama `caso-5/aceptar`).
 - API: `POST /publico/{token}/aceptar` con `{ version }` y `POST /proyectos/{id}/versiones`. Sin migración nueva.
 - Se acepta un número de versión concreto: si el freelancer creó otra mientras tanto, 409. La aceptada queda congelada; la nueva rige solo al aceptarse.
 - Al aceptar se revisa que ningún hito que ya avanzó cambie de términos (la prueba con hitos avanzados llega con el caso 6).
 - Pruebas: 7 unitarias y 3 de integración nuevas. Total: 23 unitarias y 31 de integración en verde.
 - Web: barra fija "Aceptar alcance" en la vista del cliente, sello ACEPTADO y "Cambiar alcance" en el detalle. Probado con Playwright: v1 → aceptar → v2 → aceptar.
 
-**Estado de la Etapa 3:** casos 1 a 5 terminados en local. Falta: subir las ramas, revisar los PR y desplegar (ver "Trabajo autónomo").
+**Estado de la Etapa 3:** casos 1 a 5 terminados y desplegados (PR #13 a #16). Pendiente: aprobación de Max y sus respuestas de entrevista.
 
 ## Trabajo autónomo (2026-11-06)
-- `git push` falló con 403: la cuenta activa de `gh` es `MaxAcosta3020`, sin acceso a `MaxAcosta-30/Hito`. No se cambió de cuenta. Para subir: `gh auth switch -u MaxAcosta-30` y luego push de cada rama.
-- Ramas encadenadas: `caso-2/clientes` → `caso-3/proyectos` → `caso-4/enlaces` → `caso-5/aceptar` → … Cada una parte de la anterior; fusionar en orden.
+- El push falló al principio (cuenta `gh` equivocada); Max cambió a `MaxAcosta-30` y se subió todo. PR #13 a #19, fusionados en orden.
+- Lección: con ramas encadenadas, "Squash and merge" deja en conflicto al PR siguiente. Usar "Create a merge commit" (o `gh pr merge --merge`).
 - Respaldos: tags `respaldo/*` y `git bundle` en `../respaldos-hito/`.
 - Pruebas locales con Podman sin root (`systemctl --user start podman.socket`, `DOCKER_HOST=unix:///run/user/1000/podman/podman.sock`, `TESTCONTAINERS_RYUK_DISABLED=true`), porque el usuario no está en el grupo `docker`.
-- Las migraciones nuevas **no** se han aplicado en Supabase: se aplicarán solas con el flujo de despliegue al fusionar en `main`.
+- Las migraciones se aplicaron en Supabase con el flujo de despliegue; `/health/ready` en 200 tras el último despliegue.
 
 ## Preguntas de entrevista pendientes
 
