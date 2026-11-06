@@ -44,3 +44,12 @@ Solo dicen lo que el repositorio demuestra.
 - Por qué no generar el PDF en el servidor: sería una dependencia nueva, más carga en Render Free y otra plantilla que mantener. El navegador ya produce un PDF fiel y con texto seleccionable.
 - Probado con una prueba temporal de Playwright: título del archivo, controles ocultos con el medio de impresión y en tema oscuro, y un PDF generado y revisado.
 - Preguntas de entrevista: (1) ¿Por qué imprimir desde el navegador y no generar el PDF en .NET? (2) ¿Qué limitación tiene este enfoque y cuándo cambiarías de opinión? (3) ¿Cómo garantizas que el PDF salga en claro aunque el usuario use el tema oscuro?
+
+## Definición de terminado (2026-11-06)
+
+- [x] **Los 10 casos Debe cumplen su criterio:** ver `03-construccion.md` y `04-cobro.md`, con pruebas unitarias, de integración y e2e en verde. Los 2 casos "Debería" también están hechos (PR #27 y #28).
+- [x] **La demo pública funciona desde una ventana privada después de un arranque en frío:** Max lo probó en el teléfono y en la laptop tras dejar Render más de 15 minutos sin tráfico, después del deploy de las 16:07. Apareció "Despertando la demo" y la demo cargó bien. No se anotaron los tiempos.
+- [x] **El CI pasa y el despliegue es automático:** `build-test`, `web`, `e2e` y `kind` → `deploy` (bundle → Supabase → deploy hook de Render), en verde en `main`.
+- [x] **Costo mensual $0 y ningún servicio con tarjeta:** confirmado por Max en la Etapa 1 (2026-11-05). No se crearon servicios nuevos después.
+- [ ] **El README se entiende en menos de 2 minutos:** escrito, pero ningún lector externo lo ha cronometrado.
+- [ ] **Max puede explicar cada decisión sin ayuda:** pendientes las preguntas 2 a 10 de la entrevista simulada y las de las Etapas 3, 4 y 5.
