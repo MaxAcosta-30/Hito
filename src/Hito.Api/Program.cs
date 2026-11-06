@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.RateLimiting;
 using Hito.Api.Auth;
+using Hito.Api.Clientes;
 using Hito.Application.Comun;
 using Hito.Infrastructure;
 using Hito.Infrastructure.Persistence;
@@ -78,5 +79,6 @@ app.MapHealthChecks("/health/live", new HealthCheckOptions { Predicate = _ => fa
 app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = check => check.Tags.Contains("ready") });
 
 app.MapAuth();
+app.MapClientes();
 
 app.Run();

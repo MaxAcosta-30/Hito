@@ -176,6 +176,10 @@ a {
   transition: transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
+a.btn {
+  text-decoration: none;
+}
+
 .btn:active:not(:disabled) {
   transform: scale(0.97);
 }
@@ -295,4 +299,182 @@ a {
 
 .esqueleto.corto {
   width: 55%;
+}
+
+/* Encabezado de página: título y su única acción primaria */
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.encabezado h1 {
+  font-size: 31px;
+}
+
+.rotulo {
+  font: 600 12px/1 'Source Sans 3', sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--grafito);
+}
+
+/* Renglones de documento: el corazón de la dirección */
+.renglon {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--renglon);
+  align-items: start;
+}
+
+.renglon:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.renglon:last-child {
+  padding-bottom: 0;
+}
+
+.renglon b {
+  font-weight: 600;
+}
+
+.renglon .monto {
+  font: 500 14px 'IBM Plex Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.renglon small {
+  font-size: 14px;
+  color: var(--grafito);
+}
+
+.renglon .acciones {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.renglon .acciones .btn.secundario {
+  margin-top: 0;
+}
+
+a.renglon {
+  color: inherit;
+  text-decoration: none;
+}
+
+a.renglon:hover b {
+  text-decoration: underline;
+}
+
+.pestanas {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--renglon);
+  margin-top: 16px;
+}
+
+.pestanas a,
+.pestanas button {
+  padding: 10px 8px;
+  min-height: 44px;
+  font: 600 15px 'Source Sans 3', sans-serif;
+  color: var(--grafito);
+  text-decoration: none;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.pestanas a.active,
+.pestanas [aria-current='page'],
+.pestanas [aria-selected='true'] {
+  color: var(--tinta);
+  box-shadow: inset 0 -2px 0 var(--firma);
+}
+
+.campo select,
+.campo textarea {
+  font: 400 16px 'Source Sans 3', sans-serif;
+  color: var(--tinta);
+  background: var(--campo);
+  border: 1px solid var(--renglon-fuerte);
+  border-radius: var(--r-control);
+  padding: 10px 12px;
+  min-height: 44px;
+}
+
+.campo textarea {
+  resize: vertical;
+}
+
+.campo.error select,
+.campo.error textarea {
+  border-color: var(--sello-vencido);
+}
+
+.campo input.num {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.botonera {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.botonera .btn.secundario {
+  margin-top: 0;
+}
+
+.toast-region {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.toast {
+  background: var(--tinta);
+  color: var(--hoja);
+  border-radius: var(--r-hoja);
+  padding: 12px 16px;
+  font-size: 15px;
+  max-width: 480px;
+  width: 100%;
+  animation: entrar 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
+}
+
+.vacio h3 {
+  font-size: 20px;
+}
+
+.vacio .btn.primario {
+  margin-top: 20px;
 }
