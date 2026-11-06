@@ -61,10 +61,45 @@ namespace Hito.Infrastructure.Persistence.Migrations
                     b.ToTable("Clientes", (string)null);
                 });
 
-            modelBuilder.Entity("Hito.Domain.Proyectos.HitoDeProyecto", b =>
+            modelBuilder.Entity("Hito.Domain.Proyectos.EnlaceDeCliente", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreadoEn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("ExpiraEn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("HashDelToken")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProyectoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("RevocadoEn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HashDelToken")
+                        .IsUnique();
+
+                    b.HasIndex("ProyectoId");
+
+                    b.ToTable("EnlacesDeCliente", (string)null);
+                });
+
+            modelBuilder.Entity("Hito.Domain.Proyectos.HitoDeProyecto", b =>
+                {
+                    b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Estado")
@@ -88,7 +123,6 @@ namespace Hito.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Hito.Domain.Proyectos.Proyecto", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("ActualizadoEn")
@@ -131,7 +165,6 @@ namespace Hito.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Hito.Domain.Proyectos.TerminosDeHito", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("Entregable")
@@ -176,7 +209,6 @@ namespace Hito.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Hito.Domain.Proyectos.VersionDeProyecto", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset?>("AceptadaEn")
@@ -386,6 +418,15 @@ namespace Hito.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Hito.Domain.Proyectos.EnlaceDeCliente", b =>
+                {
+                    b.HasOne("Hito.Domain.Proyectos.Proyecto", null)
+                        .WithMany()
+                        .HasForeignKey("ProyectoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Hito.Domain.Proyectos.HitoDeProyecto", b =>
                 {
                     b.HasOne("Hito.Domain.Proyectos.Proyecto", null)
@@ -415,7 +456,7 @@ namespace Hito.Infrastructure.Persistence.Migrations
                     b.HasOne("Hito.Domain.Proyectos.HitoDeProyecto", null)
                         .WithMany()
                         .HasForeignKey("HitoId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("Hito.Domain.Proyectos.VersionDeProyecto", null)

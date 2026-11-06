@@ -33,6 +33,13 @@ public sealed class VersionDeProyecto : IPerteneceAUsuario
 
     public TerminosDeHito? TerminosDe(Guid hitoId) => _terminos.FirstOrDefault(t => t.HitoId == hitoId);
 
+    internal void Enviar(DateTimeOffset ahora)
+    {
+        if (_terminos.Count == 0) throw new ReglaDeNegocioException("La versión no tiene hitos.");
+        Estado = EstadoVersion.Enviada;
+        EnviadaEn = ahora;
+    }
+
     internal void AgregarTerminos(Guid hitoId, int orden, DatosDeHito datos) =>
         _terminos.Add(new TerminosDeHito(OwnerId, Id, hitoId, orden, datos));
 

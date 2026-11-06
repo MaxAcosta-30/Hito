@@ -16,6 +16,7 @@ public sealed class HitoDbContext(DbContextOptions<HitoDbContext> options, IUsua
     public DbSet<SesionDeRenovacion> Sesiones => Set<SesionDeRenovacion>();
     public DbSet<Cliente> Clientes => Set<Cliente>();
     public DbSet<Proyecto> Proyectos => Set<Proyecto>();
+    public DbSet<EnlaceDeCliente> Enlaces => Set<EnlaceDeCliente>();
 
     // EF lee esta propiedad en cada consulta, así el filtro usa el usuario de la petición actual.
     // Sin usuario autenticado vale Guid.Empty y el filtro no devuelve nada.
