@@ -29,6 +29,7 @@ public static class ProyectosEndpoints
         DateTimeOffset CreadoEn, DateTimeOffset ActualizadoEn);
     // Datos del enlace activo. El token nunca se puede volver a leer: solo se muestra al crearlo.
     public sealed record EnlaceRespuesta(DateTimeOffset CreadoEn, DateTimeOffset ExpiraEn);
+    public sealed record EventoRespuesta(DateTimeOffset Fecha, Actor Actor, string Quien, TipoDeEvento Tipo, string Descripcion);
     public sealed record EnlaceCreado(string Token, DateTimeOffset ExpiraEn, ProyectoDetalle Proyecto);
 
     public static void MapProyectos(this IEndpointRouteBuilder app)
@@ -45,6 +46,8 @@ public static class ProyectosEndpoints
         proyectos.MapPost("/{id:guid}/enviar", Enviar);
         proyectos.MapPost("/{id:guid}/enlace", NuevoEnlace);
         proyectos.MapPost("/{id:guid}/enlace/revocar", RevocarEnlace);
+        // Solo lectura: no hay PUT, PATCH ni DELETE para el historial.
+        proyectos.MapGet("/{id:guid}/eventos", Historial);
     }
 
     private static async Task<IResult> Listar(HitoDbContext db, CancellationToken ct)
@@ -178,16 +181,35 @@ public static class ProyectosEndpoints
         var ahora = reloj.GetUtcNow();
         proyecto.ExigirQuePuedaCompartirse();
         var (token, enlace) = await CrearEnlaceAsync(db, proyecto, ahora, ct);
+        proyecto.AnotarEnlaceGenerado(ahora);
         await db.SaveChangesAsync(ct);
         return Results.Ok(new EnlaceCreado(token, enlace.ExpiraEn, await DetalleAsync(db, proyecto, ahora, ct)));
     }
 
     private static async Task<IResult> RevocarEnlace(Guid id, HitoDbContext db, TimeProvider reloj, CancellationToken ct)
     {
-        if (!await db.Proyectos.AnyAsync(p => p.Id == id, ct)) return NoEncontrado();
-        await RevocarEnlacesAsync(db, id, reloj.GetUtcNow(), ct);
+        var proyecto = await db.Proyectos.FirstOrDefaultAsync(p => p.Id == id, ct);
+        if (proyecto is null) return NoEncontrado();
+        var ahora = reloj.GetUtcNow();
+        if (await RevocarEnlacesAsync(db, id, ahora, ct) > 0) proyecto.AnotarEnlaceRevocado(ahora);
         await db.SaveChangesAsync(ct);
         return Results.NoContent();
+    }
+
+    // Quién, qué y cuándo, del más reciente al más antiguo.
+    private static async Task<IResult> Historial(Guid id, HitoDbContext db, CancellationToken ct)
+    {
+        var proyecto = await db.Proyectos.FirstOrDefaultAsync(p => p.Id == id, ct);
+        if (proyecto is null) return NoEncontrado();
+
+        var freelancer = await db.Users.Where(u => u.Id == proyecto.OwnerId).Select(u => u.Nombre).SingleAsync(ct);
+        var cliente = await db.Clientes.Where(c => c.Id == proyecto.ClienteId).Select(c => c.Nombre).SingleAsync(ct);
+        var eventos = await db.Eventos
+            .Where(e => e.ProyectoId == id)
+            .OrderByDescending(e => EF.Property<long>(e, "Secuencia"))
+            .ToListAsync(ct);
+        return Results.Ok(eventos.Select(e => new EventoRespuesta(
+            e.Fecha, e.Actor, e.Actor == Actor.Cliente ? cliente : freelancer, e.Tipo, e.Descripcion)));
     }
 
     // Un solo enlace activo por proyecto: crear uno nuevo revoca los anteriores.
@@ -201,10 +223,11 @@ public static class ProyectosEndpoints
         return (token, enlace);
     }
 
-    private static async Task RevocarEnlacesAsync(HitoDbContext db, Guid proyectoId, DateTimeOffset ahora, CancellationToken ct)
+    private static async Task<int> RevocarEnlacesAsync(HitoDbContext db, Guid proyectoId, DateTimeOffset ahora, CancellationToken ct)
     {
         var activos = await db.Enlaces.Where(e => e.ProyectoId == proyectoId && e.RevocadoEn == null).ToListAsync(ct);
         foreach (var enlace in activos) enlace.Revocar(ahora);
+        return activos.Count;
     }
 
     // Validación de entrada con los nombres de campo que usa la web: hitos[0].monto, etc.

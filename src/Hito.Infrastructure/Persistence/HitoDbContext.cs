@@ -17,6 +17,31 @@ public sealed class HitoDbContext(DbContextOptions<HitoDbContext> options, IUsua
     public DbSet<Cliente> Clientes => Set<Cliente>();
     public DbSet<Proyecto> Proyectos => Set<Proyecto>();
     public DbSet<EnlaceDeCliente> Enlaces => Set<EnlaceDeCliente>();
+    public DbSet<EventoDeProyecto> Eventos => Set<EventoDeProyecto>();
+
+    // Guarda los eventos que generó el dominio y protege el historial: un evento solo se agrega.
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        PrepararHistorial();
+        return base.SaveChanges(acceptAllChangesOnSuccess);
+    }
+
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        PrepararHistorial();
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+
+    private void PrepararHistorial()
+    {
+        foreach (var proyecto in ChangeTracker.Entries<Proyecto>().Select(e => e.Entity).ToList())
+        {
+            Eventos.AddRange(proyecto.EventosNuevos);
+            proyecto.OlvidarEventosNuevos();
+        }
+        if (ChangeTracker.Entries<EventoDeProyecto>().Any(e => e.State is EntityState.Modified or EntityState.Deleted))
+            throw new InvalidOperationException("El historial no se edita ni se borra.");
+    }
 
     // EF lee esta propiedad en cada consulta, así el filtro usa el usuario de la petición actual.
     // Sin usuario autenticado vale Guid.Empty y el filtro no devuelve nada.

@@ -97,6 +97,48 @@ namespace Hito.Infrastructure.Persistence.Migrations
                     b.ToTable("EnlacesDeCliente", (string)null);
                 });
 
+            modelBuilder.Entity("Hito.Domain.Proyectos.EventoDeProyecto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Actor")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(1300)
+                        .HasColumnType("character varying(1300)");
+
+                    b.Property<DateTimeOffset>("Fecha")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProyectoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("Secuencia")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("Secuencia"));
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProyectoId", "Secuencia");
+
+                    b.ToTable("EventosDeProyecto", (string)null);
+                });
+
             modelBuilder.Entity("Hito.Domain.Proyectos.HitoDeProyecto", b =>
                 {
                     b.Property<Guid>("Id")
@@ -473,6 +515,15 @@ namespace Hito.Infrastructure.Persistence.Migrations
                 });
 
             modelBuilder.Entity("Hito.Domain.Proyectos.EnlaceDeCliente", b =>
+                {
+                    b.HasOne("Hito.Domain.Proyectos.Proyecto", null)
+                        .WithMany()
+                        .HasForeignKey("ProyectoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Hito.Domain.Proyectos.EventoDeProyecto", b =>
                 {
                     b.HasOne("Hito.Domain.Proyectos.Proyecto", null)
                         .WithMany()

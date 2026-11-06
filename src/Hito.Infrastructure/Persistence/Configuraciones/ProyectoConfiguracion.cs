@@ -23,6 +23,7 @@ public sealed class ProyectoConfiguracion : IEntityTypeConfiguration<Proyecto>
         builder.Ignore(p => p.VersionActual);
         builder.Ignore(p => p.Total);
         builder.Ignore(p => p.Pagado);
+        builder.Ignore(p => p.EventosNuevos);
         builder.HasIndex(p => p.OwnerId);
 
         builder.HasOne<Usuario>().WithMany().HasForeignKey(p => p.OwnerId).OnDelete(DeleteBehavior.Cascade);

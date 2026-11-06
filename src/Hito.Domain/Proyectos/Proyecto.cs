@@ -11,6 +11,7 @@ public sealed class Proyecto : IPerteneceAUsuario
     private readonly List<VersionDeProyecto> _versiones = [];
     private readonly List<HitoDeProyecto> _hitos = [];
     private readonly List<Pago> _pagos = [];
+    private readonly List<EventoDeProyecto> _eventosNuevos = [];
 
     public Guid Id { get; private set; } = Guid.NewGuid();
     public Guid OwnerId { get; private set; }
@@ -25,6 +26,17 @@ public sealed class Proyecto : IPerteneceAUsuario
     public IReadOnlyList<VersionDeProyecto> Versiones => _versiones;
     public IReadOnlyList<HitoDeProyecto> Hitos => _hitos;
     public IReadOnlyList<Pago> Pagos => _pagos;
+
+    // Eventos generados en esta operación y aún sin guardar. HitoDbContext los guarda al llamar SaveChanges.
+    public IReadOnlyList<EventoDeProyecto> EventosNuevos => _eventosNuevos;
+
+    public void OlvidarEventosNuevos() => _eventosNuevos.Clear();
+
+    private void Registrar(Actor actor, TipoDeEvento tipo, string descripcion, DateTimeOffset ahora) =>
+        _eventosNuevos.Add(new EventoDeProyecto(OwnerId, Id, actor, tipo, descripcion, ahora));
+
+    private string TituloDe(Guid hitoId) =>
+        (VersionVigente ?? UltimaVersion).TerminosDe(hitoId)?.Titulo ?? "un hito";
 
     public VersionDeProyecto UltimaVersion => _versiones.MaxBy(v => v.Numero)!;
 
@@ -49,6 +61,9 @@ public sealed class Proyecto : IPerteneceAUsuario
         var proyecto = new Proyecto { OwnerId = ownerId, ClienteId = clienteId, CreadoEn = ahora };
         proyecto._versiones.Add(new VersionDeProyecto(ownerId, proyecto.Id, 1, ahora));
         proyecto.DefinirAlcance(nombre, hitos, ahora);
+        proyecto._eventosNuevos.Clear();
+        proyecto.Registrar(Actor.Freelancer, TipoDeEvento.Creado,
+            $"creó el proyecto con {hitos.Count} {(hitos.Count == 1 ? "hito" : "hitos")} por {EventoDeProyecto.Dinero(proyecto.Total)}.", ahora);
         return proyecto;
     }
 
@@ -105,6 +120,8 @@ public sealed class Proyecto : IPerteneceAUsuario
 
         Nombre = nombre.Trim();
         ActualizadoEn = ahora;
+        Registrar(Actor.Freelancer, TipoDeEvento.AlcanceEditado,
+            $"editó el alcance de la versión {borrador.Numero}: {borrador.Terminos.Count} hitos por {EventoDeProyecto.Dinero(borrador.Total)}.", ahora);
     }
 
     // Manda la versión en borrador al cliente. El primer envío pasa el proyecto de Borrador a Enviado.
@@ -117,6 +134,8 @@ public sealed class Proyecto : IPerteneceAUsuario
         borrador.Enviar(ahora);
         if (Estado == EstadoProyecto.Borrador) Estado = EstadoProyecto.Enviado;
         ActualizadoEn = ahora;
+        Registrar(Actor.Freelancer, TipoDeEvento.VersionEnviada,
+            $"envió la versión {borrador.Numero} al cliente por {EventoDeProyecto.Dinero(borrador.Total)}.", ahora);
     }
 
     // El cliente acepta una versión concreta: si mientras tanto el freelancer creó otra, la aceptación se rechaza
@@ -141,6 +160,8 @@ public sealed class Proyecto : IPerteneceAUsuario
         ultima.Aceptar(ahora);
         if (Estado == EstadoProyecto.Enviado) Estado = EstadoProyecto.Aceptado;
         ActualizadoEn = ahora;
+        Registrar(Actor.Cliente, TipoDeEvento.VersionAceptada,
+            $"aceptó la versión {ultima.Numero} del alcance por {EventoDeProyecto.Dinero(ultima.Total)}.", ahora);
     }
 
     // Un cambio después de enviar crea una versión nueva en borrador, copiando la última.
@@ -158,6 +179,7 @@ public sealed class Proyecto : IPerteneceAUsuario
             nueva.AgregarTerminos(t.HitoId, t.Orden, new DatosDeHito(t.HitoId, t.Titulo, t.Monto, t.FechaEntrega, t.Entregable));
         _versiones.Add(nueva);
         ActualizadoEn = ahora;
+        Registrar(Actor.Freelancer, TipoDeEvento.VersionNueva, $"creó la versión {nueva.Numero} para cambiar el alcance.", ahora);
         return nueva;
     }
 
@@ -165,18 +187,21 @@ public sealed class Proyecto : IPerteneceAUsuario
     {
         HitoVigente(hitoId).Entregar(evidenciaUrl, ahora);
         ActualizadoEn = ahora;
+        Registrar(Actor.Freelancer, TipoDeEvento.HitoEntregado, $"entregó «{TituloDe(hitoId)}» con evidencia: {evidenciaUrl}", ahora);
     }
 
     public void AprobarHito(Guid hitoId, DateTimeOffset ahora)
     {
         HitoVigente(hitoId).Aprobar(ahora);
         ActualizadoEn = ahora;
+        Registrar(Actor.Cliente, TipoDeEvento.HitoAprobado, $"aprobó «{TituloDe(hitoId)}».", ahora);
     }
 
     public void PedirCambios(Guid hitoId, string comentario, DateTimeOffset ahora)
     {
         HitoVigente(hitoId).PedirCambios(comentario);
         ActualizadoEn = ahora;
+        Registrar(Actor.Cliente, TipoDeEvento.CambiosSolicitados, $"pidió cambios en «{TituloDe(hitoId)}»: «{comentario.Trim()}»", ahora);
     }
 
     // Solo se paga un hito aprobado y nunca más de lo que falta. Al cubrirlo completo pasa a Pagado;
@@ -199,9 +224,14 @@ public sealed class Proyecto : IPerteneceAUsuario
         _pagos.Add(pago);
         if (monto == pendiente) hito.MarcarPagado(ahora);
 
+        Registrar(Actor.Freelancer, TipoDeEvento.PagoRegistrado,
+            $"registró un pago de {EventoDeProyecto.Dinero(monto)} en «{TituloDe(hitoId)}»{(nota is null ? "" : $" ({nota})")}.", ahora);
         var vigentes = VersionVigente.Terminos.Select(t => t.HitoId).ToHashSet();
         if (_hitos.Where(h => vigentes.Contains(h.Id)).All(h => h.Estado == EstadoHito.Pagado))
+        {
             Estado = EstadoProyecto.Completado;
+            Registrar(Actor.Freelancer, TipoDeEvento.ProyectoCompletado, "completó el proyecto: todos los hitos están pagados.", ahora);
+        }
         ActualizadoEn = ahora;
         return pago;
     }
@@ -225,12 +255,26 @@ public sealed class Proyecto : IPerteneceAUsuario
             throw new ReglaDeNegocioException("Primero envía el proyecto al cliente.");
     }
 
+    // Los enlaces se crean y revocan fuera del agregado; aquí solo queda constancia en el historial.
+    public void AnotarEnlaceGenerado(DateTimeOffset ahora)
+    {
+        ActualizadoEn = ahora;
+        Registrar(Actor.Freelancer, TipoDeEvento.EnlaceGenerado, "generó un enlace nuevo para el cliente; el anterior dejó de funcionar.", ahora);
+    }
+
+    public void AnotarEnlaceRevocado(DateTimeOffset ahora)
+    {
+        ActualizadoEn = ahora;
+        Registrar(Actor.Freelancer, TipoDeEvento.EnlaceRevocado, "revocó el enlace del cliente.", ahora);
+    }
+
     // Un proyecto con pagos se puede cancelar: se conserva con todo su historial.
     public void Cancelar(DateTimeOffset ahora)
     {
         ExigirQueSigaAbierto();
         Estado = EstadoProyecto.Cancelado;
         ActualizadoEn = ahora;
+        Registrar(Actor.Freelancer, TipoDeEvento.ProyectoCancelado, "canceló el proyecto.", ahora);
     }
 
     private void ExigirQueSigaAbierto()

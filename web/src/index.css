@@ -763,3 +763,36 @@ a.renglon:hover b {
 .rotulo + .renglon {
   border-top: 0;
 }
+
+/* Historial: renglones de bitácora */
+.historial {
+  list-style: none;
+  margin-bottom: 0;
+}
+
+.evento {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--renglon);
+  font-size: 15px;
+}
+
+.evento:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.evento time {
+  font: 500 12px/1.6 'IBM Plex Mono', monospace;
+  color: var(--grafito);
+}
+
+.evento .quien {
+  font-weight: 600;
+}
+
+.evento div {
+  overflow-wrap: anywhere;
+}
