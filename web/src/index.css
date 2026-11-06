@@ -849,3 +849,57 @@ a.renglon:hover b {
     grid-template-columns: 2fr 1fr;
   }
 }
+
+/* Impresión y PDF: solo el resumen del proyecto, en claro y sin controles */
+.solo-impresion {
+  display: none;
+}
+
+@page {
+  margin: 16mm;
+}
+
+@media print {
+  :root {
+    --papel: #ffffff;
+    --hoja: #ffffff;
+    --tinta: #1d2b4f;
+    --grafito: #4f4a40;
+    --renglon: rgba(29, 43, 79, 0.2);
+    --renglon-fuerte: rgba(29, 43, 79, 0.35);
+    --firma: #2347a6;
+    --sello-pagado: #2f6b3f;
+    --sello-vencido: #b23a2e;
+    --sello-cambios: #8f5400;
+    --sombra-hoja: none;
+    color-scheme: light;
+  }
+
+  .barra,
+  .saltar,
+  .aviso-demo,
+  .pestanas,
+  .acciones,
+  .toast-region,
+  .no-imprimir {
+    display: none !important;
+  }
+
+  .solo-impresion {
+    display: block;
+  }
+
+  .contenido {
+    max-width: none;
+    padding: 0;
+  }
+
+  .renglon {
+    break-inside: avoid;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
