@@ -11,7 +11,7 @@ public sealed record HitoDto(
 public sealed record VersionDto(int Numero, string Estado, DateTimeOffset? EnviadaEn, DateTimeOffset? AceptadaEn, decimal Total, List<HitoDto> Hitos);
 public sealed record ClienteResumenDto(Guid Id, string Nombre);
 public sealed record ProyectoDto(
-    Guid Id, string Nombre, ClienteResumenDto Cliente, string Estado, decimal Total, int VersionActual, int UltimaVersion, List<VersionDto> Versiones);
+    Guid Id, string Nombre, ClienteResumenDto Cliente, string Estado, decimal Total, decimal Pagado, int VersionActual, int UltimaVersion, List<VersionDto> Versiones);
 
 // Ayudas compartidas por las pruebas de proyectos, enlaces y aceptación.
 public static class Proyectos

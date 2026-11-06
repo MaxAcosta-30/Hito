@@ -22,6 +22,7 @@ public sealed class ProyectoConfiguracion : IEntityTypeConfiguration<Proyecto>
         builder.Ignore(p => p.VersionVigente);
         builder.Ignore(p => p.VersionActual);
         builder.Ignore(p => p.Total);
+        builder.Ignore(p => p.Pagado);
         builder.HasIndex(p => p.OwnerId);
 
         builder.HasOne<Usuario>().WithMany().HasForeignKey(p => p.OwnerId).OnDelete(DeleteBehavior.Cascade);
@@ -30,6 +31,22 @@ public sealed class ProyectoConfiguracion : IEntityTypeConfiguration<Proyecto>
         builder.HasOne<Cliente>().WithMany().HasForeignKey(p => p.ClienteId).OnDelete(DeleteBehavior.NoAction);
         builder.HasMany(p => p.Versiones).WithOne().HasForeignKey(v => v.ProyectoId).OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(p => p.Hitos).WithOne().HasForeignKey(h => h.ProyectoId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(p => p.Pagos).WithOne().HasForeignKey(p => p.ProyectoId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class PagoConfiguracion : IEntityTypeConfiguration<Pago>
+{
+    public void Configure(EntityTypeBuilder<Pago> builder)
+    {
+        builder.ToTable("Pagos");
+        builder.HasKey(p => p.Id);
+        builder.Property(p => p.Id).ValueGeneratedNever();
+        builder.Property(p => p.Monto).HasPrecision(18, 2);
+        builder.Property(p => p.Nota).HasMaxLength(Pago.MaximoNota);
+        builder.HasIndex(p => p.HitoId);
+        // Un pago siempre apunta a un hito existente (NO ACTION, igual que los términos).
+        builder.HasOne<HitoDeProyecto>().WithMany().HasForeignKey(p => p.HitoId).OnDelete(DeleteBehavior.ClientCascade);
     }
 }
 

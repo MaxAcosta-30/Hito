@@ -17,13 +17,14 @@ public static class ProyectosEndpoints
         Guid Id, string Nombre, ClienteResumen Cliente, EstadoProyecto Estado, decimal Total, int Version, DateTimeOffset ActualizadoEn);
     public sealed record HitoRespuesta(
         Guid Id, int Orden, string Titulo, decimal Monto, DateOnly FechaEntrega, string Entregable, EstadoHito Estado,
-        string? EvidenciaUrl, DateTimeOffset? EntregadoEn, string? ComentarioCambios, DateTimeOffset? AprobadoEn);
+        string? EvidenciaUrl, DateTimeOffset? EntregadoEn, string? ComentarioCambios, DateTimeOffset? AprobadoEn, decimal Pagado);
     public sealed record EntregarSolicitud(string? EvidenciaUrl);
+    public sealed record PagoSolicitud(decimal? Monto, DateOnly? Fecha, string? Nota);
     public sealed record VersionRespuesta(
         int Numero, EstadoVersion Estado, DateTimeOffset CreadaEn, DateTimeOffset? EnviadaEn, DateTimeOffset? AceptadaEn,
         decimal Total, List<HitoRespuesta> Hitos);
     public sealed record ProyectoDetalle(
-        Guid Id, string Nombre, ClienteResumen Cliente, EstadoProyecto Estado, decimal Total,
+        Guid Id, string Nombre, ClienteResumen Cliente, EstadoProyecto Estado, decimal Total, decimal Pagado,
         int VersionActual, int UltimaVersion, List<VersionRespuesta> Versiones, EnlaceRespuesta? Enlace,
         DateTimeOffset CreadoEn, DateTimeOffset ActualizadoEn);
     // Datos del enlace activo. El token nunca se puede volver a leer: solo se muestra al crearlo.
@@ -40,6 +41,7 @@ public static class ProyectosEndpoints
         proyectos.MapPost("/{id:guid}/cancelar", Cancelar);
         proyectos.MapPost("/{id:guid}/versiones", NuevaVersion);
         proyectos.MapPost("/{id:guid}/hitos/{hitoId:guid}/entregar", Entregar);
+        proyectos.MapPost("/{id:guid}/hitos/{hitoId:guid}/pagos", RegistrarPago);
         proyectos.MapPost("/{id:guid}/enviar", Enviar);
         proyectos.MapPost("/{id:guid}/enlace", NuevoEnlace);
         proyectos.MapPost("/{id:guid}/enlace/revocar", RevocarEnlace);
@@ -121,6 +123,24 @@ public static class ProyectosEndpoints
 
         var ahora = reloj.GetUtcNow();
         proyecto.EntregarHito(hitoId, url!, ahora);
+        await db.SaveChangesAsync(ct);
+        return Results.Ok(await DetalleAsync(db, proyecto, ahora, ct));
+    }
+
+    private static async Task<IResult> RegistrarPago(
+        Guid id, Guid hitoId, PagoSolicitud solicitud, HitoDbContext db, TimeProvider reloj, CancellationToken ct)
+    {
+        var proyecto = await db.Proyectos.ConAgregado().FirstOrDefaultAsync(p => p.Id == id, ct);
+        if (proyecto is null) return NoEncontrado();
+
+        var v = new Validacion();
+        if (solicitud.Monto is not > 0) v.Agregar("monto", "Escribe el monto recibido.");
+        if (solicitud.Fecha is null) v.Agregar("fecha", "Elige la fecha del pago.");
+        var nota = v.Opcional("nota", solicitud.Nota, Pago.MaximoNota, $"Máximo {Pago.MaximoNota} caracteres.");
+        if (v.HayErrores) return v.Problema();
+
+        var ahora = reloj.GetUtcNow();
+        proyecto.RegistrarPago(hitoId, solicitud.Monto!.Value, solicitud.Fecha!.Value, nota, ahora);
         await db.SaveChangesAsync(ct);
         return Results.Ok(await DetalleAsync(db, proyecto, ahora, ct));
     }
@@ -211,6 +231,7 @@ public static class ProyectosEndpoints
         proyectos
             .Include(p => p.Versiones).ThenInclude(v => v.Terminos)
             .Include(p => p.Hitos)
+            .Include(p => p.Pagos)
             .AsSplitQuery();
 
     internal static async Task<ProyectoDetalle> DetalleAsync(HitoDbContext db, Proyecto p, DateTimeOffset ahora, CancellationToken ct)
@@ -223,20 +244,20 @@ public static class ProyectosEndpoints
             .FirstOrDefaultAsync(ct);
         var hitos = p.Hitos.ToDictionary(h => h.Id);
         return new ProyectoDetalle(
-            p.Id, p.Nombre, new ClienteResumen(p.ClienteId, clientes[p.ClienteId]), p.Estado, p.Total,
+            p.Id, p.Nombre, new ClienteResumen(p.ClienteId, clientes[p.ClienteId]), p.Estado, p.Total, p.Pagado,
             p.VersionActual.Numero, p.UltimaVersion.Numero,
             p.Versiones.OrderByDescending(v => v.Numero).Select(v => new VersionRespuesta(
                 v.Numero, v.Estado, v.CreadaEn, v.EnviadaEn, v.AceptadaEn, v.Total,
                 v.Terminos.OrderBy(t => t.Orden)
-                    .Select(t => ARespuesta(t, hitos[t.HitoId]))
+                    .Select(t => ARespuesta(t, hitos[t.HitoId], p.PagadoDe(t.HitoId)))
                     .ToList()))
                 .ToList(),
             enlace, p.CreadoEn, p.ActualizadoEn);
     }
 
-    private static HitoRespuesta ARespuesta(TerminosDeHito t, HitoDeProyecto h) =>
+    private static HitoRespuesta ARespuesta(TerminosDeHito t, HitoDeProyecto h, decimal pagado) =>
         new(t.HitoId, t.Orden, t.Titulo, t.Monto, t.FechaEntrega, t.Entregable, h.Estado,
-            h.EvidenciaUrl, h.EntregadoEn, h.ComentarioCambios, h.AprobadoEn);
+            h.EvidenciaUrl, h.EntregadoEn, h.ComentarioCambios, h.AprobadoEn, pagado);
 
     // Incluye clientes archivados: un proyecto conserva el nombre de su cliente aunque se archive.
     private static Task<Dictionary<Guid, string>> NombresDeClientesAsync(HitoDbContext db, IEnumerable<Guid> ids, CancellationToken ct)
