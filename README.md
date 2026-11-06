@@ -99,3 +99,7 @@ Pruebas: `dotnet test` (necesita Docker para Testcontainers). E2E y kind: ver [d
 - **Kubernetes** solo se prueba en `kind` dentro de CI; el despliegue real no usa Kubernetes.
 - Los límites de peticiones de `/publico`, `/demo` y el registro son globales, no por IP.
 - Fuera de alcance: cobros con tarjeta, facturación o CFDI, envío de correos, tiempo real, equipos y app móvil.
+
+## Licencia
+
+[MIT](LICENSE) © 2026 Max Acosta.
