@@ -17,6 +17,7 @@ export type Hito = {
   entregadoEn: string | null
   comentarioCambios: string | null
   aprobadoEn: string | null
+  pagado: number
 }
 
 export type Version = {
@@ -47,6 +48,7 @@ export type Proyecto = {
   cliente: ClienteResumen
   estado: EstadoProyecto
   total: number
+  pagado: number
   versionActual: number
   ultimaVersion: number
   versiones: Version[]

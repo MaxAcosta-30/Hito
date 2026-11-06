@@ -1,3 +1,4 @@
+using System.Globalization;
 using Hito.Domain.Comun;
 
 namespace Hito.Domain.Proyectos;
@@ -9,6 +10,7 @@ public sealed class Proyecto : IPerteneceAUsuario
 
     private readonly List<VersionDeProyecto> _versiones = [];
     private readonly List<HitoDeProyecto> _hitos = [];
+    private readonly List<Pago> _pagos = [];
 
     public Guid Id { get; private set; } = Guid.NewGuid();
     public Guid OwnerId { get; private set; }
@@ -22,6 +24,7 @@ public sealed class Proyecto : IPerteneceAUsuario
 
     public IReadOnlyList<VersionDeProyecto> Versiones => _versiones;
     public IReadOnlyList<HitoDeProyecto> Hitos => _hitos;
+    public IReadOnlyList<Pago> Pagos => _pagos;
 
     public VersionDeProyecto UltimaVersion => _versiones.MaxBy(v => v.Numero)!;
 
@@ -33,6 +36,10 @@ public sealed class Proyecto : IPerteneceAUsuario
     public VersionDeProyecto VersionActual => VersionVigente ?? UltimaVersion;
 
     public decimal Total => VersionActual.Total;
+
+    public decimal PagadoDe(Guid hitoId) => _pagos.Where(p => p.HitoId == hitoId).Sum(p => p.Monto);
+
+    public decimal Pagado => _pagos.Sum(p => p.Monto);
 
     private Proyecto() { }
 
@@ -170,6 +177,33 @@ public sealed class Proyecto : IPerteneceAUsuario
     {
         HitoVigente(hitoId).PedirCambios(comentario);
         ActualizadoEn = ahora;
+    }
+
+    // Solo se paga un hito aprobado y nunca más de lo que falta. Al cubrirlo completo pasa a Pagado;
+    // cuando todos los hitos vigentes están pagados, el proyecto se completa.
+    public Pago RegistrarPago(Guid hitoId, decimal monto, DateOnly fecha, string? nota, DateTimeOffset ahora)
+    {
+        var hito = HitoVigente(hitoId);
+        if (hito.Estado != EstadoHito.Aprobado)
+            throw new ReglaDeNegocioException("Solo se puede registrar el pago de un hito aprobado.");
+        if (monto <= 0 || decimal.Round(monto, 2) != monto)
+            throw new ReglaDeNegocioException("El monto debe ser mayor que cero y tener como máximo dos decimales.");
+
+        var montoDelHito = VersionVigente!.TerminosDe(hitoId)!.Monto;
+        var pendiente = montoDelHito - PagadoDe(hitoId);
+        if (monto > pendiente)
+            throw new ReglaDeNegocioException(
+                $"No puede ser mayor que lo pendiente: ${pendiente.ToString("N2", CultureInfo.InvariantCulture)}.");
+
+        var pago = new Pago(OwnerId, Id, hitoId, monto, fecha, nota, ahora);
+        _pagos.Add(pago);
+        if (monto == pendiente) hito.MarcarPagado(ahora);
+
+        var vigentes = VersionVigente.Terminos.Select(t => t.HitoId).ToHashSet();
+        if (_hitos.Where(h => vigentes.Contains(h.Id)).All(h => h.Estado == EstadoHito.Pagado))
+            Estado = EstadoProyecto.Completado;
+        ActualizadoEn = ahora;
+        return pago;
     }
 
     // Solo se trabaja sobre hitos del alcance aceptado y vigente.

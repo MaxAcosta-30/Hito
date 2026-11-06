@@ -137,6 +137,43 @@ namespace Hito.Infrastructure.Persistence.Migrations
                     b.ToTable("Hitos", (string)null);
                 });
 
+            modelBuilder.Entity("Hito.Domain.Proyectos.Pago", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("Fecha")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("HitoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Monto")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("Nota")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProyectoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("RegistradoEn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HitoId");
+
+                    b.HasIndex("ProyectoId");
+
+                    b.ToTable("Pagos", (string)null);
+                });
+
             modelBuilder.Entity("Hito.Domain.Proyectos.Proyecto", b =>
                 {
                     b.Property<Guid>("Id")
@@ -453,6 +490,21 @@ namespace Hito.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Hito.Domain.Proyectos.Pago", b =>
+                {
+                    b.HasOne("Hito.Domain.Proyectos.HitoDeProyecto", null)
+                        .WithMany()
+                        .HasForeignKey("HitoId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.HasOne("Hito.Domain.Proyectos.Proyecto", null)
+                        .WithMany("Pagos")
+                        .HasForeignKey("ProyectoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Hito.Domain.Proyectos.Proyecto", b =>
                 {
                     b.HasOne("Hito.Domain.Clientes.Cliente", null)
@@ -531,6 +583,8 @@ namespace Hito.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Hito.Domain.Proyectos.Proyecto", b =>
                 {
                     b.Navigation("Hitos");
+
+                    b.Navigation("Pagos");
 
                     b.Navigation("Versiones");
                 });
