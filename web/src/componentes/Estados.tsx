@@ -3,7 +3,7 @@ import { mensajeDeError } from '../api/errores'
 // Carga: renglones vacíos, sin spinners.
 export function Esqueleto({ renglones = 4 }: { renglones?: number }) {
   return (
-    <div className="hoja" role="status" aria-busy="true">
+    <div className="hoja" role="status">
       <span className="solo-lectores">Cargando…</span>
       {Array.from({ length: renglones }, (_, i) => (
         <div key={i} className={i % 2 ? 'esqueleto corto' : 'esqueleto'} />

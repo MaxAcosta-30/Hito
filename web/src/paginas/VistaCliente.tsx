@@ -190,12 +190,15 @@ function PedirCambios({ hito, token, freelancer, onListo, onCancelar }: { hito: 
     mutationFn: () => api<Vista>(`/publico/${token}/hitos/${hito.id}/cambios`, { method: 'POST', body: JSON.stringify({ comentario }) }),
     onSuccess: onListo,
   })
-  const formulario = useEnfocarError(faltaComentario)
+  const formulario = useEnfocarError(enviar.error)
 
   function alEnviar(e: FormEvent) {
     e.preventDefault()
     // El comentario es obligatorio: se valida antes de enviar (y el servidor lo vuelve a validar).
-    if (!comentario.trim()) return setFaltaComentario(true)
+    if (!comentario.trim()) {
+      setFaltaComentario(true)
+      return document.getElementById('comentario')?.focus()
+    }
     enviar.mutate()
   }
 

@@ -26,6 +26,9 @@ reenviar() {
 # Secretos aleatorios por corrida: no se guardan en ningún lado y mueren con el clúster.
 clave_db="$(openssl rand -hex 24)"
 conexion_interna="Host=postgres;Database=hito;Username=hito;Password=${clave_db}"
+# Se empieza limpio: si queda un PostgreSQL de una corrida anterior, ya se inicializó con otra contraseña.
+kubectl delete -f api.yaml -f postgres.yaml --ignore-not-found --wait
+kubectl delete secret hito-db hito-api --ignore-not-found
 kubectl create secret generic hito-db --from-literal=password="$clave_db"
 kubectl create secret generic hito-api \
   --from-literal=connection-string="$conexion_interna" \
@@ -38,7 +41,8 @@ kubectl rollout status deployment/postgres --timeout=120s
 echo "== Migraciones con el bundle"
 reenviar deployment/postgres 15432:5432
 # El bundle arranca Program, que exige una clave JWT aunque no emita tokens.
-Jwt__Clave="$(openssl rand -hex 32)" \
+# Sin vigilar appsettings.json: el bundle corre una vez y termina.
+DOTNET_hostBuilder__reloadConfigOnChange=false Jwt__Clave="$(openssl rand -hex 32)" \
   ConnectionStrings__Hito="Host=127.0.0.1;Port=15432;Database=hito;Username=hito;Password=${clave_db}" "$bundle"
 
 echo "== API"

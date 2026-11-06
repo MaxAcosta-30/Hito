@@ -23,7 +23,7 @@ type Pestana = (typeof pestanas)[number]['clave']
 export function ProyectoDetalle() {
   const { id } = useParams()
   const proyecto = useProyecto(id)
-  // La pestaña vive en la URL: se puede recargar, compartir o volver con "atrás".
+  // La pestaña vive en la URL: se puede recargar o compartir. Con replace, cambiar de pestaña no llena el historial.
   const [parametros, setParametros] = useSearchParams()
   const pestana: Pestana = pestanas.find((t) => t.clave === parametros.get('pestana'))?.clave ?? 'hitos'
   const botones = useRef<(HTMLButtonElement | null)[]>([])
@@ -238,13 +238,16 @@ function FormularioPago({ proyectoId, hito, onListo }: { proyectoId: string; hit
     },
   })
   const errores = erroresDeFormulario(pagar.error)
-  const formPago = useEnfocarError(errorMonto ?? pagar.error)
+  const formPago = useEnfocarError(pagar.error)
 
   function enviar(e: FormEvent) {
     e.preventDefault()
     // Se revisa antes de enviar para dar el mensaje al instante; el servidor vuelve a validarlo.
-    if (!(monto > 0)) return setErrorMonto('Escribe el monto recibido.')
-    if (monto > pendiente) return setErrorMonto(`No puede ser mayor que lo pendiente: ${dinero(pendiente)}`)
+    const error = !(monto > 0) ? 'Escribe el monto recibido.' : monto > pendiente ? `No puede ser mayor que lo pendiente: ${dinero(pendiente)}` : undefined
+    if (error) {
+      setErrorMonto(error)
+      return document.getElementById('monto')?.focus()
+    }
     pagar.mutate()
   }
 
