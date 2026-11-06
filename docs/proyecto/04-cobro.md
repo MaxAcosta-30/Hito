@@ -19,7 +19,13 @@
 - API: `GET /cobros`. Pruebas: 5 unitarias y 2 de integración (los totales coinciden con los datos; aislamiento). Total: 48 + 42.
 - Web: cifra "Te deben", desglose y "Necesita tu atención", con esqueleto, vacío y error. Probado con Playwright.
 
-**Pendiente de la Etapa 4:** caso 9 (historial) y caso 10 (demo).
+**Caso 9 · Historial:** terminado en la rama `caso-9/historial` (2026-11-06).
+- Cada método de `Proyecto` genera un `EventoDeProyecto` (actor, tipo, descripción en texto y fecha); `HitoDbContext` lo guarda al hacer `SaveChanges` y lanza error si un evento se modifica o se borra.
+- API: solo `GET /proyectos/{id}/eventos`; PUT/PATCH/DELETE/POST responden 405. Columna identidad `Secuencia` para el orden. Migración `AgregarHistorial`.
+- Pruebas: 3 unitarias y 4 de integración (incluida la de que ni el propio servidor puede editar o borrar). Total: 51 + 46.
+- Web: pestaña Historial de solo lectura. Probado con Playwright.
+
+**Pendiente de la Etapa 4:** caso 10 (demo).
 
 ## Preguntas de entrevista pendientes
 
@@ -37,3 +43,8 @@
 1. ¿Por qué "hoy" se calcula en la zona horaria de México y no en UTC?
 2. ¿Por qué el cálculo vive en el dominio y no en una consulta SQL?
 3. Un hito aprobado y vencido, ¿cuenta dos veces en "Te deben"? ¿Por qué no?
+
+**Caso 9**
+1. ¿Por qué se guarda la descripción como texto y no se arma al consultar?
+2. ¿Dónde se impide editar o borrar un evento y qué pasa si un desarrollador lo intenta desde el código?
+3. ¿Por qué el orden usa una columna `Secuencia` y no solo la fecha?

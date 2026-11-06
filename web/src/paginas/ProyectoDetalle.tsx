@@ -3,16 +3,16 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { api } from '../api/cliente'
 import { erroresDeFormulario, mensajeDeError } from '../api/errores'
-import { useProyecto, versionDe, type Hito, type Proyecto, type Version } from '../api/proyectos'
+import { useEventos, useProyecto, versionDe, type Hito, type Proyecto, type Version } from '../api/proyectos'
 import { Campo } from '../componentes/Campo'
 import { Dialogo } from '../componentes/Dialogo'
 import { Compartir } from '../componentes/Compartir'
 import { ErrorCarga, Esqueleto } from '../componentes/Estados'
 import { Sello } from '../componentes/Sello'
 import { useToast } from '../componentes/toast'
-import { dinero, fechaCorta, hoyIso, leerMonto } from '../formato'
+import { dinero, fechaCorta, horaCorta, hoyIso, leerMonto } from '../formato'
 
-type Pestana = 'hitos' | 'versiones'
+type Pestana = 'hitos' | 'historial' | 'versiones'
 
 export function ProyectoDetalle() {
   const { id } = useParams()
@@ -44,12 +44,15 @@ export function ProyectoDetalle() {
         <button role="tab" aria-selected={pestana === 'hitos'} onClick={() => setPestana('hitos')}>
           Hitos
         </button>
+        <button role="tab" aria-selected={pestana === 'historial'} onClick={() => setPestana('historial')}>
+          Historial
+        </button>
         <button role="tab" aria-selected={pestana === 'versiones'} onClick={() => setPestana('versiones')}>
           Versiones
         </button>
       </div>
 
-      {pestana === 'hitos' ? <HojaDeHitos proyecto={p} version={actual} /> : <Versiones proyecto={p} />}
+      {pestana === 'hitos' ? <HojaDeHitos proyecto={p} version={actual} /> : pestana === 'historial' ? <Historial proyectoId={p.id} /> : <Versiones proyecto={p} />}
 
       <Compartir proyecto={p} />
       <Acciones proyecto={p} />
@@ -248,6 +251,32 @@ function FormularioPago({ proyectoId, hito, onListo }: { proyectoId: string; hit
         </button>
       </div>
     </form>
+  )
+}
+
+// Solo lectura: el historial no se edita ni se borra.
+function Historial({ proyectoId }: { proyectoId: string }) {
+  const eventos = useEventos(proyectoId, true)
+  if (eventos.isPending) return <Esqueleto renglones={5} />
+  if (eventos.isError) return <ErrorCarga error={eventos.error} onReintentar={() => eventos.refetch()} />
+  return (
+    <>
+      <ol className="hoja historial">
+        {eventos.data.map((e, i) => (
+          <li key={i} className="evento">
+            <time dateTime={e.fecha}>
+              {fechaCorta(e.fecha)}
+              <br />
+              {horaCorta(e.fecha)}
+            </time>
+            <div>
+              <span className="quien">{e.quien}</span> {e.descripcion}
+            </div>
+          </li>
+        ))}
+      </ol>
+      <p className="meta">Los eventos no se pueden editar ni borrar.</p>
+    </>
   )
 }
 

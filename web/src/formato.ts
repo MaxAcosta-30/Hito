@@ -23,3 +23,6 @@ export function hoyIso() {
 
 // Acepta "12,000.50" o "12000.5"; devuelve NaN si no es un número.
 export const leerMonto = (texto: string) => (texto.trim() === '' ? NaN : Number(texto.replace(/[,\s$]/g, '')))
+
+const hora = new Intl.DateTimeFormat('es-MX', { hour: '2-digit', minute: '2-digit', hour12: false })
+export const horaCorta = (valor: string) => hora.format(new Date(valor))

@@ -70,3 +70,8 @@ export const versionDe = (proyecto: Proyecto, numero: number) => proyecto.versio
 export type EnlaceCreado = { token: string; expiraEn: string; proyecto: Proyecto }
 
 export const urlDelCliente = (token: string) => `${window.location.origin}/p/${token}`
+
+export type Evento = { fecha: string; actor: 'Freelancer' | 'Cliente'; quien: string; tipo: string; descripcion: string }
+
+export const useEventos = (id: string, activo: boolean) =>
+  useQuery({ queryKey: ['proyectos', id, 'eventos'], queryFn: () => api<Evento[]>(`/proyectos/${id}/eventos`), enabled: activo })
