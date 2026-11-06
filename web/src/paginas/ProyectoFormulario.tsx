@@ -8,6 +8,7 @@ import { useProyecto, versionDe, type HitoFormulario, type Proyecto } from '../a
 import { Campo, CampoArea } from '../componentes/Campo'
 import { ErrorCarga, Esqueleto } from '../componentes/Estados'
 import { useToast } from '../componentes/toast'
+import { useEnfocarError } from '../componentes/useEnfocarError'
 import { dinero, leerMonto } from '../formato'
 
 type HitoEditable = { clave: string; id?: string; titulo: string; monto: string; fechaEntrega: string; entregable: string }
@@ -82,6 +83,7 @@ function Formulario({ proyecto, clientes }: { proyecto?: Proyecto; clientes: { i
   })
 
   const errores = erroresDeFormulario(guardar.error)
+  const formulario = useEnfocarError(guardar.error)
   const cambiar = (clave: string, campo: keyof HitoEditable, valor: string) =>
     setHitos((lista) => lista.map((h) => (h.clave === clave ? { ...h, [campo]: valor } : h)))
   // Vista previa: el total oficial lo calcula el servidor al guardar.
@@ -93,8 +95,8 @@ function Formulario({ proyecto, clientes }: { proyecto?: Proyecto; clientes: { i
   }
 
   return (
-    <form className="hoja" onSubmit={enviar} noValidate>
-      <h2>{proyecto ? `Editar alcance · versión ${proyecto.ultimaVersion}` : 'Nuevo proyecto'}</h2>
+    <form ref={formulario} className="hoja" onSubmit={enviar} noValidate>
+      <h1 className="titulo-hoja">{proyecto ? `Editar alcance · versión ${proyecto.ultimaVersion}` : 'Nuevo proyecto'}</h1>
       {(errores.general || errores.campo('hitos')) && (
         <p className="mensaje-error" role="alert">
           {errores.general ?? errores.campo('hitos')}

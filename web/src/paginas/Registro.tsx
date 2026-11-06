@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router'
 import { api, ErrorApi, type Sesion } from '../api/cliente'
 import { useSesion } from '../auth/contexto'
 import { Campo } from '../componentes/Campo'
+import { useEnfocarError } from '../componentes/useEnfocarError'
 
 export function Registro() {
   const { iniciar } = useSesion()
@@ -19,6 +20,7 @@ export function Registro() {
   })
 
   const error = registrar.error instanceof ErrorApi ? registrar.error : null
+  const formulario = useEnfocarError(registrar.error)
   const errorDe = (campo: string) => error?.errores[campo]?.[0]
   // Errores por campo van bajo cada campo; los demás, arriba del formulario.
   const mensajeGeneral = !registrar.error
@@ -40,7 +42,7 @@ export function Registro() {
     <main className="contenido angosto">
       <h1 className="marca-grande">Hito</h1>
       <p className="meta">Cada entrega aprobada, cada cobro claro.</p>
-      <form className="hoja" onSubmit={enviar} noValidate>
+      <form ref={formulario} className="hoja" onSubmit={enviar} noValidate>
         <h2>Crear cuenta</h2>
         {mensajeGeneral && (
           <p className="mensaje-error" role="alert">

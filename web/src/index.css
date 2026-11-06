@@ -59,7 +59,8 @@ h3 {
   margin: 0;
 }
 
-h2 {
+h2,
+.titulo-hoja {
   font-size: 25px;
 }
 
@@ -396,7 +397,8 @@ a.renglon:hover b {
 
 .pestanas a.active,
 .pestanas [aria-current='page'],
-.pestanas [aria-selected='true'] {
+.pestanas [aria-selected='true'],
+.pestanas [aria-pressed='true'] {
   color: var(--tinta);
   box-shadow: inset 0 -2px 0 var(--firma);
 }
@@ -814,4 +816,23 @@ a.renglon:hover b {
   background: var(--hoja);
   border-bottom: 1px solid var(--renglon);
   color: var(--grafito);
+}
+
+/* Enlace para saltar la navegación: invisible hasta que recibe el foco con el teclado */
+.saltar {
+  position: absolute;
+  left: 16px;
+  top: -48px;
+  z-index: 30;
+  padding: 8px 12px;
+  background: var(--hoja);
+  border-radius: var(--r-control);
+}
+
+.saltar:focus-visible {
+  top: 8px;
+}
+
+#contenido:focus {
+  outline: none;
 }
