@@ -100,6 +100,26 @@ public sealed class Proyecto : IPerteneceAUsuario
         ActualizadoEn = ahora;
     }
 
+    // Manda la versión en borrador al cliente. El primer envío pasa el proyecto de Borrador a Enviado.
+    public void Enviar(DateTimeOffset ahora)
+    {
+        ExigirQueSigaAbierto();
+        var borrador = UltimaVersion;
+        if (borrador.Estado != EstadoVersion.Borrador)
+            throw new ReglaDeNegocioException("Esta versión ya se envió. Genera un enlace nuevo si el cliente lo perdió.");
+        borrador.Enviar(ahora);
+        if (Estado == EstadoProyecto.Borrador) Estado = EstadoProyecto.Enviado;
+        ActualizadoEn = ahora;
+    }
+
+    // Para dar un enlace nuevo sin cambiar el alcance: el proyecto ya debe haberse enviado.
+    public void ExigirQuePuedaCompartirse()
+    {
+        ExigirQueSigaAbierto();
+        if (Estado == EstadoProyecto.Borrador)
+            throw new ReglaDeNegocioException("Primero envía el proyecto al cliente.");
+    }
+
     // Un proyecto con pagos se puede cancelar: se conserva con todo su historial.
     public void Cancelar(DateTimeOffset ahora)
     {

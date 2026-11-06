@@ -4,6 +4,7 @@ using Hito.Api.Auth;
 using Hito.Api.Clientes;
 using Hito.Api.Comun;
 using Hito.Api.Proyectos;
+using Hito.Api.Publico;
 using System.Text.Json.Serialization;
 using Hito.Application.Comun;
 using Hito.Infrastructure;
@@ -63,6 +64,13 @@ builder.Services.AddRateLimiter(options =>
         limite.Window = TimeSpan.FromMinutes(1);
         limite.QueueLimit = 0;
     });
+    // Límite global para los enlaces públicos: frena a quien intente adivinar tokens.
+    options.AddFixedWindowLimiter(PublicoEndpoints.Politica, limite =>
+    {
+        limite.PermitLimit = builder.Configuration.GetValue("Publico:PeticionesPorMinuto", 120);
+        limite.Window = TimeSpan.FromMinutes(1);
+        limite.QueueLimit = 0;
+    });
 });
 
 builder.Services.AddHealthChecks()
@@ -88,5 +96,6 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = check 
 app.MapAuth();
 app.MapClientes();
 app.MapProyectos();
+app.MapPublico();
 
 app.Run();

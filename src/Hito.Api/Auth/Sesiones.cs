@@ -1,5 +1,4 @@
-using System.Security.Cryptography;
-using System.Text;
+using Hito.Api.Comun;
 using Hito.Infrastructure.Identidad;
 using Hito.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +12,7 @@ public sealed class Sesiones(HitoDbContext db, TimeProvider reloj)
 
     public async Task<(string Token, DateTimeOffset ExpiraEn)> CrearAsync(Guid usuarioId, CancellationToken ct)
     {
-        var token = Base64Url(RandomNumberGenerator.GetBytes(32));
+        var token = TokenAleatorio.Generar();
         var ahora = reloj.GetUtcNow();
         var sesion = new SesionDeRenovacion
         {
@@ -54,9 +53,5 @@ public sealed class Sesiones(HitoDbContext db, TimeProvider reloj)
             .Where(s => s.HashDelToken == Hash(token) && s.RevocadaEn == null)
             .ExecuteUpdateAsync(s => s.SetProperty(x => x.RevocadaEn, reloj.GetUtcNow()), ct);
 
-    private static string Hash(string token) =>
-        Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
-
-    private static string Base64Url(byte[] bytes) =>
-        Convert.ToBase64String(bytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
+    private static string Hash(string token) => TokenAleatorio.Hash(token);
 }

@@ -599,3 +599,46 @@ a.renglon:hover b {
   background: var(--hoja);
   font-size: 15px;
 }
+
+/* Vista del cliente: móvil primero, sin barra de navegación */
+.contenido.cliente {
+  padding-bottom: 160px;
+}
+
+.cliente-cabecera h1 {
+  font-size: 25px;
+  margin: 4px 0;
+}
+
+.titulo-seccion {
+  margin-top: 24px;
+}
+
+.pie-cliente {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.barra-accion {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 16px 16px;
+  background: var(--hoja);
+  border-top: 1px solid var(--renglon-fuerte);
+  z-index: 10;
+}
+
+.barra-accion > div {
+  max-width: 720px;
+  margin: 0 auto;
+  display: grid;
+  gap: 8px;
+}
+
+.barra-accion .nota {
+  font-size: 13px;
+  color: var(--grafito);
+  margin: 0;
+}
