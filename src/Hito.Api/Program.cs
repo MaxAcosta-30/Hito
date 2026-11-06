@@ -1,6 +1,7 @@
 using Hito.Infrastructure;
 using Hito.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,10 @@ builder.Services.AddInfrastructure(connectionString);
 
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<HitoDbContext>("database", tags: ["ready"]);
+
+// Sin este límite, EnableRetryOnFailure hace que /health/ready tarde ~1 min en responder 503.
+builder.Services.Configure<HealthCheckServiceOptions>(options =>
+    options.Registrations.Single(r => r.Name == "database").Timeout = TimeSpan.FromSeconds(5));
 
 var app = builder.Build();
 
