@@ -31,6 +31,7 @@ export default function App() {
   if (api !== 'lista') {
     return (
       <Despertando
+        key={intento}
         estado={api}
         onReintentar={() => {
           setApi('despertando')
