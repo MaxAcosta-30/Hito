@@ -1,6 +1,6 @@
 # Etapa 1 · Despliegue temprano
 
-**Estado:** terminada, pendiente de aprobación (2026-11-05). Max confirmó que Supabase, Render y Vercel no tienen tarjeta registrada.
+**Estado:** aprobada por Max (2026-11-05). Max confirmó que Supabase, Render y Vercel no tienen tarjeta registrada.
 
 - Frontend: https://hito-one.vercel.app (Vercel Hobby, Root Directory `web`). El rewrite `/api/*` → Render está probado: `live` y `ready` en 200.
 - API: https://hito-api-a4su.onrender.com (Render Free, Oregon, Docker, Auto-Deploy desactivado, health check `/health/live`).
