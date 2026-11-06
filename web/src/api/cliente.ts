@@ -1,4 +1,4 @@
-export type Usuario = { id: string; nombre: string; email: string }
+export type Usuario = { id: string; nombre: string; email: string; esDemo: boolean }
 export type Sesion = { accessToken: string; usuario: Usuario }
 
 export class ErrorApi extends Error {

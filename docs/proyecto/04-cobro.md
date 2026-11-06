@@ -25,7 +25,14 @@
 - Pruebas: 3 unitarias y 4 de integración (incluida la de que ni el propio servidor puede editar o borrar). Total: 51 + 46.
 - Web: pestaña Historial de solo lectura. Probado con Playwright.
 
-**Pendiente de la Etapa 4:** caso 10 (demo).
+**Caso 10 · Probar la demo:** terminado en la rama `caso-10/demo` (2026-11-06).
+- `POST /demo` crea un usuario con `DemoExpiraEn` (24 h), siembra 3 clientes y 3 proyectos con los métodos del dominio y abre su sesión. Límite global: 10 por minuto.
+- Cada demo es un usuario distinto: el filtro por dueño la aísla. Cada `POST /demo` borra antes las demos vencidas en cascada.
+- Hallazgo: con `NO ACTION`, ese borrado fallaba (PostgreSQL revisa Términos → Hito antes de la cascada por Versiones). Términos y Pagos → Hito pasaron a `CASCADE` (migración `CascadaDeHitos`, ADR 0005 actualizado).
+- Pruebas: 4 de integración (datos coherentes: $76,000 por cobrar, $12,000 aprobado y $27,000 vencido; aislamiento; borrado en cascada de una demo vencida; límite 429). Total: 51 + 50.
+- Web: "Probar la demo" en `/entrar` y aviso de demo arriba. Probado con Playwright en dos contextos.
+
+**Estado de la Etapa 4:** casos 6 a 10 terminados. Pendiente: aprobación de Max, sus respuestas de entrevista y probar la demo en producción tras un arranque en frío.
 
 ## Preguntas de entrevista pendientes
 
@@ -48,3 +55,8 @@
 1. ¿Por qué se guarda la descripción como texto y no se arma al consultar?
 2. ¿Dónde se impide editar o borrar un evento y qué pasa si un desarrollador lo intenta desde el código?
 3. ¿Por qué el orden usa una columna `Secuencia` y no solo la fecha?
+
+**Caso 10**
+1. ¿Cómo se garantiza que dos visitantes de la demo no vean los datos del otro?
+2. ¿Por qué la limpieza se hace al crear una demo y no con un job programado?
+3. ¿Qué falló con `NO ACTION` al borrar una demo y por qué `CASCADE` hacia el hito es seguro aquí?

@@ -111,6 +111,11 @@ function Protegida() {
           Salir
         </button>
       </header>
+      {estado.usuario.esDemo && (
+        <p className="aviso-demo" role="note">
+          Estás en la demo: los datos son de ejemplo y se borran en 24 horas.
+        </p>
+      )}
       <main className="contenido">
         <Outlet />
       </main>

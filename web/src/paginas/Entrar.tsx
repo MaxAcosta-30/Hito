@@ -20,6 +20,15 @@ export function Entrar() {
     },
   })
 
+  // Visitante: con un clic, una cuenta temporal con datos de ejemplo.
+  const demo = useMutation({
+    mutationFn: () => api<Sesion>('/demo', { method: 'POST' }),
+    onSuccess: (sesion) => {
+      iniciar(sesion)
+      navegar('/cobros', { replace: true })
+    },
+  })
+
   function enviar(e: FormEvent) {
     e.preventDefault()
     entrar.mutate()
@@ -29,6 +38,17 @@ export function Entrar() {
     <main className="contenido angosto">
       <h1 className="marca-grande">Hito</h1>
       <p className="meta">Cada entrega aprobada, cada cobro claro.</p>
+      <div className="hoja demo">
+        <p>¿Solo quieres verlo? Entra a una cuenta de ejemplo con clientes, proyectos y cobros. Se borra sola en 24 horas.</p>
+        {demo.error && (
+          <p className="mensaje-error" role="alert">
+            {demo.error instanceof ErrorApi ? demo.error.message : 'No pudimos conectar. Inténtalo de nuevo.'}
+          </p>
+        )}
+        <button className="btn primario ancho" type="button" onClick={() => demo.mutate()} disabled={demo.isPending}>
+          {demo.isPending ? 'Preparando la demo…' : 'Probar la demo'}
+        </button>
+      </div>
       <form className="hoja" onSubmit={enviar} noValidate>
         <h2>Entrar</h2>
         {entrar.error && (
@@ -38,7 +58,7 @@ export function Entrar() {
         )}
         <Campo id="email" etiqueta="Correo" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
         <Campo id="contrasena" etiqueta="Contraseña" type="password" autoComplete="current-password" required value={contrasena} onChange={(e) => setContrasena(e.target.value)} />
-        <button className="btn primario ancho" type="submit" disabled={entrar.isPending}>
+        <button className="btn secundario ancho" type="submit" disabled={entrar.isPending}>
           {entrar.isPending ? 'Entrando…' : 'Entrar'}
         </button>
       </form>
