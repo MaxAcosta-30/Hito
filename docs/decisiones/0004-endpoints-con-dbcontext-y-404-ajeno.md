@@ -1,6 +1,6 @@
 # 0004 · Endpoints con DbContext directo y 404 para datos ajenos
 
-**Estado:** propuesta · 2026-11-06 (pendiente de revisión de Max)
+**Estado:** aceptada · 2026-11-06
 
 **Decisión:**
 - Los endpoints mínimos de `Hito.Api` usan `HitoDbContext` directamente. Las reglas de negocio viven en las entidades de `Hito.Domain` y se prueban sin base de datos.
