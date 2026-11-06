@@ -15,6 +15,7 @@ El freelancer manda el alcance por WhatsApp, el cliente dice "sí" y semanas des
 - Cada hito se **entrega con evidencia** (una URL) y el cliente **aprueba o pide cambios** con un comentario obligatorio.
 - El freelancer **registra los pagos** y su panel muestra lo **por cobrar**, lo **aprobado sin pagar** y lo **vencido**.
 - Todo queda en un **historial** que no se puede editar ni borrar.
+- Los proyectos se **buscan y filtran** por nombre, cliente y estado, y su resumen se **exporta a PDF**.
 
 ## Capturas
 
