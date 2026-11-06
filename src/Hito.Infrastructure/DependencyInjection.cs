@@ -8,9 +8,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connectionString)
     {
-        // EnableRetryOnFailure: Azure SQL serverless puede estar pausada y tarda en despertar.
+        // EnableRetryOnFailure: tolera cortes breves del pooler de Supabase y los arranques en frío.
         services.AddDbContext<HitoDbContext>(options =>
-            options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure()));
+            options.UseNpgsql(connectionString, npgsql => npgsql.EnableRetryOnFailure()));
 
         return services;
     }

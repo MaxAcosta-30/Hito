@@ -1,20 +1,20 @@
-# SQL Server local para desarrollo. La contraseña vive en .env (no se versiona); copia .env.example.
+# PostgreSQL local para desarrollo. La contraseña vive en .env (no se versiona); copia .env.example.
 services:
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+  postgres:
+    image: postgres:17-alpine
     environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Define MSSQL_SA_PASSWORD en .env}
+      POSTGRES_DB: hito
+      POSTGRES_USER: hito
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en .env}
     ports:
-      - "1433:1433"
+      - "5432:5432"
     volumes:
-      - sqlserver-data:/var/opt/mssql
+      - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q 'SELECT 1' -b -o /dev/null"]
-      interval: 10s
-      timeout: 5s
+      test: ["CMD-SHELL", "pg_isready -U hito -d hito"]
+      interval: 5s
+      timeout: 3s
       retries: 10
-      start_period: 20s
 
 volumes:
-  sqlserver-data:
+  postgres-data:
