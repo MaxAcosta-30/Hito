@@ -7,5 +7,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Hito.IntegrationTests/Hito.IntegrationTests.csproj" />
+    <Project Path="tests/Hito.UnitTests/Hito.UnitTests.csproj" />
   </Folder>
 </Solution>

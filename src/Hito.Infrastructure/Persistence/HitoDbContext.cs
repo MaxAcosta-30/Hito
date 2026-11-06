@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Hito.Application.Comun;
 using Hito.Domain.Clientes;
+using Hito.Domain.Proyectos;
 using Hito.Domain.Comun;
 using Hito.Infrastructure.Identidad;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -14,6 +15,7 @@ public sealed class HitoDbContext(DbContextOptions<HitoDbContext> options, IUsua
 {
     public DbSet<SesionDeRenovacion> Sesiones => Set<SesionDeRenovacion>();
     public DbSet<Cliente> Clientes => Set<Cliente>();
+    public DbSet<Proyecto> Proyectos => Set<Proyecto>();
 
     // EF lee esta propiedad en cada consulta, así el filtro usa el usuario de la petición actual.
     // Sin usuario autenticado vale Guid.Empty y el filtro no devuelve nada.

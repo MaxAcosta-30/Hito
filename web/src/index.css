@@ -478,3 +478,124 @@ a.renglon:hover b {
 .vacio .btn.primario {
   margin-top: 20px;
 }
+
+/* Sellos: solo para el estado del hito */
+.sellos {
+  display: inline-flex;
+  gap: 6px;
+  justify-self: end;
+  align-self: start;
+}
+
+.sello {
+  font: 600 11px/1 'IBM Plex Mono', monospace;
+  letter-spacing: 0.12em;
+  padding: 5px 7px;
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
+  transform: rotate(-3deg);
+  white-space: nowrap;
+}
+
+.sello.pendiente {
+  color: var(--grafito);
+  border-style: dotted;
+}
+
+.sello.entregado {
+  color: var(--grafito);
+  border-style: dashed;
+}
+
+.sello.cambios {
+  color: var(--sello-cambios);
+}
+
+.sello.aprobado {
+  color: var(--firma);
+}
+
+.sello.pagado {
+  color: var(--sello-pagado);
+}
+
+.sello.vencido {
+  color: var(--sello-vencido);
+}
+
+.sello.grande {
+  font-size: 22px;
+  padding: 10px 14px;
+  border-width: 3px;
+  transform: rotate(-6deg);
+  display: inline-block;
+}
+
+/* Totales con doble raya contable */
+.totales {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--renglon-fuerte);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  font-size: 14px;
+}
+
+.totales .monto {
+  font-family: 'IBM Plex Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.totales .final {
+  font-weight: 600;
+  font-size: 16px;
+  padding-top: 4px;
+}
+
+.totales .final.monto {
+  border-bottom: 3px double var(--tinta);
+  padding-bottom: 2px;
+}
+
+.cabecera-proyecto h1 {
+  font-size: 31px;
+  margin: 2px 0;
+}
+
+/* Un hito dentro del formulario */
+.hito-form {
+  border-top: 1px solid var(--renglon);
+  margin-top: 20px;
+  padding-top: 4px;
+}
+
+.hito-form .fila {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0 12px;
+}
+
+/* Los inputs (sobre todo type=date) no se encogen solos dentro de una rejilla. */
+.campo input,
+.campo select,
+.campo textarea {
+  min-width: 0;
+  width: 100%;
+}
+
+.hito-form .cabeza {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.aviso-linea {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-left: 3px solid var(--firma);
+  background: var(--hoja);
+  font-size: 15px;
+}

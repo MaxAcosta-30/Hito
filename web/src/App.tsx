@@ -8,6 +8,9 @@ import { ToastProvider } from './componentes/ToastProvider'
 import { ClienteFormulario } from './paginas/ClienteFormulario'
 import { Clientes } from './paginas/Clientes'
 import { Cobros } from './paginas/Cobros'
+import { ProyectoDetalle } from './paginas/ProyectoDetalle'
+import { ProyectoFormulario } from './paginas/ProyectoFormulario'
+import { Proyectos } from './paginas/Proyectos'
 import { Entrar } from './paginas/Entrar'
 import { Registro } from './paginas/Registro'
 
@@ -46,6 +49,10 @@ export default function App() {
           </Route>
           <Route element={<Protegida />}>
             <Route path="/cobros" element={<Cobros />} />
+            <Route path="/proyectos" element={<Proyectos />} />
+            <Route path="/proyectos/nuevo" element={<ProyectoFormulario />} />
+            <Route path="/proyectos/:id" element={<ProyectoDetalle />} />
+            <Route path="/proyectos/:id/alcance" element={<ProyectoFormulario />} />
             <Route path="/clientes" element={<Clientes />} />
             <Route path="/clientes/nuevo" element={<ClienteFormulario />} />
             <Route path="/clientes/:id" element={<ClienteFormulario />} />
@@ -86,6 +93,7 @@ function Protegida() {
         <span className="marca">Hito</span>
         <nav aria-label="Principal">
           <NavLink to="/cobros">Cobros</NavLink>
+          <NavLink to="/proyectos">Proyectos</NavLink>
           <NavLink to="/clientes">Clientes</NavLink>
         </nav>
         <button className="btn texto" onClick={salir}>
