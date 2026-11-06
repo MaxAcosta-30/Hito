@@ -31,6 +31,22 @@
 - Pruebas: 4 unitarias y 6 de integración nuevas, incluida la expiración con reloj ajustable y "en la base solo está el hash".
 - Web: enviar, copiar, WhatsApp y revocar en el detalle; `/p/:token` sin sesión. Probado con Playwright.
 
+**Caso 5 · Aceptar el alcance:** terminado en la rama `caso-5/aceptar` (2026-11-06), sin subir ni desplegar.
+- API: `POST /publico/{token}/aceptar` con `{ version }` y `POST /proyectos/{id}/versiones`. Sin migración nueva.
+- Se acepta un número de versión concreto: si el freelancer creó otra mientras tanto, 409. La aceptada queda congelada; la nueva rige solo al aceptarse.
+- Al aceptar se revisa que ningún hito que ya avanzó cambie de términos (la prueba con hitos avanzados llega con el caso 6).
+- Pruebas: 7 unitarias y 3 de integración nuevas. Total: 23 unitarias y 31 de integración en verde.
+- Web: barra fija "Aceptar alcance" en la vista del cliente, sello ACEPTADO y "Cambiar alcance" en el detalle. Probado con Playwright: v1 → aceptar → v2 → aceptar.
+
+**Estado de la Etapa 3:** casos 1 a 5 terminados en local. Falta: subir las ramas, revisar los PR y desplegar (ver "Trabajo autónomo").
+
+## Trabajo autónomo (2026-11-06)
+- `git push` falló con 403: la cuenta activa de `gh` es `MaxAcosta3020`, sin acceso a `MaxAcosta-30/Hito`. No se cambió de cuenta. Para subir: `gh auth switch -u MaxAcosta-30` y luego push de cada rama.
+- Ramas encadenadas: `caso-2/clientes` → `caso-3/proyectos` → `caso-4/enlaces` → `caso-5/aceptar` → … Cada una parte de la anterior; fusionar en orden.
+- Respaldos: tags `respaldo/*` y `git bundle` en `../respaldos-hito/`.
+- Pruebas locales con Podman sin root (`systemctl --user start podman.socket`, `DOCKER_HOST=unix:///run/user/1000/podman/podman.sock`, `TESTCONTAINERS_RYUK_DISABLED=true`), porque el usuario no está en el grupo `docker`.
+- Las migraciones nuevas **no** se han aplicado en Supabase: se aplicarán solas con el flujo de despliegue al fusionar en `main`.
+
 ## Preguntas de entrevista pendientes
 
 **Caso 2**
@@ -47,3 +63,8 @@
 1. ¿Por qué se guarda el hash del token y no el token? ¿Por qué aquí basta SHA-256?
 2. Un enlace inexistente, uno expirado y uno revocado responden igual. ¿Por qué?
 3. `/publico` usa `IgnoreQueryFilters()`. ¿Por qué es seguro aquí y qué revisarías en code review si aparece en otro endpoint?
+
+**Caso 5**
+1. ¿Por qué el cliente manda el número de versión que acepta? ¿Qué problema evita?
+2. Si el freelancer cambia un monto después de que el cliente aceptó, ¿qué pasa en la base y qué ve el cliente?
+3. ¿Qué es la versión vigente y por qué no es siempre la última?

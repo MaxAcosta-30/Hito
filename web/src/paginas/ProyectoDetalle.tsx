@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useNavigate, useParams } from 'react-router'
 import { api } from '../api/cliente'
 import { mensajeDeError } from '../api/errores'
 import { useProyecto, versionDe, type Proyecto, type Version } from '../api/proyectos'
@@ -118,6 +118,17 @@ function Acciones({ proyecto }: { proyecto: Proyecto }) {
   const ultima = versionDe(proyecto, proyecto.ultimaVersion)
   const abierto = proyecto.estado !== 'Cancelado' && proyecto.estado !== 'Completado'
 
+  const navegar = useNavigate()
+  const nuevaVersion = useMutation({
+    mutationFn: () => api<Proyecto>(`/proyectos/${proyecto.id}/versiones`, { method: 'POST' }),
+    onSuccess: (p) => {
+      queryClient.setQueryData(['proyectos', p.id], p)
+      queryClient.invalidateQueries({ queryKey: ['proyectos'] })
+      toast(`Versión ${p.ultimaVersion} creada en borrador`)
+      navegar(`/proyectos/${p.id}/alcance`)
+    },
+  })
+
   const cancelar = useMutation({
     mutationFn: () => api<Proyecto>(`/proyectos/${proyecto.id}/cancelar`, { method: 'POST' }),
     onSuccess: (p) => {
@@ -135,6 +146,18 @@ function Acciones({ proyecto }: { proyecto: Proyecto }) {
           Editar alcance
         </Link>
       )}
+      {ultima.estado !== 'Borrador' && (
+        <button
+          className="btn secundario"
+          disabled={nuevaVersion.isPending}
+          onClick={() => {
+            const aviso = ultima.estado === 'Enviada' ? ' La versión enviada dejará de poder aceptarse.' : ''
+            if (window.confirm(`¿Crear la versión ${ultima.numero + 1}? Tu cliente tendrá que aceptarla.${aviso}`)) nuevaVersion.mutate()
+          }}
+        >
+          Cambiar alcance
+        </button>
+      )}
       <button
         className="btn texto"
         disabled={cancelar.isPending}
@@ -144,9 +167,9 @@ function Acciones({ proyecto }: { proyecto: Proyecto }) {
       >
         Cancelar proyecto
       </button>
-      {cancelar.isError && (
+      {(cancelar.isError || nuevaVersion.isError) && (
         <p className="mensaje-error" role="alert">
-          {mensajeDeError(cancelar.error)}
+          {mensajeDeError(cancelar.error ?? nuevaVersion.error)}
         </p>
       )}
     </div>
