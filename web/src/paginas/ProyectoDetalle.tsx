@@ -154,6 +154,7 @@ function FormularioEntrega({ proyectoId, hito, onListo }: { proyectoId: string; 
     onSuccess: (p) => {
       queryClient.setQueryData(['proyectos', p.id], p)
       queryClient.invalidateQueries({ queryKey: ['proyectos'] })
+      queryClient.invalidateQueries({ queryKey: ['cobros'] })
       toast(`«${hito.titulo}» entregado. Tu cliente ya puede revisarlo.`)
       onListo()
     },
@@ -287,6 +288,7 @@ function Acciones({ proyecto }: { proyecto: Proyecto }) {
     onSuccess: (p) => {
       queryClient.setQueryData(['proyectos', p.id], p)
       queryClient.invalidateQueries({ queryKey: ['proyectos'] })
+      queryClient.invalidateQueries({ queryKey: ['cobros'] })
       toast(`Versión ${p.ultimaVersion} creada en borrador`)
       navegar(`/proyectos/${p.id}/alcance`)
     },
@@ -297,6 +299,7 @@ function Acciones({ proyecto }: { proyecto: Proyecto }) {
     onSuccess: (p) => {
       queryClient.setQueryData(['proyectos', p.id], p)
       queryClient.invalidateQueries({ queryKey: ['proyectos'] })
+      queryClient.invalidateQueries({ queryKey: ['cobros'] })
       toast('Proyecto cancelado. Su historial se conserva.')
     },
   })

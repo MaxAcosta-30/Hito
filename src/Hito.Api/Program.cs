@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.RateLimiting;
 using Hito.Api.Auth;
 using Hito.Api.Clientes;
+using Hito.Api.Cobros;
 using Hito.Api.Comun;
 using Hito.Api.Proyectos;
 using Hito.Api.Publico;
@@ -97,5 +98,6 @@ app.MapAuth();
 app.MapClientes();
 app.MapProyectos();
 app.MapPublico();
+app.MapCobros();
 
 app.Run();

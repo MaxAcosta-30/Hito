@@ -17,6 +17,7 @@ export function Compartir({ proyecto }: { proyecto: Proyecto }) {
     setCreado(resultado)
     queryClient.setQueryData(['proyectos', proyecto.id], resultado.proyecto)
     queryClient.invalidateQueries({ queryKey: ['proyectos'] })
+      queryClient.invalidateQueries({ queryKey: ['cobros'] })
   }
   const enviar = useMutation({
     mutationFn: () => api<EnlaceCreado>(`/proyectos/${proyecto.id}/enviar`, { method: 'POST' }),
