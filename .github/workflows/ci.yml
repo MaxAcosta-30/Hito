@@ -47,6 +47,9 @@ jobs:
 
       - run: dotnet tool restore
 
+      # dotnet ef no restaura paquetes por su cuenta (NETSDK1004).
+      - run: dotnet restore
+
       - name: Generar bundle de migraciones
         run: dotnet ef migrations bundle -p src/Hito.Infrastructure -s src/Hito.Api -o efbundle --configuration Release
         env:
