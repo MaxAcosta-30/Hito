@@ -36,6 +36,7 @@ public static class ProyectosEndpoints
         proyectos.MapPost("/", Crear);
         proyectos.MapPut("/{id:guid}/alcance", DefinirAlcance);
         proyectos.MapPost("/{id:guid}/cancelar", Cancelar);
+        proyectos.MapPost("/{id:guid}/versiones", NuevaVersion);
         proyectos.MapPost("/{id:guid}/enviar", Enviar);
         proyectos.MapPost("/{id:guid}/enlace", NuevoEnlace);
         proyectos.MapPost("/{id:guid}/enlace/revocar", RevocarEnlace);
@@ -99,6 +100,17 @@ public static class ProyectosEndpoints
         proyecto.Cancelar(ahora);
         // Un proyecto cancelado ya no se comparte.
         await RevocarEnlacesAsync(db, proyecto.Id, ahora, ct);
+        await db.SaveChangesAsync(ct);
+        return Results.Ok(await DetalleAsync(db, proyecto, ahora, ct));
+    }
+
+    private static async Task<IResult> NuevaVersion(Guid id, HitoDbContext db, TimeProvider reloj, CancellationToken ct)
+    {
+        var proyecto = await db.Proyectos.ConAgregado().FirstOrDefaultAsync(p => p.Id == id, ct);
+        if (proyecto is null) return NoEncontrado();
+
+        var ahora = reloj.GetUtcNow();
+        proyecto.NuevaVersion(ahora);
         await db.SaveChangesAsync(ct);
         return Results.Ok(await DetalleAsync(db, proyecto, ahora, ct));
     }

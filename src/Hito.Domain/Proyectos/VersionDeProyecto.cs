@@ -40,6 +40,14 @@ public sealed class VersionDeProyecto : IPerteneceAUsuario
         EnviadaEn = ahora;
     }
 
+    internal void Aceptar(DateTimeOffset ahora)
+    {
+        Estado = EstadoVersion.Aceptada;
+        AceptadaEn = ahora;
+    }
+
+    internal void Reemplazar() => Estado = EstadoVersion.Reemplazada;
+
     internal void AgregarTerminos(Guid hitoId, int orden, DatosDeHito datos) =>
         _terminos.Add(new TerminosDeHito(OwnerId, Id, hitoId, orden, datos));
 
