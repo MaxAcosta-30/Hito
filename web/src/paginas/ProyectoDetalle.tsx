@@ -1,9 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { api } from '../api/cliente'
-import { mensajeDeError } from '../api/errores'
-import { useProyecto, versionDe, type Proyecto, type Version } from '../api/proyectos'
+import { erroresDeFormulario, mensajeDeError } from '../api/errores'
+import { useProyecto, versionDe, type Hito, type Proyecto, type Version } from '../api/proyectos'
+import { Campo } from '../componentes/Campo'
+import { Dialogo } from '../componentes/Dialogo'
 import { Compartir } from '../componentes/Compartir'
 import { ErrorCarga, Esqueleto } from '../componentes/Estados'
 import { Sello } from '../componentes/Sello'
@@ -66,24 +68,98 @@ function lineaDeEstado(p: Proyecto, v: Version) {
 export function HojaDeHitos({ proyecto, version }: { proyecto: Proyecto; version: Version }) {
   // Vencido: la fecha ya pasó y no se ha pagado. Solo cuenta con el alcance aceptado.
   const hoy = hoyIso()
-  const cuentaVencido = proyecto.estado === 'Aceptado'
+  const vigente = proyecto.estado === 'Aceptado' && version.estado === 'Aceptada'
   return (
     <div className="hoja">
       {version.hitos.map((h) => (
-        <div key={h.id} className="renglon">
-          <b>{h.titulo}</b>
-          <span className="monto">{dinero(h.monto)}</span>
-          <small>
-            Entrega: {fechaCorta(h.fechaEntrega)} · {h.entregable}
-          </small>
-          <Sello estado={h.estado} vencido={cuentaVencido && h.estado !== 'Pagado' && h.fechaEntrega < hoy} />
-        </div>
+        <RenglonHito key={h.id} proyecto={proyecto} hito={h} accionable={vigente} vencido={vigente && h.estado !== 'Pagado' && h.fechaEntrega < hoy} />
       ))}
       <div className="totales">
         <span className="final">Total</span>
         <span className="final monto">{dinero(version.total)}</span>
       </div>
     </div>
+  )
+}
+
+function detalleDeHito(h: Hito) {
+  if (h.estado === 'Aprobado' && h.aprobadoEn) return `Aprobado el ${fechaCorta(h.aprobadoEn)}`
+  if (h.estado === 'Entregado' && h.entregadoEn) return `Entregado el ${fechaCorta(h.entregadoEn)}, esperando revisión`
+  if (h.estado === 'CambiosSolicitados') return 'El cliente pidió cambios'
+  return `Entrega: ${fechaCorta(h.fechaEntrega)} · ${h.entregable}`
+}
+
+function RenglonHito({ proyecto, hito, accionable, vencido }: { proyecto: Proyecto; hito: Hito; accionable: boolean; vencido: boolean }) {
+  const [entregando, setEntregando] = useState(false)
+  const puedeEntregar = accionable && (hito.estado === 'Pendiente' || hito.estado === 'CambiosSolicitados')
+  return (
+    <div className="renglon">
+      <b>{hito.titulo}</b>
+      <span className="monto">{dinero(hito.monto)}</span>
+      <small>
+        {detalleDeHito(hito)}
+        {hito.evidenciaUrl && hito.estado !== 'Pendiente' && (
+          <>
+            {' · '}
+            <a href={hito.evidenciaUrl} target="_blank" rel="noopener noreferrer">
+              ver entrega ↗
+            </a>
+          </>
+        )}
+      </small>
+      <Sello estado={hito.estado} vencido={vencido} />
+      {hito.estado === 'CambiosSolicitados' && hito.comentarioCambios && <p className="comentario">«{hito.comentarioCambios}»</p>}
+      {puedeEntregar && (
+        <div className="acciones">
+          <button className="btn secundario" onClick={() => setEntregando(true)}>
+            {hito.estado === 'CambiosSolicitados' ? 'Entregar de nuevo' : 'Marcar como entregado'}
+          </button>
+        </div>
+      )}
+      <Dialogo titulo={`Entregar «${hito.titulo}»`} abierto={entregando} onCerrar={() => setEntregando(false)}>
+        <FormularioEntrega proyectoId={proyecto.id} hito={hito} onListo={() => setEntregando(false)} />
+      </Dialogo>
+    </div>
+  )
+}
+
+function FormularioEntrega({ proyectoId, hito, onListo }: { proyectoId: string; hito: Hito; onListo: () => void }) {
+  const queryClient = useQueryClient()
+  const toast = useToast()
+  const [url, setUrl] = useState(hito.evidenciaUrl ?? 'https://')
+  const entregar = useMutation({
+    mutationFn: () => api<Proyecto>(`/proyectos/${proyectoId}/hitos/${hito.id}/entregar`, { method: 'POST', body: JSON.stringify({ evidenciaUrl: url }) }),
+    onSuccess: (p) => {
+      queryClient.setQueryData(['proyectos', p.id], p)
+      queryClient.invalidateQueries({ queryKey: ['proyectos'] })
+      toast(`«${hito.titulo}» entregado. Tu cliente ya puede revisarlo.`)
+      onListo()
+    },
+  })
+  const errores = erroresDeFormulario(entregar.error)
+
+  function enviar(e: FormEvent) {
+    e.preventDefault()
+    entregar.mutate()
+  }
+
+  return (
+    <form onSubmit={enviar} noValidate>
+      {errores.general && (
+        <p className="mensaje-error" role="alert">
+          {errores.general}
+        </p>
+      )}
+      <Campo id="evidenciaUrl" etiqueta="Enlace a la entrega" type="url" inputMode="url" autoFocus value={url} onChange={(e) => setUrl(e.target.value)} error={errores.campo('evidenciaUrl')} ayuda="El sitio publicado, una carpeta compartida o un archivo. Debe empezar con https://" />
+      <div className="botonera columna">
+        <button className="btn primario ancho" type="submit" disabled={entregar.isPending}>
+          {entregar.isPending ? 'Entregando…' : 'Entregar'}
+        </button>
+        <button className="btn secundario ancho" type="button" onClick={onListo}>
+          Cancelar
+        </button>
+      </div>
+    </form>
   )
 }
 
