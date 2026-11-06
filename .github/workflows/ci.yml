@@ -31,6 +31,27 @@ jobs:
       # Las pruebas de integración usan Testcontainers; el runner ya trae Docker.
       - run: dotnet test -c Release --no-build
 
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      - run: npm run build
+
   # La prueba en kind se inserta antes de este job en la Etapa 5.
   deploy:
     needs: build-test
