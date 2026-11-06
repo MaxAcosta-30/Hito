@@ -1,14 +1,298 @@
+/* Dirección "Cotización firmada". Reglas en docs/proyecto/07-diseno.md. */
 :root {
-  font-family: system-ui, sans-serif;
+  --papel: #f5f0e6;
+  --hoja: #fbf8f1;
+  --campo: #f1ebdf;
+  --tinta: #1d2b4f;
+  --grafito: #6b6558;
+  --renglon: rgba(29, 43, 79, 0.12);
+  --renglon-fuerte: rgba(29, 43, 79, 0.24);
+  --firma: #2347a6;
+  --sobre-firma: #ffffff;
+  --sello-pagado: #2f6b3f;
+  --sello-vencido: #b23a2e;
+  --sello-cambios: #8f5400;
+  --sombra-hoja: 0 1px 2px rgba(29, 43, 79, 0.06);
+  --r-control: 4px;
+  --r-hoja: 8px;
+  --r-dialogo: 12px;
   color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --papel: #151824;
+    --hoja: #1c2030;
+    --campo: #12151f;
+    --tinta: #ece6d8;
+    --grafito: #a9a293;
+    --renglon: rgba(236, 230, 216, 0.1);
+    --renglon-fuerte: rgba(236, 230, 216, 0.22);
+    --firma: #93abf2;
+    --sobre-firma: #151824;
+    --sello-pagado: #86c595;
+    --sello-vencido: #ee9184;
+    --sello-cambios: #e2b060;
+    --sombra-hoja: none;
+  }
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font: 400 16px/1.5 'Source Sans 3', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-main {
-  max-width: 40rem;
+h1,
+h2,
+h3 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  margin: 0;
+}
+
+h2 {
+  font-size: 25px;
+}
+
+a {
+  color: var(--firma);
+}
+
+:focus-visible {
+  outline: 2px solid var(--firma);
+  outline-offset: 2px;
+}
+
+.num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.meta {
+  font-size: 14px;
+  color: var(--grafito);
+}
+
+/* Estructura */
+.barra {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--renglon);
+}
+
+.barra .marca {
+  font: 600 20px 'Newsreader', serif;
+}
+
+.barra nav {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.barra nav a {
+  color: var(--grafito);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 10px 8px;
+}
+
+.barra nav a.active {
+  color: var(--tinta);
+  box-shadow: inset 0 -2px 0 var(--firma);
+}
+
+.contenido {
+  max-width: 720px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 16px;
+}
+
+.contenido.angosto {
+  max-width: 420px;
+  padding-top: 48px;
+}
+
+.marca-grande {
+  font-size: 39px;
+}
+
+.hoja {
+  background: var(--hoja);
+  border: 1px solid var(--renglon);
+  border-radius: var(--r-hoja);
+  box-shadow: var(--sombra-hoja);
+  padding: 16px;
+  margin-top: 16px;
+}
+
+@media (min-width: 640px) {
+  .contenido {
+    padding: 24px;
+  }
+  .hoja {
+    padding: 24px;
+  }
+}
+
+.vacio {
+  text-align: center;
+  padding-block: 40px;
+}
+
+.vacio .meta {
+  margin: 8px auto 0;
+  max-width: 36ch;
+}
+
+.pie-formulario {
+  text-align: center;
+  font-size: 15px;
+}
+
+/* Controles */
+.btn {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: var(--r-control);
+  font: 600 15px 'Source Sans 3', sans-serif;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.btn.primario {
+  background: var(--firma);
+  color: var(--sobre-firma);
+}
+
+.btn.secundario {
+  background: transparent;
+  color: var(--tinta);
+  border-color: var(--renglon-fuerte);
+  margin-top: 12px;
+}
+
+.btn.texto {
+  background: transparent;
+  color: var(--firma);
+  padding: 0 8px;
+}
+
+.btn.ancho {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.campo {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.campo label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.campo input {
+  font: 400 16px 'Source Sans 3', sans-serif;
+  color: var(--tinta);
+  background: var(--campo);
+  border: 1px solid var(--renglon-fuerte);
+  border-radius: var(--r-control);
+  padding: 10px 12px;
+  min-height: 44px;
+}
+
+.campo .ayuda {
+  font-size: 14px;
+  color: var(--grafito);
+}
+
+.campo.error input {
+  border-color: var(--sello-vencido);
+}
+
+.mensaje-error {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sello-vencido);
+  margin: 12px 0 0;
+}
+
+/* Estados */
+.aviso {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 24px;
+  padding: 12px 16px;
+  border: 1px solid var(--renglon-fuerte);
+  border-radius: var(--r-hoja);
+  background: var(--hoja);
+}
+
+.aviso-error {
+  border-color: var(--sello-vencido);
+}
+
+.aviso .punto {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--firma);
+  margin-top: 7px;
+  flex: none;
+  animation: pulso 1.2s ease-in-out infinite;
+}
+
+@keyframes pulso {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aviso .punto {
+    animation: none;
+  }
+  .btn {
+    transition: none;
+  }
+}
+
+.esqueleto {
+  height: 12px;
+  border-radius: 2px;
+  background: var(--renglon);
+  margin: 10px 0;
+}
+
+.esqueleto.corto {
+  width: 55%;
 }
