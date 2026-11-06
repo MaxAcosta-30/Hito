@@ -1,13 +1,12 @@
 # Etapa 1 · Despliegue temprano
 
-**Estado:** en curso (2026-11-05). Cuentas de Supabase, Render y Vercel creadas por Max, sin tarjeta.
+**Estado:** terminada, pendiente de aprobación (2026-11-05). Max confirmó que Supabase, Render y Vercel no tienen tarjeta registrada.
 
-- Supabase en Oregon (West US), con la Data API desactivada. Render también va en Oregon para quedar junto a la base.
-- `Dockerfile` (imagen chiseled, sin root, 171 MB) probado en local con `/health/live` y `/health/ready` en 200.
-- Primera migración `Inicial` vacía: sirve para probar el bundle. Aplicada en local leyendo `ConnectionStrings__Hito`.
-- `ci.yml`: build-test → deploy (solo en push a `main`, environment `produccion`): bundle → migraciones → deploy hook. En `main` no se cancela un despliegue en curso.
-- `keepalive.yml`: lunes y jueves llama a `/health/ready` (variable `API_URL`) hasta recibir `Healthy`.
-- API en Render (Oregon, Free): https://hito-api-a4su.onrender.com. El pipeline completo (pruebas → migraciones en Supabase → deploy hook) está en verde. `keepalive` probado a mano.
-- Supabase usa el host `aws-1-us-west-2.pooler.supabase.com`. A `API_URL` se le había colado un `\r\n` al pegarla.
-- `web/`: Vite + React + TS (dependencias publicadas antes del 22-oct). Espera a que `/api/health/live` responda `Healthy` y muestra el aviso de arranque. `vercel.json` hace el rewrite de `/api/*` → Render.
-- Pendiente: proyecto en Vercel (Root Directory `web`), probar la página publicada y confirmar que no hay tarjeta.
+- Frontend: https://hito-one.vercel.app (Vercel Hobby, Root Directory `web`). El rewrite `/api/*` → Render está probado: `live` y `ready` en 200.
+- API: https://hito-api-a4su.onrender.com (Render Free, Oregon, Docker, Auto-Deploy desactivado, health check `/health/live`).
+- Base: Supabase Free en Oregon, session pooler `aws-1-us-west-2.pooler.supabase.com:5432` con `Maximum Pool Size=5` y la Data API desactivada.
+- CI en `main`: build-test + web → deploy (bundle → migraciones → deploy hook), en verde. `keepalive` lunes y jueves, probado a mano.
+- Secretos en el environment `produccion` (solo `main`): `SUPABASE_CONNECTION_STRING` y `RENDER_DEPLOY_HOOK_URL`. Variable del repo: `API_URL`.
+- Sin probar: el aviso "Despertando la demo…" en un navegador durante un arranque en frío real.
+
+**Siguiente paso:** Etapa 2 (diseño) en una sesión nueva.
