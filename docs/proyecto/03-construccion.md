@@ -23,6 +23,14 @@
 - Nuevo `tests/Hito.UnitTests`: 12 pruebas del agregado. Integración: 6 nuevas (22 en total), incluido el aislamiento de proyectos.
 - Web: `/proyectos`, `/proyectos/nuevo`, `/proyectos/:id` (pestañas Hitos y Versiones) y `/proyectos/:id/alcance`. Probado con Playwright en 390 px.
 
+**Caso 4 · Enviar el proyecto al cliente:** terminado en la rama `caso-4/enlaces` (2026-11-06), sin subir ni desplegar.
+- API: `POST /proyectos/{id}/enviar`, `/enlace` (uno nuevo) y `/enlace/revocar`; `GET /publico/{token}`. Migración `AgregarEnlacesDeCliente`.
+- Token de 256 bits; en la base solo su SHA-256 (`TokenAleatorio`, compartido con los refresh tokens). Vence a los 30 días; generar uno nuevo o cancelar el proyecto revoca el anterior.
+- Inexistente, expirado o revocado: el mismo 404. `/publico` tiene límite global de 120 peticiones por minuto.
+- `vercel.json`: `/p/*` sale con `Referrer-Policy: no-referrer` y `noindex`. **Sin probar en Vercel.**
+- Pruebas: 4 unitarias y 6 de integración nuevas, incluida la expiración con reloj ajustable y "en la base solo está el hash".
+- Web: enviar, copiar, WhatsApp y revocar en el detalle; `/p/:token` sin sesión. Probado con Playwright.
+
 ## Preguntas de entrevista pendientes
 
 **Caso 2**
@@ -34,3 +42,8 @@
 1. ¿Por qué el hito y sus términos son entidades distintas? ¿Qué pasaría con los pagos si los hitos vivieran dentro de cada versión?
 2. ¿Por qué `decimal` y `numeric(18,2)` y no `double`? Da un ejemplo de error con `double`.
 3. ¿Qué hace `xmin` en este proyecto y qué ve el usuario si dos pestañas editan el mismo proyecto a la vez?
+
+**Caso 4**
+1. ¿Por qué se guarda el hash del token y no el token? ¿Por qué aquí basta SHA-256?
+2. Un enlace inexistente, uno expirado y uno revocado responden igual. ¿Por qué?
+3. `/publico` usa `IgnoreQueryFilters()`. ¿Por qué es seguro aquí y qué revisarías en code review si aparece en otro endpoint?

@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router'
 import { api } from '../api/cliente'
 import { mensajeDeError } from '../api/errores'
 import { useProyecto, versionDe, type Proyecto, type Version } from '../api/proyectos'
+import { Compartir } from '../componentes/Compartir'
 import { ErrorCarga, Esqueleto } from '../componentes/Estados'
 import { Sello } from '../componentes/Sello'
 import { useToast } from '../componentes/toast'
@@ -48,6 +49,7 @@ export function ProyectoDetalle() {
 
       {pestana === 'hitos' ? <HojaDeHitos proyecto={p} version={actual} /> : <Versiones proyecto={p} />}
 
+      <Compartir proyecto={p} />
       <Acciones proyecto={p} />
     </>
   )
@@ -129,7 +131,7 @@ function Acciones({ proyecto }: { proyecto: Proyecto }) {
   return (
     <div className="botonera">
       {ultima.estado === 'Borrador' && (
-        <Link className="btn primario" to={`/proyectos/${proyecto.id}/alcance`}>
+        <Link className="btn secundario" to={`/proyectos/${proyecto.id}/alcance`}>
           Editar alcance
         </Link>
       )}

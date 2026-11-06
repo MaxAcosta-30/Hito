@@ -46,6 +46,7 @@ export type Proyecto = {
   versionActual: number
   ultimaVersion: number
   versiones: Version[]
+  enlace: { creadoEn: string; expiraEn: string } | null
   creadoEn: string
   actualizadoEn: string
 }
@@ -58,3 +59,8 @@ export const useProyecto = (id: string | undefined) =>
   useQuery({ queryKey: ['proyectos', id], queryFn: () => api<Proyecto>(`/proyectos/${id}`), enabled: !!id })
 
 export const versionDe = (proyecto: Proyecto, numero: number) => proyecto.versiones.find((v) => v.numero === numero)!
+
+// El token solo llega aquí, al crearlo: el servidor guarda su hash y no puede volver a mostrarlo.
+export type EnlaceCreado = { token: string; expiraEn: string; proyecto: Proyecto }
+
+export const urlDelCliente = (token: string) => `${window.location.origin}/p/${token}`

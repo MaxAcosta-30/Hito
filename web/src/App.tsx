@@ -13,6 +13,7 @@ import { ProyectoFormulario } from './paginas/ProyectoFormulario'
 import { Proyectos } from './paginas/Proyectos'
 import { Entrar } from './paginas/Entrar'
 import { Registro } from './paginas/Registro'
+import { VistaCliente } from './paginas/VistaCliente'
 
 export default function App() {
   const [api, setApi] = useState<'despertando' | 'lista' | 'error'>('despertando')
@@ -39,6 +40,16 @@ export default function App() {
     )
   }
 
+  // El cliente entra con su enlace y sin cuenta: su vista no carga la sesión del freelancer.
+  return (
+    <Routes>
+      <Route path="/p/:token" element={<VistaCliente />} />
+      <Route path="*" element={<AppFreelancer />} />
+    </Routes>
+  )
+}
+
+function AppFreelancer() {
   return (
     <SesionProvider>
       <ToastProvider>
