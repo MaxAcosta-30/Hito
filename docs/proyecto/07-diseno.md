@@ -1,6 +1,6 @@
 # Etapa 2 · Diseño
 
-**Estado:** pendiente de aprobación (2026-11-05). Max eligió la dirección **A · Cotización firmada**.
+**Estado:** aprobada por Max (2026-11-05). Max eligió la dirección **A · Cotización firmada**.
 **Referencia visual:** [`diseno/pantallas.html`](diseno/pantallas.html), con las tres pantallas y sus estados en claro y oscuro.
 
 ## Intención
