@@ -28,3 +28,12 @@ Solo dicen lo que el repositorio demuestra.
 8. Explica el pipeline de CI/CD y por qué las migraciones no corren al arrancar la API.
 9. ¿Qué demuestra la prueba en kind y qué no?
 10. ¿Qué cambiarías primero con 1,000 freelancers pagando?
+
+## Casos "Debería"
+
+**Filtrar y buscar proyectos:** rama `deberia/filtrar-proyectos`.
+- Buscador por nombre del proyecto o del cliente, sin distinguir acentos ni mayúsculas, y filtro por estado. Los dos viven en la URL (`?q=&estado=`), así que se conservan al volver del detalle.
+- Se filtra en el navegador: el listado ya llega completo y un freelancer tiene decenas de proyectos. Si creciera, el filtro pasaría a la API con paginación.
+- Contador accesible ("2 de 3 proyectos") y estado vacío con "Quitar filtros".
+- Probado con una prueba temporal de Playwright sobre los datos de la demo: búsqueda "CLINICA", filtro Aceptado, volver del detalle y quitar filtros.
+- Preguntas de entrevista: (1) ¿Por qué filtrar en el navegador y cuándo lo moverías al servidor? (2) ¿Por qué el filtro vive en la URL y no en `useState`? (3) ¿Cómo haces que "clinica" encuentre "Clínica"?

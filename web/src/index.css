@@ -836,3 +836,16 @@ a.renglon:hover b {
 #contenido:focus {
   outline: none;
 }
+
+/* Filtros del listado de proyectos: apilados en móvil, en una fila en escritorio */
+.filtros {
+  display: grid;
+  gap: 0 12px;
+  margin-top: 16px;
+}
+
+@media (min-width: 640px) {
+  .filtros {
+    grid-template-columns: 2fr 1fr;
+  }
+}
