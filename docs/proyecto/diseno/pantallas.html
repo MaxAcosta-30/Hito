@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hito · Pantallas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* Referencia de diseño (Etapa 2). Las reglas viven en docs/proyecto/07-diseno.md. */
+:root {
+  --papel: #F5F0E6; --hoja: #FBF8F1; --campo: #F1EBDF;
+  --tinta: #1D2B4F; --grafito: #6B6558; --renglon: rgba(29,43,79,.12); --renglon-fuerte: rgba(29,43,79,.24);
+  --firma: #2347A6; --sobre-firma: #FFFFFF;
+  --sello-pagado: #2F6B3F; --sello-vencido: #B23A2E; --sello-cambios: #8F5400;
+  --foco: #2347A6; --sombra-hoja: 0 1px 2px rgba(29,43,79,.06);
+  --r-control: 4px; --r-hoja: 8px; --r-dialogo: 12px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --papel: #151824; --hoja: #1C2030; --campo: #12151F;
+  --tinta: #ECE6D8; --grafito: #A9A293; --renglon: rgba(236,230,216,.10); --renglon-fuerte: rgba(236,230,216,.22);
+  --firma: #93ABF2; --sobre-firma: #151824;
+  --sello-pagado: #86C595; --sello-vencido: #EE9184; --sello-cambios: #E2B060;
+  --foco: #93ABF2; --sombra-hoja: none;
+}}
+:root[data-theme="dark"] {
+  --papel: #151824; --hoja: #1C2030; --campo: #12151F;
+  --tinta: #ECE6D8; --grafito: #A9A293; --renglon: rgba(236,230,216,.10); --renglon-fuerte: rgba(236,230,216,.22);
+  --firma: #93ABF2; --sobre-firma: #151824;
+  --sello-pagado: #86C595; --sello-vencido: #EE9184; --sello-cambios: #E2B060;
+  --foco: #93ABF2; --sombra-hoja: none;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 16px/1.5 "Source Sans 3", sans-serif; -webkit-font-smoothing: antialiased; }
+.num, .monto { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+h1, h2, h3 { font-family: "Newsreader", serif; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; margin: 0; }
+
+/* Lienzo de la referencia (no es parte del diseño) */
+.lienzo-titulo { max-width: 1200px; margin: 0 auto; padding: 24px 16px 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.lienzo-titulo h1 { font-size: 25px; }
+.seccion { max-width: 1200px; margin: 0 auto; padding: 16px; }
+.seccion > h2 { font-size: 20px; margin: 16px 0 4px; }
+.seccion > p { margin: 0 0 12px; color: var(--grafito); font-size: 14px; }
+.marcos { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 12px; }
+.marco { flex: 0 0 360px; }
+.marco > .etiqueta { font: 600 12px/1 "Source Sans 3"; letter-spacing: .1em; text-transform: uppercase; color: var(--grafito); margin: 0 0 8px; }
+.pantalla { width: 360px; min-height: 640px; background: var(--papel); border: 1px solid var(--renglon-fuerte); border-radius: 16px; overflow: hidden; position: relative; }
+
+/* Barra superior del freelancer */
+.barra { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--renglon); }
+.barra .marca { font: 600 20px "Newsreader"; }
+.barra nav { display: flex; gap: 4px; }
+.barra nav a { font: 500 14px "Source Sans 3"; color: var(--grafito); text-decoration: none; padding: 10px 8px; border-radius: var(--r-control); }
+.barra nav a[aria-current] { color: var(--tinta); box-shadow: inset 0 -2px 0 var(--firma); border-radius: 0; }
+
+.contenido { padding: 16px; }
+.hoja { background: var(--hoja); border: 1px solid var(--renglon); border-radius: var(--r-hoja); box-shadow: var(--sombra-hoja); padding: 16px; }
+.hoja + .hoja { margin-top: 16px; }
+.rotulo { font: 600 12px/1 "Source Sans 3"; letter-spacing: .1em; text-transform: uppercase; color: var(--grafito); }
+.cifra { font: 600 39px/1.1 "IBM Plex Mono"; font-variant-numeric: tabular-nums; letter-spacing: -.02em; margin: 8px 0 4px; }
+.meta { font-size: 14px; color: var(--grafito); }
+.desglose { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--renglon); }
+.desglose strong { display: block; font: 600 16px "IBM Plex Mono"; font-variant-numeric: tabular-nums; margin-top: 4px; }
+.desglose .alerta strong { color: var(--sello-vencido); }
+
+/* Renglón de hito: el corazón de la dirección */
+.renglon { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 12px 0; border-top: 1px solid var(--renglon); align-items: start; }
+.renglon:first-of-type { border-top: 0; }
+.renglon b { font-weight: 600; font-size: 16px; }
+.renglon .monto { font-weight: 500; font-size: 14px; text-align: right; }
+.renglon small { font-size: 14px; color: var(--grafito); }
+.renglon .acciones { grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 4px; }
+
+/* Sellos: solo para el estado del hito. Siempre con texto, nunca solo color. */
+.sello { justify-self: end; font: 600 11px/1 "IBM Plex Mono"; letter-spacing: .12em; padding: 5px 7px; border: 1.5px solid currentColor; border-radius: 3px; transform: rotate(-3deg); white-space: nowrap; }
+.sello.pendiente { color: var(--grafito); border-style: dotted; }
+.sello.entregado { color: var(--grafito); border-style: dashed; }
+.sello.cambios { color: var(--sello-cambios); }
+.sello.aprobado { color: var(--firma); }
+.sello.pagado { color: var(--sello-pagado); }
+.sello.vencido { color: var(--sello-vencido); }
+.sello.grande { font-size: 22px; padding: 10px 14px; border-width: 3px; transform: rotate(-6deg); display: inline-block; }
+
+/* Totales con doble raya contable */
+.totales { margin-top: 4px; padding-top: 12px; border-top: 1px solid var(--renglon-fuerte); display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 14px; }
+.totales .monto { text-align: right; }
+.totales .final { font-weight: 600; font-size: 16px; padding-top: 4px; }
+.totales .final.monto { border-bottom: 3px double var(--tinta); padding-bottom: 2px; }
+
+/* Controles */
+.btn { min-height: 44px; padding: 0 16px; border-radius: var(--r-control); font: 600 15px "Source Sans 3"; border: 1px solid transparent; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: transform 120ms cubic-bezier(.23,1,.32,1); }
+.btn:active { transform: scale(.97); }
+.btn:focus-visible, a:focus-visible, textarea:focus-visible, input:focus-visible { outline: 2px solid var(--foco); outline-offset: 2px; }
+.btn.primario { background: var(--firma); color: var(--sobre-firma); }
+.btn.secundario { background: transparent; color: var(--tinta); border-color: var(--renglon-fuerte); }
+.btn.texto { background: transparent; color: var(--firma); padding: 0 8px; min-height: 40px; }
+.btn.ancho { width: 100%; }
+.campo { display: grid; gap: 6px; margin-top: 12px; }
+.campo label { font: 600 14px "Source Sans 3"; }
+.campo input, .campo textarea { font: 400 16px "Source Sans 3"; color: var(--tinta); background: var(--campo); border: 1px solid var(--renglon-fuerte); border-radius: var(--r-control); padding: 10px 12px; }
+.campo input.num { font-family: "IBM Plex Mono"; }
+.campo .ayuda { font-size: 14px; color: var(--grafito); }
+.campo.error input, .campo.error textarea { border-color: var(--sello-vencido); }
+.campo .mensaje-error { font-size: 14px; color: var(--sello-vencido); font-weight: 600; }
+
+/* Estados */
+.esqueleto { height: 12px; border-radius: 2px; background: var(--renglon); margin: 10px 0; }
+.esqueleto.cifra-e { height: 40px; width: 60%; }
+.aviso { display: flex; gap: 12px; align-items: flex-start; padding: 12px 16px; border: 1px solid var(--renglon-fuerte); border-radius: var(--r-hoja); background: var(--hoja); font-size: 15px; }
+.aviso .punto { width: 10px; height: 10px; border-radius: 50%; background: var(--firma); margin-top: 6px; flex: none; animation: pulso 1.2s ease-in-out infinite; }
+@keyframes pulso { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .aviso .punto { animation: none; } }
+.vacio { text-align: center; padding: 40px 16px; }
+.vacio h3 { font-size: 20px; margin-bottom: 8px; }
+.vacio p { color: var(--grafito); margin: 0 0 20px; font-size: 15px; }
+.toast { position: absolute; left: 16px; right: 16px; bottom: 16px; background: var(--tinta); color: var(--hoja); border-radius: var(--r-hoja); padding: 12px 16px; font-size: 15px; display: flex; justify-content: space-between; }
+.pestanas { display: flex; gap: 4px; border-bottom: 1px solid var(--renglon); margin: 16px -16px 16px; padding: 0 16px; }
+.pestanas a { padding: 10px 8px; font: 500 15px "Source Sans 3"; color: var(--grafito); text-decoration: none; }
+.pestanas a[aria-current] { color: var(--tinta); box-shadow: inset 0 -2px 0 var(--firma); }
+.evento { display: grid; grid-template-columns: 56px 1fr; gap: 12px; padding: 10px 0; border-top: 1px solid var(--renglon); font-size: 15px; }
+.evento:first-child { border-top: 0; }
+.evento time { font: 500 12px/1.6 "IBM Plex Mono"; color: var(--grafito); }
+.evento .quien { font-weight: 600; }
+
+/* Vista del cliente */
+.cliente-cabecera { padding: 20px 16px 8px; }
+.cliente-cabecera .de { font-size: 14px; color: var(--grafito); }
+.cliente-cabecera h2 { font-size: 25px; margin: 4px 0; }
+.barra-accion { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 16px 16px; background: var(--hoja); border-top: 1px solid var(--renglon-fuerte); display: grid; gap: 8px; }
+.barra-accion .nota { font-size: 13px; color: var(--grafito); margin: 0; }
+.dialogo { position: absolute; inset: auto 0 0 0; background: var(--hoja); border-top-left-radius: var(--r-dialogo); border-top-right-radius: var(--r-dialogo); border-top: 1px solid var(--renglon-fuerte); padding: 20px 16px 16px; }
+.velo { position: absolute; inset: 0; background: rgba(21,24,36,.4); }
+.dialogo h3 { font-size: 20px; }
+</style>
+</head>
+<body>
+<div class="lienzo-titulo">
+  <h1>Hito · Pantallas (dirección A: Cotización firmada)</h1>
+  <button class="btn secundario" onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'">Claro / oscuro</button>
+</div>
+
+<!-- ===================== PANEL DE COBROS ===================== -->
+<section class="seccion">
+  <h2>Panel de cobros · freelancer</h2>
+  <p>Foco: la cifra “Te deben”. Debajo, solo lo que requiere acción.</p>
+  <div class="marcos">
+
+    <div class="marco"><p class="etiqueta">Con datos</p>
+      <div class="pantalla">
+        <div class="barra"><span class="marca">Hito</span><nav><a aria-current="page" href="#">Cobros</a><a href="#">Proyectos</a><a href="#">Clientes</a></nav></div>
+        <div class="contenido">
+          <div class="hoja">
+            <div class="rotulo">Te deben</div>
+            <div class="cifra">$52,000.00</div>
+            <div class="meta">En 3 proyectos activos</div>
+            <div class="desglose">
+              <div><span class="rotulo">Aprobado sin pagar</span><strong>$12,000.00</strong></div>
+              <div class="alerta"><span class="rotulo">Vencido</span><strong>$4,000.00</strong></div>
+            </div>
+          </div>
+          <div class="hoja">
+            <div class="rotulo" style="margin-bottom:4px">Necesita tu atención</div>
+            <div class="renglon"><b>Capacitación</b><span class="monto">$4,000.00</span><small>Panadería Rosales · venció el 30 oct</small><span class="sello vencido">VENCIDO</span></div>
+            <div class="renglon"><b>Landing page</b><span class="monto">$12,000.00</span><small>Panadería Rosales · aprobado el 2 nov</small><span class="sello aprobado">APROBADO</span>
+              <div class="acciones"><button class="btn secundario">Registrar pago</button></div></div>
+            <div class="renglon"><b>App de citas · Fase 1</b><span class="monto">$15,000.00</span><small>Clínica Norte · pidió cambios</small><span class="sello cambios">CAMBIOS</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="marco"><p class="etiqueta">Cargando</p>
+      <div class="pantalla">
+        <div class="barra"><span class="marca">Hito</span><nav><a aria-current="page" href="#">Cobros</a><a href="#">Proyectos</a><a href="#">Clientes</a></nav></div>
+        <div class="contenido" aria-busy="true">
+          <div class="hoja"><div class="rotulo">Te deben</div><div class="esqueleto cifra-e"></div><div class="esqueleto" style="width:40%"></div></div>
+          <div class="hoja"><div class="esqueleto"></div><div class="esqueleto" style="width:70%"></div><div class="esqueleto"></div><div class="esqueleto" style="width:55%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="marco"><p class="etiqueta">Vacío</p>
+      <div class="pantalla">
+        <div class="barra"><span class="marca">Hito</span><nav><a aria-current="page" href="#">Cobros</a><a href="#">Proyectos</a><a href="#">Clientes</a></nav></div>
+        <div class="contenido">
+          <div class="hoja vacio">
+            <h3>Aún no hay nada por cobrar</h3>
+            <p>Crea un proyecto con sus hitos y envíaselo a tu cliente para que acepte el alcance.</p>
+            <button class="btn primario ancho">Crear proyecto</button>
+            <button class="btn texto" style="margin-top:8px">Primero agregar un cliente</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="marco"><p class="etiqueta">Despertando / error</p>
+      <div class="pantalla">
+        <div class="barra"><span class="marca">Hito</span><nav><a aria-current="page" href="#">Cobros</a><a href="#">Proyectos</a><a href="#">Clientes</a></nav></div>
+        <div class="contenido" style="display:grid;gap:16px">
+          <div class="aviso" role="status"><span class="punto"></span><div><b>Despertando la demo, puede tardar hasta un minuto</b><div class="meta">El servidor gratuito se apaga cuando nadie lo usa.</div></div></div>
+          <div class="aviso" role="alert" style="border-color:var(--sello-vencido)"><div><b>No pudimos conectar con el servidor</b><div class="meta">Revisa tu conexión e inténtalo de nuevo. Tus datos están a salvo.</div><button class="btn secundario" style="margin-top:12px">Reintentar</button></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===================== DETALLE DEL PROYECTO ===================== -->
+<section class="seccion">
+  <h2>Detalle del proyecto · freelancer</h2>
+  <p>Foco: la hoja de hitos con sus sellos. Cada renglón ofrece solo la acción que su estado permite.</p>
+  <div class="marcos">
+
+    <div class="marco"><p class="etiqueta">Con datos</p>
+      <div class="pantalla">
+        <div class="barra"><span class="marca">Hito</span><nav><a href="#">Cobros</a><a aria-current="page" href="#">Proyectos</a><a href="#">Clientes</a></nav></div>
+        <div class="contenido">
+          <div class="meta">Panadería Rosales</div>
+          <h2 style="font-size:25px">Tienda en línea</h2>
+          <div class="meta">Versión 2 · aceptada el 1 nov · enlace activo hasta el 1 dic</div>
+          <nav class="pestanas"><a aria-current="page" href="#">Hitos</a><a href="#">Historial</a><a href="#">Versiones</a></nav>
+          <div class="hoja">
+            <div class="renglon"><b>Diseño de marca</b><span class="monto">$8,000.00</span><small>Pagado el 20 oct</small><span class="sello pagado">PAGADO</span></div>
+            <div class="renglon"><b>Landing page</b><span class="monto">$12,000.00</span><small>Aprobado el 2 nov</small><span class="sello aprobado">APROBADO</span>
+              <div class="acciones"><button class="btn primario">Registrar pago</button></div></div>
+            <div class="renglon"><b>Tienda en línea</b><span class="monto">$20,000.00</span><small>Entregado el 4 nov · <a href="#" style="color:var(--firma)">tienda.rosales.mx ↗</a></small><span class="sello entregado">ENTREGADO</span></div>
+            <div class="renglon"><b>Capacitación</b><span class="monto">$4,000.00</span><small>Vence el 30 nov</small><span class="sello pendiente">PENDIENTE</span>
+              <div class="acciones"><button class="btn secundario">Marcar como entregado</button></div></div>
+            <div class="totales"><span>Pagado</span><span class="monto">$8,000.00</span><span>Por cobrar</span><span class="monto">$36,000.00</span><span class="final">Total</span><span class="final monto">$44,000.00</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="marco"><p class="etiqueta">Registrar pago · validación</p>
+      <div class="pantalla">
+        <div class="barra"><span class="marca">Hito</span><nav><a href="#">Cobros</a><a aria-current="page" href="#">Proyectos</a><a href="#">Clientes</a></nav></div>
+        <div class="velo"></div>
+        <div class="dialogo" role="dialog" aria-labelledby="t-pago">
+          <h3 id="t-pago">Registrar pago</h3>
+          <div class="meta">Landing page · aprobado el 2 nov</div>
+          <div class="campo error"><label for="m">Monto recibido (MXN)</label><input id="m" class="num" value="15,000.00" aria-invalid="true" aria-describedby="m-err">
+            <span id="m-err" class="mensaje-error">No puede ser mayor que lo pendiente: $12,000.00</span></div>
+          <div class="campo"><label for="f">Fecha del pago</label><input id="f" value="5 nov 2026"></div>
+          <div class="campo"><label for="n">Nota (opcional)</label><input id="n" placeholder="Transferencia, referencia…"></div>
+          <div style="display:grid;gap:8px;margin-top:20px"><button class="btn primario ancho">Registrar $12,000.00</button><button class="btn secundario ancho">Cancelar</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="marco"><p class="etiqueta">Éxito</p>
+      <div class="pantalla">
+        <div class="barra"><span class="marca">Hito</span><nav><a href="#">Cobros</a><a aria-current="page" href="#">Proyectos</a><a href="#">Clientes</a></nav></div>
+        <div class="contenido">
+          <h2 style="font-size:25px">Tienda en línea</h2>
+          <nav class="pestanas"><a aria-current="page" href="#">Hitos</a><a href="#">Historial</a><a href="#">Versiones</a></nav>
+          <div class="hoja">
+            <div class="renglon"><b>Diseño de marca</b><span class="monto">$8,000.00</span><small>Pagado el 20 oct</small><span class="sello pagado">PAGADO</span></div>
+            <div class="renglon"><b>Landing page</b><span class="monto">$12,000.00</span><small>Pagado hoy</small><span class="sello pagado">PAGADO</span></div>
+            <div class="totales"><span>Pagado</span><span class="monto">$20,000.00</span><span>Por cobrar</span><span class="monto">$24,000.00</span><span class="final">Total</span><span class="final monto">$44,000.00</span></div>
+          </div>
+        </div>
+        <div class="toast" role="status"><span>Pago registrado · <span class="num">$12,000.00</span></span><a href="#" style="color:inherit">Ver historial</a></div>
+      </div>
+    </div>
+
+    <div class="marco"><p class="etiqueta">Historial (solo lectura)</p>
+      <div class="pantalla">
+        <div class="barra"><span class="marca">Hito</span><nav><a href="#">Cobros</a><a aria-current="page" href="#">Proyectos</a><a href="#">Clientes</a></nav></div>
+        <div class="contenido">
+          <h2 style="font-size:25px">Tienda en línea</h2>
+          <nav class="pestanas"><a href="#">Hitos</a><a aria-current="page" href="#">Historial</a><a href="#">Versiones</a></nav>
+          <div class="hoja">
+            <div class="evento"><time>5 nov<br>10:42</time><div><span class="quien">Tú</span> registraste un pago de <span class="num">$12,000.00</span> en “Landing page”.</div></div>
+            <div class="evento"><time>4 nov<br>18:03</time><div><span class="quien">Tú</span> entregaste “Tienda en línea” con evidencia.</div></div>
+            <div class="evento"><time>2 nov<br>09:15</time><div><span class="quien">Cliente</span> aprobó “Landing page”.</div></div>
+            <div class="evento"><time>1 nov<br>12:30</time><div><span class="quien">Cliente</span> aceptó la versión 2 del alcance.</div></div>
+          </div>
+          <p class="meta" style="margin-top:12px">Los eventos no se pueden editar ni borrar.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===================== VISTA DEL CLIENTE ===================== -->
+<section class="seccion">
+  <h2>Vista del cliente · móvil primero, sin cuenta</h2>
+  <p>Foco: la única decisión que el cliente tiene pendiente. La acción vive fija abajo, al alcance del pulgar.</p>
+  <div class="marcos">
+
+    <div class="marco"><p class="etiqueta">Aceptar alcance</p>
+      <div class="pantalla">
+        <div class="cliente-cabecera"><div class="de">Max Acosta te envió este alcance</div><h2>Tienda en línea</h2><div class="meta">Versión 2 · para Panadería Rosales</div></div>
+        <div class="contenido" style="padding-top:8px">
+          <div class="hoja">
+            <div class="renglon"><b>Diseño de marca</b><span class="monto">$8,000.00</span><small>Entrega: 15 oct</small></div>
+            <div class="renglon"><b>Landing page</b><span class="monto">$12,000.00</span><small>Entrega: 31 oct</small></div>
+            <div class="renglon"><b>Tienda en línea</b><span class="monto">$20,000.00</span><small>Entrega: 15 nov</small></div>
+            <div class="renglon"><b>Capacitación</b><span class="monto">$4,000.00</span><small>Entrega: 30 nov</small></div>
+            <div class="totales"><span class="final">Total</span><span class="final monto">$44,000.00</span></div>
+          </div>
+        </div>
+        <div class="barra-accion"><p class="nota">Al aceptar, los hitos y montos quedan fijos. Si algo cambia, recibirás una nueva versión.</p><button class="btn primario ancho">Aceptar alcance</button></div>
+      </div>
+    </div>
+
+    <div class="marco"><p class="etiqueta">Revisar entrega</p>
+      <div class="pantalla">
+        <div class="cliente-cabecera"><div class="de">Max Acosta entregó un hito</div><h2>Tienda en línea</h2><div class="meta">Panadería Rosales · versión 2</div></div>
+        <div class="contenido" style="padding-top:8px">
+          <div class="hoja">
+            <div class="renglon"><b>Tienda en línea</b><span class="monto">$20,000.00</span><small>Entregado el 4 nov</small><span class="sello entregado">ENTREGADO</span></div>
+            <a class="btn secundario ancho" href="#" style="text-decoration:none;margin-top:8px">Ver la entrega ↗</a>
+            <p class="meta" style="margin:12px 0 0">tienda.rosales.mx · abre en otra pestaña</p>
+          </div>
+        </div>
+        <div class="barra-accion"><button class="btn primario ancho">Aprobar entrega</button><button class="btn secundario ancho">Pedir cambios</button></div>
+      </div>
+    </div>
+
+    <div class="marco"><p class="etiqueta">Pedir cambios · validación</p>
+      <div class="pantalla">
+        <div class="cliente-cabecera"><div class="de">Max Acosta entregó un hito</div><h2>Tienda en línea</h2></div>
+        <div class="velo"></div>
+        <div class="dialogo" role="dialog" aria-labelledby="t-cambios">
+          <h3 id="t-cambios">¿Qué hay que cambiar?</h3>
+          <div class="campo error"><label for="c">Comentario para Max</label><textarea id="c" rows="4" aria-invalid="true" aria-describedby="c-err"></textarea>
+            <span id="c-err" class="mensaje-error">Escribe qué hay que cambiar para que Max pueda corregirlo.</span></div>
+          <div style="display:grid;gap:8px;margin-top:20px"><button class="btn primario ancho">Enviar cambios</button><button class="btn secundario ancho">Volver</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="marco"><p class="etiqueta">Éxito</p>
+      <div class="pantalla">
+        <div class="cliente-cabecera"><h2>Tienda en línea</h2></div>
+        <div class="contenido" style="text-align:center;padding-top:56px">
+          <span class="sello aprobado grande">APROBADO</span>
+          <h3 style="font-size:20px;margin-top:28px">Gracias, quedó registrado</h3>
+          <p class="meta">Max verá tu aprobación de “Tienda en línea” ($20,000.00). Puedes cerrar esta página.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="marco"><p class="etiqueta">Enlace no válido</p>
+      <div class="pantalla">
+        <div class="contenido vacio" style="padding-top:120px">
+          <h3>Este enlace ya no es válido</h3>
+          <p>Puede haber expirado o el freelancer lo desactivó. Pídele uno nuevo.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="marco"><p class="etiqueta">Cargando</p>
+      <div class="pantalla">
+        <div class="cliente-cabecera" aria-busy="true"><div class="esqueleto" style="width:50%"></div><div class="esqueleto" style="height:28px;width:70%"></div></div>
+        <div class="contenido"><div class="hoja"><div class="esqueleto"></div><div class="esqueleto" style="width:60%"></div><div class="esqueleto"></div><div class="esqueleto" style="width:45%"></div></div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</body>
+</html>
