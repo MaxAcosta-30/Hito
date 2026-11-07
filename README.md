@@ -7,6 +7,10 @@ Un freelancer acuerda los hitos de un proyecto con su cliente, registra cada ent
 **Demo:** https://hito-one.vercel.app → **Probar la demo** (un clic, sin registro; la cuenta temporal se borra en 24 horas).
 Si la demo lleva un rato sin uso, el servidor gratuito tarda hasta un minuto en despertar; la página lo avisa y reintenta sola.
 
+[![Video de 40 segundos: Hito en acción](docs/capturas/video-portada.png)](https://github.com/MaxAcosta-30/Hito/releases/download/v1.0.0/hito-promo.mp4)
+
+**Video (40 s):** la app real, de la demo con un clic al pago registrado. [Descargar MP4](https://github.com/MaxAcosta-30/Hito/releases/download/v1.0.0/hito-promo.mp4)
+
 ## El problema
 
 El freelancer manda el alcance por WhatsApp, el cliente dice "sí" y semanas después nadie recuerda qué se acordó, qué se entregó ni cuánto falta por pagar. Hito deja todo eso por escrito:
@@ -17,6 +21,14 @@ El freelancer manda el alcance por WhatsApp, el cliente dice "sí" y semanas des
 - Todo queda en un **historial** que no se puede editar ni borrar.
 - Los proyectos se **buscan y filtran** por nombre, cliente y estado, y su resumen se **exporta a PDF**.
 - El panel grafica lo **acordado contra lo cobrado** mes a mes, y la app se **instala en el celular** como PWA.
+
+### Casos de ejemplo
+
+Los tres vienen en la demo, así que se pueden abrir y recorrer:
+
+- **Diseñadora web · Tienda en línea:** cuatro hitos por $44,000. Su cliente aprueba la landing desde WhatsApp y ella ve que le deben $36,000, con $12,000 ya aprobados.
+- **Desarrollador · App de citas:** la clínica pide cambios al prototipo con un comentario obligatorio. Él corrige, entrega de nuevo y todo queda en el historial.
+- **Estudio de arquitectura · Sitio institucional:** el alcance está en borrador y se ajusta antes de enviarlo. Al aceptarse, hitos y montos quedan congelados.
 
 ## Capturas
 

@@ -36,9 +36,11 @@ export function Cobros() {
   return (
     <>
       <h1 className="solo-lectores">Cobros</h1>
-      <div className="hoja">
+      <div className="hoja hoja-saldo">
         <div className="rotulo">Te deben</div>
         <Cifra valor={p.porCobrar} />
+        {/* Doble raya contable que se traza bajo la cifra, como en el libro de la landing */}
+        <div className="doble-raya" aria-hidden="true" />
         <div className="meta">
           En {p.proyectosActivos} {p.proyectosActivos === 1 ? 'proyecto activo' : 'proyectos activos'}
         </div>
