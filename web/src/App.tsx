@@ -13,6 +13,8 @@ import { ProyectoDetalle } from './paginas/ProyectoDetalle'
 import { ProyectoFormulario } from './paginas/ProyectoFormulario'
 import { Proyectos } from './paginas/Proyectos'
 import { Entrar } from './paginas/Entrar'
+import { IniciarDemo } from './paginas/IniciarDemo'
+import { Landing } from './paginas/Landing'
 import { Privacidad } from './paginas/Privacidad'
 import { Registro } from './paginas/Registro'
 import { VistaCliente } from './paginas/VistaCliente'
@@ -31,7 +33,8 @@ export default function App() {
     return () => control.abort()
   }, [intento])
 
-  // El aviso de privacidad es texto fijo: no espera a que despierte la API.
+  // La landing y el aviso de privacidad son texto fijo: no esperan a que despierte la API.
+  if (pathname === '/') return <Landing />
   if (pathname === '/privacidad') return <Privacidad />
 
   if (api !== 'lista') {
@@ -75,6 +78,7 @@ function AppFreelancer() {
             <Route path="/clientes/nuevo" element={<ClienteFormulario />} />
             <Route path="/clientes/:id" element={<ClienteFormulario />} />
           </Route>
+          <Route path="/demo" element={<IniciarDemo />} />
           <Route path="*" element={<Navigate to="/cobros" replace />} />
         </Routes>
       </ToastProvider>

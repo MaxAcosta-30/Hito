@@ -46,3 +46,8 @@ Max notó que, tras las mejoras de comportamiento, Hito se veía igual. Se propu
 - Gráfica "Acordado vs. cobrado": `HistorialDeCobros` (dominio, función pura) acumula por mes lo acordado que ya vencía y lo cobrado en los últimos 6 meses. Cuentan los proyectos aceptados y completados; los cancelados no. Se expone en `GET /cobros` como `historial`.
 - Líneas escalonadas en SVG sin librería, con un solo eje, leyenda, etiquetas directas, un recuadro por mes y "Ver como tabla". Colores validados con el script de dataviz en claro y oscuro (banda de luminosidad, croma, daltonismo ΔE ≥ 8.7 y contraste ≥ 3:1).
 - Pruebas: 2 unitarias nuevas (acumulados por mes, corte en "hoy", ignora borradores y cancelados) y una verificación de integración de que la gráfica cuadra con lo registrado. Total: 53 + 50.
+
+**Landing pública** (rama `ui/landing`)
+- `/` muestra la landing sin esperar a la API y la despierta en segundo plano mientras se lee. "Probar la demo" lleva a `/demo`, que pasa por la puerta de "Despertando" si hace falta, crea la cuenta de ejemplo una sola vez (un `ref` evita el doble efecto de StrictMode) y entra al panel.
+- Elemento firma: un libro mayor en SVG donde los hitos se asientan, se sellan y aparece el saldo (solo `transform` y `opacity`; con movimiento reducido queda fijo). Debajo: "Cómo funciona" en 3 pasos, una banda oscura a todo lo ancho con la vista del cliente, la sección técnica para reclutadores y el pie con privacidad y licencia.
+- Probado con Playwright: escritorio y celular, claro y oscuro, la landing carga con la API "dormida" y "Probar la demo" llega al panel con $76,000.
