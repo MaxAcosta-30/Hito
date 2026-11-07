@@ -66,3 +66,14 @@ Max notó que, tras las mejoras de comportamiento, Hito se veía igual. Se propu
 - `manifest.webmanifest` (`standalone`, inicia en `/cobros`, colores del papel), íconos de 192 y 512 px, uno adaptable (maskable) con zona segura y `apple-touch-icon` para "Agregar a inicio" en iOS. Generados con Playwright desde el SVG del logo.
 - **Sin service worker:** los criterios de instalación de Chrome (web.dev, consultado el 2026-11-06) piden manifest e íconos, no service worker. Agregarlo traería caché de versiones viejas sin necesidad.
 - **Límites:** es la misma web instalada, no una app nativa (la app móvil sigue fuera de alcance), y sin conexión no funciona.
+
+**Ajustes de celular y README** (rama `ui/pwa`)
+- A 390 px el logo con mojón y palabra empujaba "Salir" fuera de la pantalla; en pantallas de 420 px o menos la barra muestra solo el mojón.
+- La gráfica medía 640 unidades y se encogía en el celular (textos de unos 6 px); ahora mide su contenedor con `ResizeObserver` y dibuja a escala 1:1.
+- Capturas del README regeneradas con el diseño nuevo; el README menciona la gráfica, la PWA y 53 pruebas unitarias.
+
+## Video promocional (2026-11-06)
+
+- 36.7 s, 1920×1080, H.264 sin audio (sin música para no arriesgar licencias; LinkedIn reproduce en silencio). Archivo y portada en `~/Desktop/Proyectos/hito-promo/` (fuera del repositorio: es difusión, no producto).
+- Se grabó la app real con Playwright dentro de un escenario con marcos de navegador y celular: landing → demo con un clic y cifra que sube → compartir el enlace → el cliente aprueba en el celular → pago con sello que se estampa → cierre con la URL. Lo reproducen `escenario.html` y `grabar.mjs` en esa carpeta.
+- **Hallazgos al grabar:** el escenario debe servirse desde el mismo origen que la app (con `file://` Chrome frenaba el iframe), y los botones de un `<dialog>` modal dentro de un iframe escalado se pulsan con un clic del DOM.
