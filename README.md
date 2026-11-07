@@ -7,9 +7,9 @@ Un freelancer acuerda los hitos de un proyecto con su cliente, registra cada ent
 **Demo:** https://hito-one.vercel.app → **Probar la demo** (un clic, sin registro; la cuenta temporal se borra en 24 horas).
 Si la demo lleva un rato sin uso, el servidor gratuito tarda hasta un minuto en despertar; la página lo avisa y reintenta sola.
 
-[![Video de 40 segundos: Hito en acción](docs/capturas/video-portada.png)](https://github.com/MaxAcosta-30/Hito/releases/download/v1.0.0/hito-promo.mp4)
+[![Video de 39 segundos: Hito en acción](docs/capturas/video-portada.png)](https://github.com/MaxAcosta-30/Hito/releases/download/v1.0.0/hito-promo.mp4)
 
-**Video (40 s):** la app real, de la demo con un clic al pago registrado. [Descargar MP4](https://github.com/MaxAcosta-30/Hito/releases/download/v1.0.0/hito-promo.mp4)
+**Video (39 s):** la app real, de la demo con un clic al pago registrado. [Descargar MP4](https://github.com/MaxAcosta-30/Hito/releases/download/v1.0.0/hito-promo.mp4)
 
 ## El problema
 
