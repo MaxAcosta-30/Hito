@@ -3,6 +3,8 @@ import { usePanel, type HitoQueAtender } from '../api/cobros'
 import { useClientes } from '../api/clientes'
 import { ErrorCarga } from '../componentes/Estados'
 import { GraficaCobros } from '../componentes/GraficaCobros'
+import { LibroAnimado } from '../componentes/LibroAnimado'
+import { useCifraAnimada } from '../componentes/useCifraAnimada'
 import { Sello } from '../componentes/Sello'
 import { dinero, fechaCorta } from '../formato'
 
@@ -36,7 +38,7 @@ export function Cobros() {
       <h1 className="solo-lectores">Cobros</h1>
       <div className="hoja">
         <div className="rotulo">Te deben</div>
-        <div className="cifra">{dinero(p.porCobrar)}</div>
+        <Cifra valor={p.porCobrar} />
         <div className="meta">
           En {p.proyectosActivos} {p.proyectosActivos === 1 ? 'proyecto activo' : 'proyectos activos'}
         </div>
@@ -99,6 +101,20 @@ function Renglon({ hito }: { hito: HitoQueAtender }) {
   )
 }
 
+// La cifra sube al cargar y al cambiar (por ejemplo, tras registrar un pago).
+// El lector de pantalla lee solo el valor final, no cada cuadro de la animación.
+function Cifra({ valor }: { valor: number }) {
+  const mostrado = useCifraAnimada(valor)
+  return (
+    <>
+      <div className="cifra" aria-hidden="true">
+        {dinero(Math.round(mostrado * 100) / 100)}
+      </div>
+      <span className="solo-lectores">{dinero(valor)}</span>
+    </>
+  )
+}
+
 function SinCobros() {
   const clientes = useClientes()
   const sinClientes = clientes.data?.length === 0
@@ -109,6 +125,11 @@ function SinCobros() {
       <Link className="btn primario" to={sinClientes ? '/clientes/nuevo' : '/proyectos/nuevo'}>
         {sinClientes ? 'Primero agrega un cliente' : 'Crear proyecto'}
       </Link>
+      {/* Vista previa tenue: anticipa cómo se verá el panel con datos. */}
+      <div className="vista-ejemplo" aria-hidden="true">
+        <span className="rotulo-ejemplo">EJEMPLO</span>
+        <LibroAnimado />
+      </div>
     </div>
   )
 }

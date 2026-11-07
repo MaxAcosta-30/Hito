@@ -187,7 +187,11 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+  transition:
+    transform 120ms cubic-bezier(0.23, 1, 0.32, 1),
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
 }
 
 a.btn {
@@ -1587,4 +1591,123 @@ i.serie-acordado {
   border-top: 2px solid var(--tinta);
   font-size: 14px;
   color: var(--grafito);
+}
+
+/* ============ Movimiento y respuesta ============ */
+
+/* Hover solo con puntero fino: en el celular un toque no deja el botón "pegado" en hover */
+@media (hover: hover) and (pointer: fine) {
+  .btn.primario:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--firma) 86%, var(--tinta));
+    box-shadow: 0 2px 0 color-mix(in srgb, var(--tinta) 30%, transparent);
+  }
+
+  .btn.secundario:hover:not(:disabled) {
+    border-color: var(--tinta);
+    background: var(--pauta);
+  }
+
+  .btn.texto:hover:not(:disabled) {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .btn.peligro:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--sello-vencido) 86%, var(--tinta));
+  }
+
+  .btn.peligro-contorno:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--sello-vencido) 8%, transparent);
+  }
+
+  a.renglon:hover {
+    background: var(--pauta);
+  }
+}
+
+/* Esqueleto con brillo que recorre el renglón (transform, no background-position) */
+.esqueleto {
+  position: relative;
+  overflow: hidden;
+}
+
+.esqueleto::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--hoja) 75%, transparent), transparent);
+  animation: brillo 1.4s ease-in-out infinite;
+}
+
+@keyframes brillo {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* Cada página entra suave al navegar */
+.contenido {
+  animation: aparecer 220ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Renglones y filas entran escalonados (solo al montarse, no en cada recarga de datos) */
+.hoja > .renglon,
+.tabla tbody tr {
+  animation: aparecer 260ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+.hoja > .renglon:nth-child(2), .tabla tbody tr:nth-child(2) { animation-delay: 30ms; }
+.hoja > .renglon:nth-child(3), .tabla tbody tr:nth-child(3) { animation-delay: 60ms; }
+.hoja > .renglon:nth-child(4), .tabla tbody tr:nth-child(4) { animation-delay: 90ms; }
+.hoja > .renglon:nth-child(5), .tabla tbody tr:nth-child(5) { animation-delay: 120ms; }
+.hoja > .renglon:nth-child(n + 6), .tabla tbody tr:nth-child(n + 6) { animation-delay: 150ms; }
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* Sello que acaba de cambiar: se estampa */
+.sello.recien {
+  animation: estampar-sello 360ms cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+@keyframes estampar-sello {
+  from {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+}
+
+/* Estado vacío del panel: un libro de ejemplo tenue */
+.vista-ejemplo {
+  position: relative;
+  margin-top: 28px;
+  opacity: 0.5;
+  border: 1px dashed var(--renglon-fuerte);
+  border-radius: var(--r-hoja);
+  padding: 8px;
+  pointer-events: none;
+}
+
+.rotulo-ejemplo {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font: 700 11px var(--f-mono);
+  letter-spacing: 0.14em;
+  color: var(--grafito);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .esqueleto::after,
+  .contenido,
+  .hoja > .renglon,
+  .tabla tbody tr,
+  .sello.recien {
+    animation: none;
+  }
 }

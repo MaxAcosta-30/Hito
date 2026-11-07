@@ -51,3 +51,13 @@ Max notó que, tras las mejoras de comportamiento, Hito se veía igual. Se propu
 - `/` muestra la landing sin esperar a la API y la despierta en segundo plano mientras se lee. "Probar la demo" lleva a `/demo`, que pasa por la puerta de "Despertando" si hace falta, crea la cuenta de ejemplo una sola vez (un `ref` evita el doble efecto de StrictMode) y entra al panel.
 - Elemento firma: un libro mayor en SVG donde los hitos se asientan, se sellan y aparece el saldo (solo `transform` y `opacity`; con movimiento reducido queda fijo). Debajo: "Cómo funciona" en 3 pasos, una banda oscura a todo lo ancho con la vista del cliente, la sección técnica para reclutadores y el pie con privacidad y licencia.
 - Probado con Playwright: escritorio y celular, claro y oscuro, la landing carga con la API "dormida" y "Probar la demo" llega al panel con $76,000.
+
+**Movimiento y carga** (rama `ui/movimiento`)
+- **Botones:** hover con cambio de tono y sombra, solo con puntero fino (en el celular no queda "pegado"), además de la presión con `scale(.97)`.
+- **Esqueletos:** con brillo que recorre el renglón, animado con `transform` y no con `background-position`.
+- **"Te deben":** sube desde el valor anterior con una curva que frena al final, y el lector de pantalla solo lee el valor final. Si la animación se interrumpe, la siguiente sigue desde el último valor pintado.
+- **Sellos:** se estampan solo cuando el estado cambia frente a la persona (por ejemplo, al registrar un pago); al cargar no se animan.
+- **Navegación:** cada página entra suave al cambiar de ruta, y los renglones y filas entran escalonados (30 ms, tope de 150 ms) solo al montarse.
+- **Panel vacío:** muestra un libro de "EJEMPLO" tenue.
+- **Carga:** las pantallas internas se descargan bajo demanda (`React.lazy`) y la barra se queda mientras el contenido muestra su esqueleto. El bundle principal bajó de 110.8 a 98.6 kB comprimidos.
+- Todo se desactiva con `prefers-reduced-motion`. Probado con Playwright: la cifra pinta 10 cuadros distintos y termina en $76,000, el sello PAGADO se estampa al pagar y no al cargar, y el flujo e2e sigue en verde.
