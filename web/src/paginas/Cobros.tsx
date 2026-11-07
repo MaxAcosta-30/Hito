@@ -1,5 +1,7 @@
 import { Link } from 'react-router'
 import { usePanel, type HitoQueAtender } from '../api/cobros'
+import { usePrecarga } from '../api/precarga'
+import { consultaProyecto } from '../api/proyectos'
 import { useClientes } from '../api/clientes'
 import { ErrorCarga } from '../componentes/Estados'
 import { GraficaCobros } from '../componentes/GraficaCobros'
@@ -82,10 +84,13 @@ const motivos: Record<HitoQueAtender['motivo'], (a: HitoQueAtender) => string> =
 }
 
 function Renglon({ hito }: { hito: HitoQueAtender }) {
+  const precargar = usePrecarga()
   return (
     <div className="renglon">
       <b>
-        <Link to={`/proyectos/${hito.proyectoId}`}>{hito.titulo}</Link>
+        <Link to={`/proyectos/${hito.proyectoId}`} {...precargar(consultaProyecto(hito.proyectoId))}>
+          {hito.titulo}
+        </Link>
       </b>
       <span className="monto">{dinero(hito.pendiente)}</span>
       <small>

@@ -10,7 +10,9 @@ import { BrowserRouter } from 'react-router'
 import App from './App.tsx'
 import './index.css'
 
-const queryClient = new QueryClient()
+// 30 s de frescura: lo precargado al pasar el cursor no se vuelve a pedir al abrir la pantalla.
+// Las mutaciones invalidan sus consultas, así que lo que cambia el usuario se ve al instante.
+const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 30_000 } } })
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

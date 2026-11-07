@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions, useQuery } from '@tanstack/react-query'
 import { api } from './cliente'
 import type { EstadoHito } from './proyectos'
 
@@ -29,4 +29,6 @@ export type Panel = {
   historial: MesDeCobro[]
 }
 
-export const usePanel = () => useQuery({ queryKey: ['cobros'], queryFn: () => api<Panel>('/cobros') })
+export const consultaPanel = () => queryOptions({ queryKey: ['cobros'], queryFn: () => api<Panel>('/cobros') })
+
+export const usePanel = () => useQuery(consultaPanel())

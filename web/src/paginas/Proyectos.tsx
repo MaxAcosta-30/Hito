@@ -1,5 +1,6 @@
 import { Link, useSearchParams } from 'react-router'
-import { useProyectos, type EstadoProyecto, type ProyectoResumen } from '../api/proyectos'
+import { usePrecarga } from '../api/precarga'
+import { consultaProyecto, useProyectos, type EstadoProyecto, type ProyectoResumen } from '../api/proyectos'
 import { ErrorCarga, Esqueleto } from '../componentes/Estados'
 import { dinero, fechaCorta } from '../formato'
 
@@ -16,6 +17,7 @@ function filtrar(lista: ProyectoResumen[], texto: string, estado: string) {
 
 export function Proyectos() {
   const proyectos = useProyectos()
+  const precargar = usePrecarga()
   // Búsqueda y estado viven en la URL: al volver del detalle, el filtro sigue ahí.
   const [parametros, setParametros] = useSearchParams()
   const texto = parametros.get('q') ?? ''
@@ -99,7 +101,9 @@ export function Proyectos() {
                 {visibles.map((p) => (
                   <tr key={p.id}>
                     <td>
-                      <Link to={`/proyectos/${p.id}`}>{p.nombre}</Link>
+                      <Link to={`/proyectos/${p.id}`} {...precargar(consultaProyecto(p.id))}>
+                        {p.nombre}
+                      </Link>
                     </td>
                     <td>{p.cliente.nombre}</td>
                     <td>{p.estado}</td>
@@ -112,7 +116,7 @@ export function Proyectos() {
             </table>
             <div className="hoja solo-movil">
               {visibles.map((p) => (
-                <Link key={p.id} className="renglon" to={`/proyectos/${p.id}`}>
+                <Link key={p.id} className="renglon" to={`/proyectos/${p.id}`} {...precargar(consultaProyecto(p.id))}>
                   <b>{p.nombre}</b>
                   <span className="monto">{dinero(p.total)}</span>
                   <small>
