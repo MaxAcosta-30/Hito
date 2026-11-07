@@ -35,7 +35,11 @@ La imagen pasa de 172 a 185 MB.
 
 Navegación con datos ya precargados: Panel → Proyectos **34 ms**, Proyectos → detalle **63 ms** y → Clientes **65 ms**, sin esqueleto (antes ~800 ms en producción). En producción hay que sumar la red cuando el clic llega antes que la respuesta precargada.
 
+## API despierta de día (decisión de Max, 2026-11-06)
+
+- `.github/workflows/despertar-render.yml` llama a `/health/live` cada 10 min de 7:00 a 23:00, hora de México: unas 496 de las 750 h gratis al mes. De noche la API se duerme para dejar margen; si se agotaran las horas, Render la suspendería hasta el mes siguiente sin cobrar.
+- GitHub puede retrasar o saltarse ejecuciones programadas: reduce los arranques en frío, no los elimina. La pantalla "Despertando" sigue cubriendo ese caso.
+
 ## Pendiente (decisión de Max)
 
-- **Mantener Render despierto:** el arranque en frío es lo más lento y no se arregla con código. Render Free da 750 horas al mes por workspace, y un servicio encendido todo el mes usa ~744. Si se agotan, Render suspende el servicio hasta el mes siguiente (no cobra). Mantenerlo despierto requiere un ping cada <15 min; los docs de Render no lo prohíben ni lo permiten explícitamente.
 - **Modelo compilado de EF Core** (`dbcontext optimize`): acortaría el arranque, pero hay que regenerarlo con cada cambio del modelo. Se dejó fuera por el costo de mantenimiento.
