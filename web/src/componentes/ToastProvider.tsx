@@ -19,6 +19,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div className="toast-region" role="status" aria-live="polite">
         {mensaje && (
           <div key={mensaje.id} className="toast">
+            <span className="sello" aria-hidden="true">
+              LISTO
+            </span>
             {mensaje.texto}
           </div>
         )}
