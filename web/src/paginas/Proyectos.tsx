@@ -83,7 +83,34 @@ export function Proyectos() {
               </button>
             </div>
           ) : (
-            <div className="hoja">
+            <>
+            <table className="tabla solo-escritorio">
+              <thead>
+                <tr>
+                  <th scope="col">Proyecto</th>
+                  <th scope="col">Cliente</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col">Versión</th>
+                  <th scope="col">Actualizado</th>
+                  <th scope="col" className="num">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visibles.map((p) => (
+                  <tr key={p.id}>
+                    <td>
+                      <Link to={`/proyectos/${p.id}`}>{p.nombre}</Link>
+                    </td>
+                    <td>{p.cliente.nombre}</td>
+                    <td>{p.estado}</td>
+                    <td className="num">v{p.version}</td>
+                    <td>{fechaCorta(p.actualizadoEn)}</td>
+                    <td className="num">{dinero(p.total)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="hoja solo-movil">
               {visibles.map((p) => (
                 <Link key={p.id} className="renglon" to={`/proyectos/${p.id}`}>
                   <b>{p.nombre}</b>
@@ -94,6 +121,7 @@ export function Proyectos() {
                 </Link>
               ))}
             </div>
+            </>
           )}
         </>
       )}

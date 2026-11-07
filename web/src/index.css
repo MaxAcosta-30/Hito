@@ -17,6 +17,9 @@
   --sobre-peligro: #ffffff;
   --sello-cambios: #9a4f0e;
   --sombra-hoja: 0 1px 0 rgba(16, 35, 27, 0.06);
+  /* Series de gráfica: validadas con dataviz (banda de luminosidad, croma y daltonismo) */
+  --serie-cobrado: #0a7650;
+  --serie-acordado: #c77d12;
   --r-control: 2px;
   --r-hoja: 3px;
   --r-dialogo: 6px;
@@ -46,6 +49,8 @@
     --sobre-peligro: #0e1813;
     --sello-cambios: #e0a341;
     --sombra-hoja: none;
+    --serie-cobrado: #3fa277;
+    --serie-acordado: #c4852a;
   }
 }
 
@@ -1025,4 +1030,209 @@ a.renglon:hover b {
 
 .logo.grande .logo-texto {
   font-size: 40px;
+}
+
+/* Tablas en escritorio; en móvil se usan los renglones */
+.solo-escritorio {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .solo-escritorio {
+    display: table;
+  }
+
+  .solo-movil {
+    display: none;
+  }
+}
+
+.tabla {
+  width: 100%;
+  margin-top: 16px;
+  border-collapse: collapse;
+  background: var(--hoja);
+  border: 1px solid var(--renglon);
+  border-radius: var(--r-hoja);
+  font-size: 15px;
+}
+
+.tabla th {
+  text-align: left;
+  font: 700 11px var(--f-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--grafito);
+  padding: 12px 14px 10px;
+  border-bottom: 2px solid var(--tinta);
+}
+
+.tabla td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--renglon);
+  vertical-align: middle;
+}
+
+.tabla th.num,
+.tabla td.num {
+  text-align: right;
+}
+
+.tabla tbody tr:hover td {
+  background: var(--pauta);
+}
+
+.tabla td a {
+  font-weight: 600;
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.tabla td a:hover {
+  text-decoration: underline;
+}
+
+.tabla .mono {
+  font-family: var(--f-mono);
+  white-space: nowrap;
+}
+
+.tabla .acciones-fila {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Gráfica de cobros: líneas finas, cuadrícula recesiva, texto con tokens de texto */
+.grafica {
+  margin: 12px 0 0;
+}
+
+.grafica .leyenda {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--grafito);
+}
+
+.grafica i {
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+  margin-right: 6px;
+  vertical-align: middle;
+  border-radius: 2px;
+}
+
+i.serie-cobrado {
+  background: var(--serie-cobrado);
+}
+
+i.serie-acordado {
+  background: var(--serie-acordado);
+}
+
+.lienzo-grafica {
+  position: relative;
+}
+
+.lienzo-grafica svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: pan-y;
+}
+
+.grafica .linea {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.grafica path.serie-cobrado {
+  stroke: var(--serie-cobrado);
+}
+
+.grafica path.serie-acordado {
+  stroke: var(--serie-acordado);
+}
+
+.grafica .cuadricula {
+  stroke: var(--renglon);
+}
+
+.grafica .mira {
+  stroke: var(--renglon-fuerte);
+  stroke-dasharray: 3 3;
+}
+
+.grafica .eje {
+  font: 500 11px var(--f-mono);
+  fill: var(--grafito);
+}
+
+.grafica .etiqueta {
+  font: 600 12px var(--f-texto);
+  fill: var(--grafito);
+}
+
+.grafica .etiqueta-valor {
+  font: 700 13px var(--f-mono);
+  fill: var(--tinta);
+}
+
+.tooltip-grafica {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  display: grid;
+  gap: 2px;
+  min-width: 190px;
+  padding: 8px 10px;
+  background: var(--hoja);
+  border: 1px solid var(--renglon-fuerte);
+  border-radius: var(--r-hoja);
+  font-size: 13px;
+  pointer-events: none;
+}
+
+.tooltip-grafica em {
+  font: 700 13px var(--f-mono);
+  font-style: normal;
+  float: right;
+  margin-left: 12px;
+}
+
+.tabla-grafica {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.tabla-grafica summary {
+  cursor: pointer;
+  color: var(--firma);
+}
+
+.tabla-grafica table {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+}
+
+.tabla-grafica th,
+.tabla-grafica td {
+  padding: 6px 4px;
+  border-bottom: 1px solid var(--renglon);
+  text-align: left;
+}
+
+.tabla-grafica .num {
+  text-align: right;
+}
+
+/* Las páginas con tabla usan más ancho en escritorio; los formularios conservan su medida de lectura */
+@media (min-width: 1024px) {
+  .contenido:has(.tabla) {
+    max-width: 1040px;
+  }
 }

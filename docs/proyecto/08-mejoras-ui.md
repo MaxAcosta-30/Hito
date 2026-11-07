@@ -32,3 +32,17 @@ Se revisó una lista de buenas prácticas de UI/UX contra Hito. Max aprobó 4 me
 1. ¿Por qué la pantalla "Despertando" no muestra un porcentaje y por qué espera 400 ms antes de aparecer?
 2. ¿Por qué el foco inicial del diálogo de cancelar está en "Volver" y no en la acción?
 3. Si el navegador ya valida el correo, ¿por qué el servidor lo vuelve a validar?
+
+## Rediseño visual "Libro mayor" (2026-11-06)
+
+Max notó que, tras las mejoras de comportamiento, Hito se veía igual. Se propusieron 3 direcciones ([`diseno/rediseno.html`](diseno/rediseno.html)) y eligió **B · Libro mayor**. Las reglas de diseño están en `07-diseno.md`.
+
+**Identidad** (rama `ui/identidad-libro-mayor`)
+- Logo propio: un mojón (lo que literalmente significa "hito") sobre doble raya contable, en `Logo.tsx` y `favicon.svg`. Reemplaza el rayo morado de Vite.
+- Paleta clara y oscura con contraste AA medido, tipografía Bricolage Grotesque, Public Sans y JetBrains Mono, sellos rectos y rellenos para lo que mueve dinero. También se actualizó la paleta de la impresión a PDF.
+
+**Tablas y gráfica** (rama `ui/tablas-grafica`)
+- Proyectos y clientes son tablas a partir de 768 px y renglones en el celular. Una de las dos versiones se oculta con `display: none`, que también la saca del árbol accesible. Las páginas con tabla se amplían a 1040 px con `:has()`.
+- Gráfica "Acordado vs. cobrado": `HistorialDeCobros` (dominio, función pura) acumula por mes lo acordado que ya vencía y lo cobrado en los últimos 6 meses. Cuentan los proyectos aceptados y completados; los cancelados no. Se expone en `GET /cobros` como `historial`.
+- Líneas escalonadas en SVG sin librería, con un solo eje, leyenda, etiquetas directas, un recuadro por mes y "Ver como tabla". Colores validados con el script de dataviz en claro y oscuro (banda de luminosidad, croma, daltonismo ΔE ≥ 8.7 y contraste ≥ 3:1).
+- Pruebas: 2 unitarias nuevas (acumulados por mes, corte en "hoy", ignora borradores y cancelados) y una verificación de integración de que la gráfica cuadra con lo registrado. Total: 53 + 50.
