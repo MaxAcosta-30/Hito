@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Logo, Mojon } from './Logo'
+import { Logo, Simbolo } from './Logo'
 
 type Props = { estado: 'despertando' | 'error'; onReintentar: () => void }
 
@@ -52,8 +52,8 @@ export function Despertando({ estado, onReintentar }: Props) {
   return (
     <main className="contenido angosto despertando">
       <h1 className="solo-lectores">Hito</h1>
-      {/* El mojón de la marca: se asienta una vez y luego respira mientras se espera. */}
-      <Mojon tamano={88} className="sello-marca" />
+      {/* El símbolo de la marca: se asienta una vez y luego respira mientras se espera. */}
+      <Simbolo tamano={88} className="sello-marca" />
       <div role="status">
         <p className="titular">Despertando la demo, puede tardar hasta un minuto</p>
         <p className="meta">{fase.texto}</p>

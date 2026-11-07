@@ -1018,11 +1018,11 @@ a.renglon:hover b {
   margin-top: 8px;
 }
 
-/* Marca: mojón + palabra en grotesca condensada */
+/* Marca: H contable + palabra en grotesca condensada */
 .logo {
   display: inline-flex;
-  align-items: flex-end;
-  gap: 8px;
+  align-items: center;
+  gap: 9px;
   color: var(--tinta);
   text-decoration: none;
 }
@@ -1713,7 +1713,7 @@ i.serie-acordado {
   }
 }
 
-/* Celular angosto: solo el mojón en la barra, para que quepan las 3 secciones y "Salir" */
+/* Celular angosto: solo el símbolo en la barra, para que quepan las 3 secciones y "Salir" */
 @media (max-width: 420px) {
   .barra {
     gap: 10px;

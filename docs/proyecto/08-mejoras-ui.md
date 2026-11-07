@@ -74,7 +74,7 @@ Max notó que, tras las mejoras de comportamiento, Hito se veía igual. Se propu
 
 ## Video promocional (2026-11-06)
 
-- 40 s, 1920×1080, H.264 sin audio (sin música para no arriesgar licencias; LinkedIn reproduce en silencio). Archivo y portada en `~/Desktop/Proyectos/hito-promo/` (fuera del repositorio: es difusión, no producto).
+- 39 s, 1920×1080, H.264 sin audio (sin música para no arriesgar licencias; LinkedIn reproduce en silencio). Archivo y portada en `~/Desktop/Proyectos/hito-promo/` (fuera del repositorio: es difusión, no producto).
 - Se grabó la app real con Playwright dentro de un escenario con marcos de navegador y celular: landing → demo con un clic y cifra que sube → compartir el enlace → el cliente aprueba en el celular → pago con sello que se estampa → cierre con la URL. Lo reproducen `escenario.html` y `grabar.mjs` en esa carpeta.
 - **Hallazgos al grabar:** el escenario debe servirse desde el mismo origen que la app (con `file://` Chrome frenaba el iframe), y los botones de un `<dialog>` modal dentro de un iframe escalado se pulsan con un clic del DOM.
 
@@ -87,3 +87,7 @@ Max notó que, tras las mejoras de comportamiento, Hito se veía igual. Se propu
 **Casos de ejemplo y video en el README** (rama `ui/hover-y-entradas`)
 - La landing tiene la sección "Casos de ejemplo" (diseñadora, desarrollador, estudio), y el README la repite. Cada caso es un proyecto de la demo con sus sellos reales, así que se puede comprobar al abrirla.
 - El README muestra la portada del video y lo enlaza al release `v1.0.0` de GitHub. El MP4 (4 MB) va como archivo del release, no dentro del repositorio.
+
+**Logo "H contable"** (rama `ui/logo-h`)
+- A Max no le convenció el mojón: con el arco arriba se leía como lápida y a 16 px no se distinguía. Se propusieron 4 opciones en su uso real (favicon, barra, ícono del celular y en grande): H contable, sello aprobado, hitos en camino y solo la palabra. Eligió **A · H contable**.
+- Se cambiaron el componente `Logo` (ahora `Simbolo` + palabra), el favicon, los íconos de la PWA (el maskable y el de Apple van a sangre completa), la pantalla "Despertando", el escenario del video y las capturas del README. El video se volvió a grabar con el logo nuevo (38.8 s) y con un interletrado más abierto en el título.

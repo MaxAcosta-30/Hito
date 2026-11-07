@@ -31,7 +31,7 @@
 Max eligió la dirección **B · Libro mayor** entre tres propuestas ([`diseno/rediseno.html`](diseno/rediseno.html)). Reemplaza la paleta y la tipografía de "Cotización firmada". Las reglas de foco, estados, sellos y dinero de este documento siguen vigentes.
 
 - **Idea:** las cifras son protagonistas, el papel es de libro contable con renglones y cada hito se "asienta".
-- **Logo:** un mojón, que es el significado literal de "hito", asentado sobre doble raya contable (`web/src/componentes/Logo.tsx` y `web/public/favicon.svg`).
+- **Logo:** "H contable": una H cuyo travesaño es la doble raya de los totales, sobre un cuadro verde (`web/src/componentes/Logo.tsx`, `favicon.svg` e íconos de la PWA). Max la eligió el 2026-11-06 entre 4 propuestas ([`diseno/logos.html`](diseno/logos.html)) para reemplazar el mojón, que se leía como lápida y no se distinguía a 16 px.
 - Se cambiaron los valores de los tokens existentes, no sus nombres, así que las pantallas no tuvieron que reescribirse.
 
 **Tokens** (oscuro = "libro de noche", diseñado aparte):
