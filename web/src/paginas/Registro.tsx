@@ -5,6 +5,7 @@ import { api, ErrorApi, type Sesion } from '../api/cliente'
 import { useSesion } from '../auth/contexto'
 import { Campo } from '../componentes/Campo'
 import { useEnfocarError } from '../componentes/useEnfocarError'
+import { reglas, useValidacion } from '../validacion'
 
 export function Registro() {
   const { iniciar } = useSesion()
@@ -21,7 +22,13 @@ export function Registro() {
 
   const error = registrar.error instanceof ErrorApi ? registrar.error : null
   const formulario = useEnfocarError(registrar.error)
-  const errorDe = (campo: string) => error?.errores[campo]?.[0]
+  const v = useValidacion({
+    nombre: reglas.nombre(datos.nombre, 100, 'Escribe tu nombre (máximo 100 caracteres).'),
+    email: reglas.correo(datos.email),
+    contrasena: reglas.contrasena(datos.contrasena),
+  })
+  // Primero el aviso local; si no hay, el del servidor.
+  const errorDe = (campo: 'nombre' | 'email' | 'contrasena') => v.error(campo) ?? error?.errores[campo]?.[0]
   // Errores por campo van bajo cada campo; los demás, arriba del formulario.
   const mensajeGeneral = !registrar.error
     ? null
@@ -35,7 +42,7 @@ export function Registro() {
 
   function enviar(e: FormEvent) {
     e.preventDefault()
-    registrar.mutate()
+    if (v.validarTodo()) registrar.mutate()
   }
 
   return (
@@ -49,8 +56,8 @@ export function Registro() {
             {mensajeGeneral}
           </p>
         )}
-        <Campo id="nombre" etiqueta="Tu nombre" autoComplete="name" required value={datos.nombre} onChange={cambiar('nombre')} error={errorDe('nombre')} />
-        <Campo id="email" etiqueta="Correo" type="email" autoComplete="email" required value={datos.email} onChange={cambiar('email')} error={errorDe('email')} />
+        <Campo id="nombre" etiqueta="Tu nombre" autoComplete="name" required value={datos.nombre} onChange={cambiar('nombre')} onBlur={v.alSalir('nombre')} error={errorDe('nombre')} />
+        <Campo id="email" etiqueta="Correo" type="email" autoComplete="email" required value={datos.email} onChange={cambiar('email')} onBlur={v.alSalir('email')} error={errorDe('email')} />
         <Campo
           id="contrasena"
           etiqueta="Contraseña"
@@ -59,6 +66,7 @@ export function Registro() {
           required
           value={datos.contrasena}
           onChange={cambiar('contrasena')}
+          onBlur={v.alSalir('contrasena')}
           error={errorDe('contrasena')}
           ayuda="Al menos 10 caracteres. Una frase es más segura que símbolos raros."
         />

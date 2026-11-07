@@ -12,6 +12,7 @@ import { ErrorCarga, Esqueleto } from '../componentes/Estados'
 import { Sello } from '../componentes/Sello'
 import { useToast } from '../componentes/toast'
 import { useEnfocarError } from '../componentes/useEnfocarError'
+import { reglas, useValidacion } from '../validacion'
 import { dinero, fechaCorta, fechaLarga, horaCorta, hoyIso, leerMonto } from '../formato'
 
 const pestanas = [
@@ -217,10 +218,11 @@ function FormularioEntrega({ proyectoId, hito, onListo }: { proyectoId: string; 
   })
   const errores = erroresDeFormulario(entregar.error)
   const formEntrega = useEnfocarError(entregar.error)
+  const v = useValidacion({ evidenciaUrl: reglas.url(url) })
 
   function enviar(e: FormEvent) {
     e.preventDefault()
-    entregar.mutate()
+    if (v.validarTodo()) entregar.mutate()
   }
 
   return (
@@ -230,7 +232,7 @@ function FormularioEntrega({ proyectoId, hito, onListo }: { proyectoId: string; 
           {errores.general}
         </p>
       )}
-      <Campo id="evidenciaUrl" etiqueta="Enlace a la entrega" type="url" inputMode="url" autoFocus value={url} onChange={(e) => setUrl(e.target.value)} error={errores.campo('evidenciaUrl')} ayuda="El sitio publicado, una carpeta compartida o un archivo. Debe empezar con https://" />
+      <Campo id="evidenciaUrl" etiqueta="Enlace a la entrega" type="url" inputMode="url" autoFocus value={url} onChange={(e) => setUrl(e.target.value)} onBlur={v.alSalir('evidenciaUrl')} error={v.error('evidenciaUrl') ?? errores.campo('evidenciaUrl')} ayuda="El sitio publicado, una carpeta compartida o un archivo. Debe empezar con https://" />
       <div className="botonera columna">
         <button className="btn primario ancho" type="submit" disabled={entregar.isPending}>
           {entregar.isPending ? 'Entregando…' : 'Entregar'}
@@ -248,7 +250,6 @@ function FormularioPago({ proyectoId, hito, onListo }: { proyectoId: string; hit
   const toast = useToast()
   const pendiente = Math.round((hito.monto - hito.pagado) * 100) / 100
   const [datos, setDatos] = useState({ monto: pendiente.toFixed(2), fecha: hoyIso(), nota: '' })
-  const [errorMonto, setErrorMonto] = useState<string>()
   const monto = leerMonto(datos.monto)
   const pagar = useMutation({
     mutationFn: () => api<Proyecto>(`/proyectos/${proyectoId}/hitos/${hito.id}/pagos`, { method: 'POST', body: JSON.stringify({ monto, fecha: datos.fecha || null, nota: datos.nota }) }),
@@ -262,15 +263,14 @@ function FormularioPago({ proyectoId, hito, onListo }: { proyectoId: string; hit
   })
   const errores = erroresDeFormulario(pagar.error)
   const formPago = useEnfocarError(pagar.error)
+  const v = useValidacion({
+    monto: () => (!(monto > 0) ? 'Escribe el monto recibido.' : monto > pendiente ? `No puede ser mayor que lo pendiente: ${dinero(pendiente)}` : undefined),
+  })
 
   function enviar(e: FormEvent) {
     e.preventDefault()
     // Se revisa antes de enviar para dar el mensaje al instante; el servidor vuelve a validarlo.
-    const error = !(monto > 0) ? 'Escribe el monto recibido.' : monto > pendiente ? `No puede ser mayor que lo pendiente: ${dinero(pendiente)}` : undefined
-    if (error) {
-      setErrorMonto(error)
-      return document.getElementById('monto')?.focus()
-    }
+    if (!v.validarTodo()) return
     pagar.mutate()
   }
 
@@ -291,11 +291,9 @@ function FormularioPago({ proyectoId, hito, onListo }: { proyectoId: string; hit
         inputMode="decimal"
         autoFocus
         value={datos.monto}
-        onChange={(e) => {
-          setDatos((d) => ({ ...d, monto: e.target.value }))
-          setErrorMonto(undefined)
-        }}
-        error={errorMonto ?? errores.campo('monto')}
+        onChange={(e) => setDatos((d) => ({ ...d, monto: e.target.value }))}
+        onBlur={v.alSalir('monto')}
+        error={v.error('monto') ?? errores.campo('monto')}
         ayuda={`Pendiente: ${dinero(pendiente)}`}
       />
       <Campo id="fecha" etiqueta="Fecha del pago" type="date" value={datos.fecha} onChange={(e) => setDatos((d) => ({ ...d, fecha: e.target.value }))} error={errores.campo('fecha')} />
