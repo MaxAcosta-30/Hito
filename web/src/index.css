@@ -1860,3 +1860,72 @@ i.serie-acordado {
     animation: none;
   }
 }
+
+/* Casos de ejemplo: tres tarjetas, cada una con los sellos de su estado */
+.landing-casos {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 48px) clamp(40px, 6vw, 72px);
+}
+
+.landing-casos h2 {
+  font-size: clamp(30px, 4vw, 44px);
+}
+
+.casos-bajada {
+  color: var(--grafito);
+  margin: 8px 0 24px;
+}
+
+.landing-casos ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px;
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 900px) {
+  .landing-casos ul {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.landing-casos li {
+  background: var(--hoja);
+  border: 1px solid var(--renglon);
+  border-top: 3px solid var(--firma);
+  border-radius: var(--r-hoja);
+  padding: 20px;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.landing-casos h3 {
+  font-size: 20px;
+}
+
+.landing-casos p {
+  margin: 0;
+  color: var(--grafito);
+}
+
+.casos-sellos {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .landing-casos li {
+    transition:
+      transform 200ms cubic-bezier(0.23, 1, 0.32, 1),
+      box-shadow 200ms ease;
+  }
+
+  .landing-casos li:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 14px 32px color-mix(in srgb, var(--tinta) 12%, transparent);
+  }
+}

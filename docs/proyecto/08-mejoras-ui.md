@@ -83,3 +83,7 @@ Max notó que, tras las mejoras de comportamiento, Hito se veía igual. Se propu
 - **Panel de cobros:** la cifra "Te deben" sube, debajo se traza una doble raya contable y el desglose se asienta escalonado. En el detalle del proyecto, la doble raya del total se traza al cargar.
 - **Hover que agranda** (solo con puntero fino y sin movimiento reducido): botones 1.03 (y 0.97 al presionar), tarjeta del saldo 1.01 con elevación, desglose 1.04, renglones 1.012, filas 1.006, sellos 1.12, el logo se levanta, y en la landing el libro se endereza, los pasos suben con su número en ámbar y la captura del celular se acerca.
 - **Hallazgo:** las entradas con `animation-fill-mode: both` bloqueaban el `transform` del hover. Se cambiaron a `backwards`: el elemento queda oculto durante el retraso y libre al terminar. Medido con Playwright: tarjeta `matrix(1.01…)`, fila `1.006`, botón `1.03`, desglose `1.04`.
+
+**Casos de ejemplo y video en el README** (rama `ui/hover-y-entradas`)
+- La landing tiene la sección "Casos de ejemplo" (diseñadora, desarrollador, estudio), y el README la repite. Cada caso es un proyecto de la demo con sus sellos reales, así que se puede comprobar al abrirla.
+- El README muestra la portada del video y lo enlaza al release `v1.0.0` de GitHub. El MP4 (4 MB) va como archivo del release, no dentro del repositorio.

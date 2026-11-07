@@ -22,6 +22,14 @@ El freelancer manda el alcance por WhatsApp, el cliente dice "sí" y semanas des
 - Los proyectos se **buscan y filtran** por nombre, cliente y estado, y su resumen se **exporta a PDF**.
 - El panel grafica lo **acordado contra lo cobrado** mes a mes, y la app se **instala en el celular** como PWA.
 
+### Casos de ejemplo
+
+Los tres vienen en la demo, así que se pueden abrir y recorrer:
+
+- **Diseñadora web · Tienda en línea:** cuatro hitos por $44,000. Su cliente aprueba la landing desde WhatsApp y ella ve que le deben $36,000, con $12,000 ya aprobados.
+- **Desarrollador · App de citas:** la clínica pide cambios al prototipo con un comentario obligatorio. Él corrige, entrega de nuevo y todo queda en el historial.
+- **Estudio de arquitectura · Sitio institucional:** el alcance está en borrador y se ajusta antes de enviarlo. Al aceptarse, hitos y montos quedan congelados.
+
 ## Capturas
 
 | Panel de cobros | Detalle del proyecto | Vista del cliente (móvil) |

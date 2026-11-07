@@ -4,6 +4,28 @@ import { esperarApi } from '../api/esperarApi'
 import { LibroAnimado } from '../componentes/LibroAnimado'
 import { Logo } from '../componentes/Logo'
 
+// Casos de ejemplo: los tres son proyectos que trae la demo, así quien lee puede abrirlos y verlos funcionar.
+const casos = [
+  {
+    quien: 'Diseñadora web',
+    proyecto: 'Tienda en línea · Panadería Rosales',
+    texto: 'Cuatro hitos por $44,000. Su cliente aprueba la landing desde WhatsApp y ella ve al instante que le deben $36,000, con $12,000 ya aprobados.',
+    sellos: ['PAGADO', 'APROBADO'],
+  },
+  {
+    quien: 'Desarrollador de apps',
+    proyecto: 'App de citas · Clínica Norte',
+    texto: 'La clínica pide cambios al prototipo con un comentario. Él corrige, entrega de nuevo y todo queda en el historial: quién, qué y cuándo.',
+    sellos: ['CAMBIOS'],
+  },
+  {
+    quien: 'Estudio de arquitectura',
+    proyecto: 'Sitio institucional · Estudio Vega',
+    texto: 'Arma el alcance en borrador y lo ajusta antes de enviarlo. Cuando el cliente lo acepte, hitos y montos quedan congelados.',
+    sellos: ['PENDIENTE'],
+  },
+]
+
 const pasos = [
   { n: '01', titulo: 'Acuerda', texto: 'Escribe los hitos con monto y fecha. Tu cliente los acepta desde un enlace privado, sin crear cuenta, y quedan congelados.' },
   { n: '02', titulo: 'Entrega', texto: 'Marca cada hito como entregado con el enlace al trabajo. Tu cliente lo aprueba o te pide cambios con un comentario.' },
@@ -73,6 +95,30 @@ export function Landing() {
               </li>
             ))}
           </ol>
+        </section>
+
+        <section className="landing-casos" aria-labelledby="casos-titulo">
+          <h2 id="casos-titulo">Casos de ejemplo</h2>
+          <p className="casos-bajada">Los tres vienen en la demo: ábrela y recórrelos.</p>
+          <ul>
+            {casos.map((c) => (
+              <li key={c.quien}>
+                <span className="rotulo">{c.quien}</span>
+                <h3>{c.proyecto}</h3>
+                <p>{c.texto}</p>
+                <span className="casos-sellos">
+                  {c.sellos.map((s) => (
+                    <span key={s} className={`sello ${{ PAGADO: 'pagado', APROBADO: 'aprobado', CAMBIOS: 'cambios', PENDIENTE: 'pendiente' }[s]}`}>
+                      {s}
+                    </span>
+                  ))}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <Link className="btn primario" to="/demo">
+            Abrir la demo con estos casos
+          </Link>
         </section>
 
         <section className="landing-cliente" aria-labelledby="cliente-titulo">
