@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Hito · Base tranquila + un acento vibrante</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Public+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Maqueta: seis combinaciones de tu paleta. Arriba la landing cinemática (oscuro); abajo la app en claro. */
+* { box-sizing: border-box; }
+body { margin: 0; padding: 28px; background: #d8d3d0; font-family: 'Public Sans', sans-serif; color: #1d1f26; }
+h1 { font: 800 30px 'Bricolage Grotesque'; margin: 0 0 4px; letter-spacing: -0.02em; }
+.nota { margin: 0 0 20px; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.op { border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.18); background: var(--cla); }
+.cine { position: relative; padding: 22px 22px 24px; color: var(--cla); min-height: 280px;
+  background: radial-gradient(70% 60% at 75% 30%, color-mix(in srgb, var(--a) 22%, transparent), transparent 65%), radial-gradient(130% 100% at 50% 50%, transparent 55%, rgba(0,0,0,.55)), var(--osc); }
+.etq { font: 700 10px 'JetBrains Mono'; letter-spacing: .12em; opacity: .75; margin-bottom: 18px; display: flex; justify-content: space-between; }
+.h { font: 800 34px/0.95 'Bricolage Grotesque'; letter-spacing: -0.04em; text-transform: uppercase; margin: 0 0 10px; }
+.h em { font-style: normal; color: var(--a); text-shadow: 0 0 28px color-mix(in srgb, var(--a) 45%, transparent); }
+.baj { opacity: .78; font-size: 14px; margin: 0 0 16px; }
+.btn { display: inline-block; font: 700 14px 'Public Sans'; padding: 11px 16px; border-radius: 4px; background: var(--a); color: var(--sobre); box-shadow: 0 0 26px color-mix(in srgb, var(--a) 40%, transparent); }
+.clara { padding: 16px 22px 18px; color: var(--osc); background: var(--cla); display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: end; }
+.clara .r { font: 700 10px 'JetBrains Mono'; letter-spacing: .14em; opacity: .7; grid-column: 1 / -1; }
+.clara .cifra { font: 700 26px 'JetBrains Mono'; letter-spacing: -0.02em; }
+/* En claro el acento lleva borde oscuro cuando su contraste con el fondo es bajo */
+.clara .btn { box-shadow: none; border: 2px solid var(--osc); font-size: 13px; padding: 8px 12px; }
+.clara .sellos { grid-column: 1 / -1; display: flex; gap: 6px; }
+.sello { font: 700 10px 'JetBrains Mono'; letter-spacing: .1em; padding: 3px 6px; border: 1.5px solid var(--osc); }
+.sello.ok { background: var(--a); color: var(--sobre); }
+.nombre { font: 800 18px 'Bricolage Grotesque'; padding: 12px 22px 14px; background: #fff; letter-spacing: -0.02em; }
+.nombre small { display: block; font: 500 11px 'JetBrains Mono'; color: #555; letter-spacing: .02em; margin-top: 2px; }
+</style>
+</head>
+<body>
+<h1>Base tranquila + un solo acento vibrante</h1>
+<p class="nota">Seis combinaciones de tu paleta, con contraste verificado. Arriba: la landing con fondo cinemático. Abajo: la app en modo claro.</p>
+<div class="grid" id="ops"></div>
+<script>
+  const ops = [
+    ['Grafito + Coral Rose', '#1D1F26', '#F9F9F9', '#FF6B82', '#1D1F26', 'Raven Black · Snowy White · Coral Rose', 'botón 6.0:1'],
+    ['Medianoche + Electric Blue', '#010311', '#F1F2F6', '#004AFD', '#FFFFFF', 'Midnight Black · Mellow White · Electric Blue', 'botón 6.2:1'],
+    ['Vino + Butter Yellow', '#371228', '#FEE6D0', '#F4CD00', '#371228', 'Deep Burgundy · Blush Peach · Butter Yellow', 'botón 10.6:1'],
+    ['Café + Pastel Turquoise', '#412822', '#E0DFD6', '#07FDD2', '#412822', 'Coffee Brown · Pale Pine · Pastel Turquoise', 'botón 10.3:1'],
+    ['Medianoche + Magenta', '#010311', '#F9F9F9', '#E10F9E', '#010311', 'Midnight Black · Snowy White · Magenta Pink', 'botón 4.7:1'],
+    ['Navy + Sunshine Yellow', '#223B82', '#F9F9F9', '#FECE00', '#223B82', 'Azure Navy · Snowy White · Sunshine Yellow', 'botón 7.0:1'],
+  ]
+  document.getElementById('ops').innerHTML = ops.map(([nombre, osc, cla, a, sobre, colores, contraste], i) => `
+    <div class="op" style="--osc:${osc};--cla:${cla};--a:${a};--sobre:${sobre}">
+      <div class="nombre">${String.fromCharCode(65 + i)} · ${nombre}<small>${colores} · ${contraste}</small></div>
+      <div class="cine"><div class="etq"><span>HITO</span><span>CINEMÁTICO</span></div>
+        <div class="h">Lo que acordaste, <em>asentado.</em></div>
+        <p class="baj">Hitos, entregas y pagos en un solo libro.</p>
+        <span class="btn">Probar la demo</span></div>
+      <div class="clara"><span class="r">TE DEBEN</span><span class="cifra">$76,000.00</span><span class="btn">Registrar pago</span>
+        <span class="sellos"><span class="sello ok">APROBADO</span><span class="sello">ENTREGADO</span></span></div>
+    </div>`).join('')
+</script>
+</body>
+</html>

@@ -26,6 +26,24 @@
 
 **Foco por pantalla.** Panel: la cifra "Te deben". Detalle: la hoja de hitos. Cliente: la única decisión pendiente, en una barra fija abajo. Cada vista tiene **una** acción primaria.
 
+## Paleta "Grafito + Coral Rose" (2026-11-06)
+
+Max pidió aplicar la técnica de una **base neutra tranquila + un solo acento vibrante**, con fondo **cinemático** en la landing, y no limitarse a los verdes. Entre 6 combinaciones de su paleta con el contraste medido ([`diseno/acento.html`](diseno/acento.html)) eligió **A · Grafito + Coral Rose**. Reemplaza los colores de "Libro mayor"; la tipografía, los sellos, las reglas de estados y el logo "H contable" se mantienen.
+
+| Token | Claro | Oscuro | Uso |
+|---|---|---|---|
+| `--papel` / `--hoja` | Mellow White `#F1F2F6` / Snowy White `#F9F9F9` | `#15161B` / Raven Black `#1D1F26` | fondo y superficies |
+| `--tinta` | Raven Black `#1D1F26` | Mellow White `#F1F2F6` | texto (15.6:1 y 14.7:1) |
+| `--grafito` | `#555966` (6.2:1) | `#A6AAB6` (7.8:1) | texto secundario |
+| `--acento` | Coral Rose `#FF6B82` | Coral Rose `#FF6B82` | **el único color vibrante**, solo como relleno: botón principal, sello APROBADO y logo, con texto Raven (6.0:1) |
+| `--firma` | `#1D1F26` | `#FF6B82` (6.0:1) | enlaces, foco y subrayados. En claro es tinta porque el coral como texto no llega a AA (2.6:1) |
+| `--sello-pagado` | relleno tinta | relleno Mellow | PAGADO: neutro, "ya está" |
+| `--sello-vencido` / `--sello-cambios` | `#C21D1A` (5.7:1) / `#9A4F0E` (5.7:1) | `#FF8A7A` / Butter Yellow `#F4CD00` | rojo solo para urgencia |
+| series de la gráfica | acordado `#3F6FB5`, cobrado `#E8506A` | `#5B8FD6`, `#E5627A` | validadas con dataviz (daltonismo ΔE ≥ 12.6) |
+
+- **Landing cinemática** en ambos modos: grafito `#15161B` con resplandor coral arriba, un toque azul abajo y viñeta. El botón de la demo es lo más brillante de la pantalla.
+- Favicon, íconos de la PWA y logo: H Raven sobre cuadro coral.
+
 ## Rediseño "Libro mayor" (2026-11-06)
 
 Max eligió la dirección **B · Libro mayor** entre tres propuestas ([`diseno/rediseno.html`](diseno/rediseno.html)). Reemplaza la paleta y la tipografía de "Cotización firmada". Las reglas de foco, estados, sellos y dinero de este documento siguen vigentes.
