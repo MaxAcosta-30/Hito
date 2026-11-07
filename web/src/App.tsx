@@ -1,23 +1,26 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Navigate, NavLink, Outlet, Route, Routes, useLocation } from 'react-router'
 import { esperarApi } from './api/esperarApi'
 import { useSesion } from './auth/contexto'
 import { SesionProvider } from './auth/SesionProvider'
 import { Despertando } from './componentes/Despertando'
+import { Esqueleto } from './componentes/Estados'
 import { Logo } from './componentes/Logo'
 import { ToastProvider } from './componentes/ToastProvider'
-import { ClienteFormulario } from './paginas/ClienteFormulario'
-import { Clientes } from './paginas/Clientes'
-import { Cobros } from './paginas/Cobros'
-import { ProyectoDetalle } from './paginas/ProyectoDetalle'
-import { ProyectoFormulario } from './paginas/ProyectoFormulario'
-import { Proyectos } from './paginas/Proyectos'
 import { Entrar } from './paginas/Entrar'
 import { IniciarDemo } from './paginas/IniciarDemo'
 import { Landing } from './paginas/Landing'
 import { Privacidad } from './paginas/Privacidad'
 import { Registro } from './paginas/Registro'
-import { VistaCliente } from './paginas/VistaCliente'
+
+// Pantallas internas bajo demanda: quien llega a la landing no descarga el panel, y el cliente solo baja su vista.
+const Cobros = lazy(() => import('./paginas/Cobros').then((m) => ({ default: m.Cobros })))
+const Proyectos = lazy(() => import('./paginas/Proyectos').then((m) => ({ default: m.Proyectos })))
+const ProyectoDetalle = lazy(() => import('./paginas/ProyectoDetalle').then((m) => ({ default: m.ProyectoDetalle })))
+const ProyectoFormulario = lazy(() => import('./paginas/ProyectoFormulario').then((m) => ({ default: m.ProyectoFormulario })))
+const Clientes = lazy(() => import('./paginas/Clientes').then((m) => ({ default: m.Clientes })))
+const ClienteFormulario = lazy(() => import('./paginas/ClienteFormulario').then((m) => ({ default: m.ClienteFormulario })))
+const VistaCliente = lazy(() => import('./paginas/VistaCliente').then((m) => ({ default: m.VistaCliente })))
 
 export default function App() {
   const [api, setApi] = useState<'despertando' | 'lista' | 'error'>('despertando')
@@ -52,10 +55,12 @@ export default function App() {
 
   // El cliente entra con su enlace y sin cuenta: su vista no carga la sesión del freelancer.
   return (
+    <Suspense fallback={<Cargando />}>
     <Routes>
       <Route path="/p/:token" element={<VistaCliente />} />
       <Route path="*" element={<AppFreelancer />} />
     </Routes>
+    </Suspense>
   )
 }
 
@@ -130,8 +135,11 @@ function Protegida() {
           Estás en la demo: los datos son de ejemplo y se borran en 24 horas.
         </p>
       )}
-      <main id="contenido" className="contenido" tabIndex={-1}>
-        <Outlet />
+      <main id="contenido" key={ubicacion.pathname} className="contenido" tabIndex={-1}>
+        {/* La barra se queda; solo el contenido muestra su esqueleto mientras baja la pantalla. */}
+        <Suspense fallback={<Esqueleto renglones={5} />}>
+          <Outlet />
+        </Suspense>
       </main>
     </>
   )
