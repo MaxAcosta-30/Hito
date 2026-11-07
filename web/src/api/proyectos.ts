@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions, useQuery } from '@tanstack/react-query'
 import { api } from './cliente'
 
 export type EstadoProyecto = 'Borrador' | 'Enviado' | 'Aceptado' | 'Completado' | 'Cancelado'
@@ -59,10 +59,15 @@ export type Proyecto = {
 
 export type HitoFormulario = { id?: string; titulo: string; monto: number; fechaEntrega: string | null; entregable: string }
 
-export const useProyectos = () => useQuery({ queryKey: ['proyectos'], queryFn: () => api<ProyectoResumen[]>('/proyectos') })
+// Cada consulta se define una vez: la usan su hook y la precarga al pasar el cursor por un enlace.
+export const consultaProyectos = () => queryOptions({ queryKey: ['proyectos'], queryFn: () => api<ProyectoResumen[]>('/proyectos') })
+export const consultaProyecto = (id: string) => queryOptions({ queryKey: ['proyectos', id], queryFn: () => api<Proyecto>(`/proyectos/${id}`) })
+export const consultaEventos = (id: string) =>
+  queryOptions({ queryKey: ['proyectos', id, 'eventos'], queryFn: () => api<Evento[]>(`/proyectos/${id}/eventos`) })
 
-export const useProyecto = (id: string | undefined) =>
-  useQuery({ queryKey: ['proyectos', id], queryFn: () => api<Proyecto>(`/proyectos/${id}`), enabled: !!id })
+export const useProyectos = () => useQuery(consultaProyectos())
+
+export const useProyecto = (id: string | undefined) => useQuery({ ...consultaProyecto(id ?? ''), enabled: !!id })
 
 export const versionDe = (proyecto: Proyecto, numero: number) => proyecto.versiones.find((v) => v.numero === numero)!
 
@@ -73,5 +78,4 @@ export const urlDelCliente = (token: string) => `${window.location.origin}/p/${t
 
 export type Evento = { fecha: string; actor: 'Freelancer' | 'Cliente'; quien: string; tipo: string; descripcion: string }
 
-export const useEventos = (id: string, activo: boolean) =>
-  useQuery({ queryKey: ['proyectos', id, 'eventos'], queryFn: () => api<Evento[]>(`/proyectos/${id}/eventos`), enabled: activo })
+export const useEventos = (id: string, activo: boolean) => useQuery({ ...consultaEventos(id), enabled: activo })

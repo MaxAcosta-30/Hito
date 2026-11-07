@@ -3,7 +3,8 @@ import { useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
 import { api } from '../api/cliente'
 import { erroresDeFormulario, mensajeDeError } from '../api/errores'
-import { useEventos, useProyecto, versionDe, type Hito, type Proyecto, type Version } from '../api/proyectos'
+import { usePrecarga } from '../api/precarga'
+import { consultaEventos, useEventos, useProyecto, versionDe, type Hito, type Proyecto, type Version } from '../api/proyectos'
 import { Campo } from '../componentes/Campo'
 import { Dialogo } from '../componentes/Dialogo'
 import { Compartir } from '../componentes/Compartir'
@@ -29,6 +30,7 @@ export function ProyectoDetalle() {
   const [parametros, setParametros] = useSearchParams()
   const pestana: Pestana = pestanas.find((t) => t.clave === parametros.get('pestana'))?.clave ?? 'hitos'
   const botones = useRef<(HTMLButtonElement | null)[]>([])
+  const precargar = usePrecarga()
   const elegir = (clave: Pestana) => setParametros(clave === 'hitos' ? {} : { pestana: clave }, { replace: true })
 
   // Patrón ARIA de pestañas: flechas, Inicio y Fin mueven el foco y la selección.
@@ -88,6 +90,7 @@ export function ProyectoDetalle() {
             tabIndex={pestana === t.clave ? 0 : -1}
             onClick={() => elegir(t.clave)}
             onKeyDown={(e) => alTeclear(e, i)}
+            {...(t.clave === 'historial' && id ? precargar(consultaEventos(id)) : {})}
           >
             {t.texto}
           </button>

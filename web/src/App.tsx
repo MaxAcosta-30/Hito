@@ -1,26 +1,23 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { Navigate, NavLink, Outlet, Route, Routes, useLocation } from 'react-router'
 import { esperarApi } from './api/esperarApi'
 import { useSesion } from './auth/contexto'
 import { SesionProvider } from './auth/SesionProvider'
+import { consultaPanel } from './api/cobros'
+import { consultaClientes } from './api/clientes'
+import { usePrecarga } from './api/precarga'
+import { consultaProyectos } from './api/proyectos'
 import { Despertando } from './componentes/Despertando'
 import { Esqueleto } from './componentes/Estados'
 import { Logo } from './componentes/Logo'
 import { ToastProvider } from './componentes/ToastProvider'
+import { ClienteFormulario, Clientes, Cobros, precargarPantallas, ProyectoDetalle, ProyectoFormulario, Proyectos, VistaCliente } from './paginas/pantallas'
 import { Entrar } from './paginas/Entrar'
 import { IniciarDemo } from './paginas/IniciarDemo'
 import { Landing } from './paginas/Landing'
 import { Privacidad } from './paginas/Privacidad'
 import { Registro } from './paginas/Registro'
 
-// Pantallas internas bajo demanda: quien llega a la landing no descarga el panel, y el cliente solo baja su vista.
-const Cobros = lazy(() => import('./paginas/Cobros').then((m) => ({ default: m.Cobros })))
-const Proyectos = lazy(() => import('./paginas/Proyectos').then((m) => ({ default: m.Proyectos })))
-const ProyectoDetalle = lazy(() => import('./paginas/ProyectoDetalle').then((m) => ({ default: m.ProyectoDetalle })))
-const ProyectoFormulario = lazy(() => import('./paginas/ProyectoFormulario').then((m) => ({ default: m.ProyectoFormulario })))
-const Clientes = lazy(() => import('./paginas/Clientes').then((m) => ({ default: m.Clientes })))
-const ClienteFormulario = lazy(() => import('./paginas/ClienteFormulario').then((m) => ({ default: m.ClienteFormulario })))
-const VistaCliente = lazy(() => import('./paginas/VistaCliente').then((m) => ({ default: m.VistaCliente })))
 
 export default function App() {
   const [api, setApi] = useState<'despertando' | 'lista' | 'error'>('despertando')
@@ -33,6 +30,7 @@ export default function App() {
     esperarApi('/api/health/live', control.signal).then((lista) => {
       if (!control.signal.aborted) setApi(lista ? 'lista' : 'error')
     })
+    precargarPantallas()
     return () => control.abort()
   }, [intento])
 
@@ -111,6 +109,7 @@ function SoloAnonimo() {
 function Protegida() {
   const { estado, salir } = useSesion()
   const ubicacion = useLocation()
+  const precargar = usePrecarga()
   if (estado.tipo === 'cargando') return <Cargando />
   if (estado.tipo === 'anonimo') return <Navigate to="/entrar" replace state={{ desde: ubicacion.pathname }} />
 
@@ -122,9 +121,15 @@ function Protegida() {
       <header className="barra">
         <Logo />
         <nav aria-label="Principal">
-          <NavLink to="/cobros">Cobros</NavLink>
-          <NavLink to="/proyectos">Proyectos</NavLink>
-          <NavLink to="/clientes">Clientes</NavLink>
+          <NavLink to="/cobros" {...precargar(consultaPanel())}>
+            Cobros
+          </NavLink>
+          <NavLink to="/proyectos" {...precargar(consultaProyectos())}>
+            Proyectos
+          </NavLink>
+          <NavLink to="/clientes" {...precargar(consultaClientes())}>
+            Clientes
+          </NavLink>
         </nav>
         <button className="btn texto" onClick={salir}>
           Salir

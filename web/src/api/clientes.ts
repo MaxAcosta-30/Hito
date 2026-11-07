@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions, useQuery } from '@tanstack/react-query'
 import { api } from './cliente'
 
 export type Cliente = {
@@ -13,11 +13,13 @@ export type Cliente = {
 
 export type DatosCliente = { nombre: string; empresa: string; email: string; telefono: string }
 
-export const useClientes = (archivados = false) =>
-  useQuery({
+export const consultaClientes = (archivados = false) =>
+  queryOptions({
     queryKey: ['clientes', { archivados }],
     queryFn: () => api<Cliente[]>(`/clientes?archivados=${archivados}`),
   })
+
+export const useClientes = (archivados = false) => useQuery(consultaClientes(archivados))
 
 export const useCliente = (id: string | undefined) =>
   useQuery({
