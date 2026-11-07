@@ -1,0 +1,4 @@
+# Los enlaces de cliente (/p/...) son privados: además llevan X-Robots-Tag: noindex.
+User-agent: *
+Disallow: /p/
+Disallow: /demo

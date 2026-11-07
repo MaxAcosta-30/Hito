@@ -16,8 +16,28 @@ export class ErrorApi extends Error {
 // Al recargar la página se pierde y se recupera con la cookie httpOnly de renovación.
 let accessToken: string | null = null
 
+// Marca no secreta ("hay una sesión en este navegador"). Sin ella no se pide /auth/renovar al cargar:
+// un visitante anónimo se ahorra la petición y el 401 en la consola. Nunca guarda el token.
+const MARCA = 'hito_sesion'
+function marcarSesion(activa: boolean) {
+  try {
+    if (activa) localStorage.setItem(MARCA, '1')
+    else localStorage.removeItem(MARCA)
+  } catch {
+    // Sin almacenamiento (modo privado estricto): se sigue funcionando, solo sin el ahorro.
+  }
+}
+export function haySesionGuardada() {
+  try {
+    return localStorage.getItem(MARCA) === '1'
+  } catch {
+    return true
+  }
+}
+
 export function guardarToken(token: string | null) {
   accessToken = token
+  marcarSesion(token !== null)
 }
 
 // Una sola renovación a la vez: el refresh token es de un solo uso y dos llamadas
@@ -29,11 +49,11 @@ export function renovar(): Promise<Sesion | null> {
     try {
       const res = await fetch('/api/auth/renovar', { method: 'POST', credentials: 'same-origin' })
       if (!res.ok) {
-        accessToken = null
+        guardarToken(null)
         return null
       }
       const sesion = (await res.json()) as Sesion
-      accessToken = sesion.accessToken
+      guardarToken(sesion.accessToken)
       return sesion
     } finally {
       renovando = null

@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { api, guardarToken, renovar, type Sesion } from '../api/cliente'
+import { api, guardarToken, haySesionGuardada, renovar, type Sesion } from '../api/cliente'
 import { SesionContexto, type EstadoSesion } from './contexto'
 
 export function SesionProvider({ children }: { children: ReactNode }) {
-  const [estado, setEstado] = useState<EstadoSesion>({ tipo: 'cargando' })
+  // Sin marca de sesión se sabe de inmediato que es anónimo: no hay esqueleto ni petición de renovación.
+  const [estado, setEstado] = useState<EstadoSesion>(() => (haySesionGuardada() ? { tipo: 'cargando' } : { tipo: 'anonimo' }))
 
   // Al cargar la app, la cookie de renovación (si existe) recupera la sesión sin pedir la contraseña.
   useEffect(() => {
+    if (!haySesionGuardada()) return
     let activo = true
     renovar().then((sesion) => {
       if (activo) setEstado(sesion ? { tipo: 'autenticado', usuario: sesion.usuario } : { tipo: 'anonimo' })
