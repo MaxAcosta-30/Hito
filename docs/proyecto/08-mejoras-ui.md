@@ -97,3 +97,23 @@ Max notó que, tras las mejoras de comportamiento, Hito se veía igual. Se propu
 - Técnica de base neutra + un solo acento vibrante, con fondo cinemático en la landing. Max eligió la combinación A entre 6 opciones de su paleta con el contraste verificado; descarté las que no pasaban AA (Tangerine, Hot Pink, Egipcio + coral).
 - El acento se separó de la "firma" (enlaces y foco), porque en claro el coral solo sirve como relleno. Detalle de tokens en `07-diseno.md`.
 - Capturas del README, la imagen del celular de la landing y el video regenerados con la paleta nueva; el escenario del video también es cinemático.
+
+## Rediseño "El expediente sellado" (2026-11-07, rama `ui/expediente-sellado`)
+
+Max pidió que la interfaz tuviera "personalidad, alma y vida". Se trabajó con la skill `impeccable`: `PRODUCT.md` con lo confirmado por Max (usuario, voz cómplice y directa, lo intocable: nombre, frase, logo H contable y paleta coral), 7 mundos visuales candidatos y la dirección asignada **El expediente sellado**: cada proyecto es un expediente sobre un escritorio grafito, con carpeta coral, hojas pautadas y sellos de goma.
+
+- **Landing:** la carpeta coral ocupa la primera pantalla y sus pestañas son la navegación. El titular «Lo que acordaste, *asentado.*» trae la última palabra estampada con tinta (filtro SVG propio, sin librerías). La hoja que sale de la carpeta se puede operar: *Aprobar entrega* deja caer un sello grande con un golpe y *Registrar pago* hace bajar lo que te deben. El folio avanza con cada asiento, como en el historial real.
+- **Debajo:** "Así se arma" es una sola hoja cuyos renglones reciben su sello al hacer scroll (`animation-timeline: view()`, cero JavaScript; donde no hay soporte, el sello ya está puesto). Los casos de ejemplo son carpetas encimadas en abanico, y el celular del cliente aparece apoyado sobre una hoja.
+- **App (con mesura):** la navegación son pestañas de carpeta, los sellos chicos usan tinta fina (borde irregular sin manchas, para que se lean siempre), el toast lleva el sello LISTO y los íconos son SVG propios en lugar de glifos unicode.
+- **Revisión independiente** (agente `impeccable-finish-reviewer`) con el veredicto "fix" y 8 correcciones materiales, todas aplicadas:
+  1. La composición de debajo del héroe volvía a ser plantilla (filas de tarjetas y un bloque 50/50); se rehízo.
+  2. El sello grande cae sobre el renglón con tinta completa.
+  3. Se agregó el folio.
+  4. El foco del teclado ahora se ve en cada material.
+  5. En el celular, el momento memorable sube a la primera pantalla.
+  6. La tipografía mono queda solo para cifras y folios.
+  7. "Firma" pasa a "aprueba": Hito no tiene firma electrónica y no debe insinuarla.
+  8. La serie "Acordado" de la gráfica dejó de ser azul, un color fuera de la paleta. Ahora es una línea de referencia grafito y punteada, validada con el script de `dataviz`: separación para daltonismo ΔE 9.2 en claro y 8.9 en oscuro.
+- **Detector de `impeccable`:** se corrigieron sus hallazgos (dos bordes laterales de acento, una franja sobre tarjeta redondeada y cuatro curvas con rebote) y terminó en 0.
+- **Rendimiento:** la imagen del celular de la landing se sirve en WebP (≈47 KB contra 86 KB en PNG) con `<picture>` y respaldo PNG. Brotli y la caché inmutable de `/assets/*` se verificaron en producción. Se intentó AVIF, pero el ImageMagick local no lo codifica, y no se agregó.
+- **Verificado:** lint, tipos, build, el e2e del flujo de cobro y capturas a 1440 y 390 px en claro y oscuro (landing, panel, proyecto y vista del cliente).

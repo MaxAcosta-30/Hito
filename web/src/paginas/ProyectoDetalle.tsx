@@ -7,6 +7,7 @@ import { usePrecarga } from '../api/precarga'
 import { consultaEventos, useEventos, useProyecto, versionDe, type Hito, type Proyecto, type Version } from '../api/proyectos'
 import { Campo } from '../componentes/Campo'
 import { Dialogo } from '../componentes/Dialogo'
+import { IconoSalida } from '../componentes/Iconos'
 import { Compartir } from '../componentes/Compartir'
 import { Confirmar } from '../componentes/Confirmar'
 import { ErrorCarga, Esqueleto } from '../componentes/Estados'
@@ -62,9 +63,10 @@ export function ProyectoDetalle() {
   return (
     <>
       <div className="cabecera-proyecto">
-        <div className="meta">{p.cliente.nombre}</div>
         <h1>{p.nombre}</h1>
-        <div className="meta">{lineaDeEstado(p, actual)}</div>
+        <div className="meta">
+          {p.cliente.nombre} · {lineaDeEstado(p, actual)}
+        </div>
         <button className="btn secundario no-imprimir" onClick={exportar}>
           Exportar PDF
         </button>
@@ -174,7 +176,7 @@ function RenglonHito({ proyecto, hito, accionable, vencido }: { proyecto: Proyec
           <>
             {' · '}
             <a href={hito.evidenciaUrl} target="_blank" rel="noopener noreferrer">
-              ver entrega ↗
+              ver entrega <IconoSalida />
             </a>
           </>
         )}
