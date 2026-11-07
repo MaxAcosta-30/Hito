@@ -1,13 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { MesDeCobro } from '../api/cobros'
 import { dinero } from '../formato'
 
 // Acordado vs. cobrado, acumulados por mes, como líneas escalonadas: el saldo cambia de golpe al vencer o al pagar.
 // Un solo eje (MXN). Leyenda + etiquetas directas al final; tooltip por mes; tabla equivalente para lectores de pantalla.
 
-const ANCHO = 640
 const ALTO = 220
-const M = { arriba: 16, derecha: 120, abajo: 28, izquierda: 56 }
 const corto = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', notation: 'compact', maximumFractionDigits: 1 })
 const nombreMes = new Intl.DateTimeFormat('es-MX', { month: 'short' })
 const mesLargo = new Intl.DateTimeFormat('es-MX', { month: 'long', year: 'numeric' })
@@ -25,6 +23,17 @@ function tope(maximo: number) {
 
 export function GraficaCobros({ historial }: { historial: MesDeCobro[] }) {
   const [activo, setActivo] = useState<number | null>(null)
+  // Se dibuja al ancho real del contenedor (escala 1:1): en el celular los textos no se encogen.
+  const lienzo = useRef<HTMLDivElement>(null)
+  const [ANCHO, setAncho] = useState(640)
+  useEffect(() => {
+    const nodo = lienzo.current
+    if (!nodo) return
+    const observador = new ResizeObserver(([e]) => setAncho(Math.max(300, Math.round(e.contentRect.width))))
+    observador.observe(nodo)
+    return () => observador.disconnect()
+  }, [])
+  const M = { arriba: 16, derecha: ANCHO < 480 ? 76 : 120, abajo: 28, izquierda: 52 }
   const y0 = tope(Math.max(...historial.flatMap((m) => [m.acordado, m.cobrado])))
   const anchoPlot = ANCHO - M.izquierda - M.derecha
   const altoPlot = ALTO - M.arriba - M.abajo
@@ -47,7 +56,7 @@ export function GraficaCobros({ historial }: { historial: MesDeCobro[] }) {
         <span><i className="serie-acordado" /> Acordado que ya vencía</span>
         <span><i className="serie-cobrado" /> Cobrado</span>
       </div>
-      <div className="lienzo-grafica" onPointerLeave={() => setActivo(null)}>
+      <div className="lienzo-grafica" ref={lienzo} onPointerLeave={() => setActivo(null)}>
         <svg viewBox={`0 0 ${ANCHO} ${ALTO}`} role="img" aria-label={`Acordado y cobrado acumulados en los últimos ${historial.length} meses. Al día de hoy: acordado ${dinero(ultimo.acordado)}, cobrado ${dinero(ultimo.cobrado)}.`}>
           {lineas.map((v) => (
             <g key={v}>

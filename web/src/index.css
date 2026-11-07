@@ -1711,3 +1711,14 @@ i.serie-acordado {
     animation: none;
   }
 }
+
+/* Celular angosto: solo el mojón en la barra, para que quepan las 3 secciones y "Salir" */
+@media (max-width: 420px) {
+  .barra {
+    gap: 10px;
+  }
+
+  .barra .logo-texto {
+    display: none;
+  }
+}

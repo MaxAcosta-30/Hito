@@ -16,6 +16,7 @@ El freelancer manda el alcance por WhatsApp, el cliente dice "sí" y semanas des
 - El freelancer **registra los pagos** y su panel muestra lo **por cobrar**, lo **aprobado sin pagar** y lo **vencido**.
 - Todo queda en un **historial** que no se puede editar ni borrar.
 - Los proyectos se **buscan y filtran** por nombre, cliente y estado, y su resumen se **exporta a PDF**.
+- El panel grafica lo **acordado contra lo cobrado** mes a mes, y la app se **instala en el celular** como PWA.
 
 ## Capturas
 
@@ -68,7 +69,7 @@ flowchart LR
 
 | Tipo | Cantidad | Qué cubre |
 |---|---|---|
-| Unitarias (xUnit) | 51 | Transiciones de estado, cálculo de totales, reglas de pago, panel de cobros |
+| Unitarias (xUnit) | 53 | Transiciones de estado, cálculo de totales, reglas de pago, panel de cobros e historial mensual |
 | Integración (Testcontainers) | 50 | API con PostgreSQL real, incluido el aislamiento entre usuarios y pagos simultáneos |
 | E2E (Playwright) | 1 | El flujo crítico completo, con freelancer y cliente en navegadores separados |
 | Kubernetes (kind) | 1 | Rollout con sondas live/ready, migraciones y llamada real a la API |
