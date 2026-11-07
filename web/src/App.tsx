@@ -4,6 +4,7 @@ import { esperarApi } from './api/esperarApi'
 import { useSesion } from './auth/contexto'
 import { SesionProvider } from './auth/SesionProvider'
 import { Despertando } from './componentes/Despertando'
+import { Logo } from './componentes/Logo'
 import { ToastProvider } from './componentes/ToastProvider'
 import { ClienteFormulario } from './paginas/ClienteFormulario'
 import { Clientes } from './paginas/Clientes'
@@ -110,7 +111,7 @@ function Protegida() {
         Saltar al contenido
       </a>
       <header className="barra">
-        <span className="marca">Hito</span>
+        <Logo />
         <nav aria-label="Principal">
           <NavLink to="/cobros">Cobros</NavLink>
           <NavLink to="/proyectos">Proyectos</NavLink>

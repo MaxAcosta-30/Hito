@@ -1,40 +1,50 @@
-/* Dirección "Cotización firmada". Reglas en docs/proyecto/07-diseno.md. */
+/* Dirección "Libro mayor": papel contable, cifras protagonistas. Reglas en docs/proyecto/07-diseno.md. */
 :root {
-  --papel: #f5f0e6;
-  --hoja: #fbf8f1;
-  --campo: #f1ebdf;
-  --tinta: #1d2b4f;
-  --grafito: #6b6558;
-  --renglon: rgba(29, 43, 79, 0.12);
-  --renglon-fuerte: rgba(29, 43, 79, 0.24);
-  --firma: #2347a6;
-  --sobre-firma: #ffffff;
-  --sello-pagado: #2f6b3f;
-  --sello-vencido: #b23a2e;
+  --papel: #edf1ea;
+  --hoja: #f7f9f4;
+  --campo: #e6ebe2;
+  --tinta: #10231b;
+  --grafito: #4f6358;
+  --renglon: rgba(16, 35, 27, 0.12);
+  --renglon-fuerte: rgba(16, 35, 27, 0.28);
+  --pauta: rgba(16, 35, 27, 0.055);
+  --firma: #0f6b4a;
+  --sobre-firma: #f7f9f4;
+  --ambar: #c77d12;
+  --sobre-ambar: #10231b;
+  --sello-pagado: #0f6b4a;
+  --sello-vencido: #b5442c;
   --sobre-peligro: #ffffff;
-  --sello-cambios: #8f5400;
-  --sombra-hoja: 0 1px 2px rgba(29, 43, 79, 0.06);
-  --r-control: 4px;
-  --r-hoja: 8px;
-  --r-dialogo: 12px;
+  --sello-cambios: #9a4f0e;
+  --sombra-hoja: 0 1px 0 rgba(16, 35, 27, 0.06);
+  --r-control: 2px;
+  --r-hoja: 3px;
+  --r-dialogo: 6px;
+  --f-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --f-texto: 'Public Sans', system-ui, sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, monospace;
   color-scheme: light dark;
 }
 
+/* Oscuro: "libro de noche", diseñado aparte y no invertido */
 @media (prefers-color-scheme: dark) {
   :root {
-    --papel: #151824;
-    --hoja: #1c2030;
-    --campo: #12151f;
-    --tinta: #ece6d8;
-    --grafito: #a9a293;
-    --renglon: rgba(236, 230, 216, 0.1);
-    --renglon-fuerte: rgba(236, 230, 216, 0.22);
-    --firma: #93abf2;
-    --sobre-firma: #151824;
-    --sello-pagado: #86c595;
-    --sello-vencido: #ee9184;
-    --sobre-peligro: #151824;
-    --sello-cambios: #e2b060;
+    --papel: #0e1813;
+    --hoja: #14221b;
+    --campo: #0b140f;
+    --tinta: #e4ebe2;
+    --grafito: #9db0a4;
+    --renglon: rgba(228, 235, 226, 0.1);
+    --renglon-fuerte: rgba(228, 235, 226, 0.24);
+    --pauta: rgba(228, 235, 226, 0.035);
+    --firma: #5fc79b;
+    --sobre-firma: #0e1813;
+    --ambar: #e0a341;
+    --sobre-ambar: #0e1813;
+    --sello-pagado: #5fc79b;
+    --sello-vencido: #f08a73;
+    --sobre-peligro: #0e1813;
+    --sello-cambios: #e0a341;
     --sombra-hoja: none;
   }
 }
@@ -45,18 +55,18 @@
 
 body {
   margin: 0;
-  background: var(--papel);
+  background: var(--papel) repeating-linear-gradient(to bottom, transparent 0 31px, var(--pauta) 31px 32px);
   color: var(--tinta);
-  font: 400 16px/1.5 'Source Sans 3', system-ui, sans-serif;
+  font: 400 16px/1.5 var(--f-texto);
   -webkit-font-smoothing: antialiased;
 }
 
 h1,
 h2,
 h3 {
-  font-family: 'Newsreader', Georgia, serif;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-family: var(--f-display);
+  font-weight: 800;
+  letter-spacing: -0.03em;
   text-wrap: balance;
   margin: 0;
 }
@@ -76,7 +86,7 @@ a {
 }
 
 .num {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--f-mono);
   font-variant-numeric: tabular-nums;
 }
 
@@ -92,10 +102,6 @@ a {
   gap: 16px;
   padding: 8px 16px;
   border-bottom: 1px solid var(--renglon);
-}
-
-.barra .marca {
-  font: 600 20px 'Newsreader', serif;
 }
 
 .barra nav {
@@ -170,7 +176,7 @@ a {
   min-height: 44px;
   padding: 0 16px;
   border-radius: var(--r-control);
-  font: 600 15px 'Source Sans 3', sans-serif;
+  font: 600 15px var(--f-texto);
   border: 1px solid transparent;
   cursor: pointer;
   display: inline-flex;
@@ -227,7 +233,7 @@ a.btn {
 }
 
 .campo input {
-  font: 400 16px 'Source Sans 3', sans-serif;
+  font: 400 16px var(--f-texto);
   color: var(--tinta);
   background: var(--campo);
   border: 1px solid var(--renglon-fuerte);
@@ -318,7 +324,7 @@ a.btn {
 }
 
 .rotulo {
-  font: 600 12px/1 'Source Sans 3', sans-serif;
+  font: 600 12px/1 var(--f-texto);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--grafito);
@@ -348,7 +354,7 @@ a.btn {
 }
 
 .renglon .monto {
-  font: 500 14px 'IBM Plex Mono', monospace;
+  font: 500 14px var(--f-mono);
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
@@ -389,7 +395,7 @@ a.renglon:hover b {
 .pestanas button {
   padding: 10px 8px;
   min-height: 44px;
-  font: 600 15px 'Source Sans 3', sans-serif;
+  font: 600 15px var(--f-texto);
   color: var(--grafito);
   text-decoration: none;
   background: none;
@@ -407,7 +413,7 @@ a.renglon:hover b {
 
 .campo select,
 .campo textarea {
-  font: 400 16px 'Source Sans 3', sans-serif;
+  font: 400 16px var(--f-texto);
   color: var(--tinta);
   background: var(--campo);
   border: 1px solid var(--renglon-fuerte);
@@ -426,7 +432,7 @@ a.renglon:hover b {
 }
 
 .campo input.num {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--f-mono);
 }
 
 .botonera {
@@ -492,12 +498,11 @@ a.renglon:hover b {
 }
 
 .sello {
-  font: 600 11px/1 'IBM Plex Mono', monospace;
-  letter-spacing: 0.12em;
+  font: 700 11px/1 var(--f-mono);
+  letter-spacing: 0.1em;
   padding: 5px 7px;
   border: 1.5px solid currentColor;
-  border-radius: 3px;
-  transform: rotate(-3deg);
+  border-radius: 2px;
   white-space: nowrap;
 }
 
@@ -515,12 +520,17 @@ a.renglon:hover b {
   color: var(--sello-cambios);
 }
 
+/* Asentados: el estado que mueve dinero va relleno */
 .sello.aprobado {
-  color: var(--firma);
+  color: var(--sobre-ambar);
+  background: var(--ambar);
+  border-color: var(--ambar);
 }
 
 .sello.pagado {
-  color: var(--sello-pagado);
+  color: var(--sobre-firma);
+  background: var(--sello-pagado);
+  border-color: var(--sello-pagado);
 }
 
 .sello.vencido {
@@ -531,7 +541,6 @@ a.renglon:hover b {
   font-size: 22px;
   padding: 10px 14px;
   border-width: 3px;
-  transform: rotate(-6deg);
   display: inline-block;
 }
 
@@ -547,7 +556,7 @@ a.renglon:hover b {
 }
 
 .totales .monto {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--f-mono);
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
@@ -715,7 +724,7 @@ a.renglon:hover b {
 
 /* Panel de cobros */
 .cifra {
-  font: 600 39px/1.1 'IBM Plex Mono', monospace;
+  font: 600 39px/1.1 var(--f-mono);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
   margin: 8px 0 4px;
@@ -737,7 +746,7 @@ a.renglon:hover b {
 
 .desglose strong {
   display: block;
-  font: 600 16px 'IBM Plex Mono', monospace;
+  font: 600 16px var(--f-mono);
   font-variant-numeric: tabular-nums;
   margin-top: 4px;
 }
@@ -789,7 +798,7 @@ a.renglon:hover b {
 }
 
 .evento time {
-  font: 500 12px/1.6 'IBM Plex Mono', monospace;
+  font: 500 12px/1.6 var(--f-mono);
   color: var(--grafito);
 }
 
@@ -865,14 +874,18 @@ a.renglon:hover b {
   :root {
     --papel: #ffffff;
     --hoja: #ffffff;
-    --tinta: #1d2b4f;
-    --grafito: #4f4a40;
-    --renglon: rgba(29, 43, 79, 0.2);
-    --renglon-fuerte: rgba(29, 43, 79, 0.35);
-    --firma: #2347a6;
-    --sello-pagado: #2f6b3f;
-    --sello-vencido: #b23a2e;
-    --sello-cambios: #8f5400;
+    --tinta: #10231b;
+    --grafito: #4f6358;
+    --renglon: rgba(16, 35, 27, 0.2);
+    --renglon-fuerte: rgba(16, 35, 27, 0.35);
+    --pauta: transparent;
+    --firma: #0f6b4a;
+    --sobre-firma: #f7f9f4;
+    --ambar: #c77d12;
+    --sobre-ambar: #10231b;
+    --sello-pagado: #0f6b4a;
+    --sello-vencido: #b5442c;
+    --sello-cambios: #9a4f0e;
     --sombra-hoja: none;
     color-scheme: light;
   }
@@ -917,9 +930,6 @@ a.renglon:hover b {
 }
 
 .despertando .sello-marca {
-  font-size: 34px;
-  padding: 12px 20px;
-  color: var(--firma);
   margin-bottom: 24px;
   animation:
     estampar 420ms cubic-bezier(0.23, 1, 0.32, 1) both,
@@ -929,7 +939,7 @@ a.renglon:hover b {
 @keyframes estampar {
   from {
     opacity: 0;
-    transform: rotate(-6deg) scale(1.6);
+    transform: translateY(-24px) scale(1.15);
   }
 }
 
@@ -940,7 +950,7 @@ a.renglon:hover b {
 }
 
 .despertando .titular {
-  font: 600 20px/1.3 'Newsreader', Georgia, serif;
+  font: 600 20px/1.3 var(--f-display);
   text-wrap: balance;
   margin: 0;
 }
@@ -951,7 +961,7 @@ a.renglon:hover b {
 }
 
 .despertando .contador {
-  font: 500 13px 'IBM Plex Mono', monospace;
+  font: 500 13px var(--f-mono);
   font-variant-numeric: tabular-nums;
   color: var(--grafito);
   margin: 8px 0 0;
@@ -997,4 +1007,22 @@ a.renglon:hover b {
 
 .privacidad li + li {
   margin-top: 8px;
+}
+
+/* Marca: mojón + palabra en grotesca condensada */
+.logo {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 8px;
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.logo-texto {
+  font: 800 21px/1 var(--f-display);
+  letter-spacing: -0.04em;
+}
+
+.logo.grande .logo-texto {
+  font-size: 40px;
 }

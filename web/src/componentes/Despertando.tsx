@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Logo, Mojon } from './Logo'
 
 type Props = { estado: 'despertando' | 'error'; onReintentar: () => void }
 
@@ -29,7 +30,9 @@ export function Despertando({ estado, onReintentar }: Props) {
   if (estado === 'error') {
     return (
       <main className="contenido angosto">
-        <h1 className="marca-grande">Hito</h1>
+        <h1 className="marca-grande">
+          <Logo grande />
+        </h1>
         <div className="aviso aviso-error" role="alert">
           <div>
             <b>No pudimos conectar con el servidor</b>
@@ -49,10 +52,8 @@ export function Despertando({ estado, onReintentar }: Props) {
   return (
     <main className="contenido angosto despertando">
       <h1 className="solo-lectores">Hito</h1>
-      {/* El sello de la marca: se estampa una vez y luego respira mientras se espera. */}
-      <span className="sello grande sello-marca" aria-hidden="true">
-        HITO
-      </span>
+      {/* El mojón de la marca: se asienta una vez y luego respira mientras se espera. */}
+      <Mojon tamano={88} className="sello-marca" />
       <div role="status">
         <p className="titular">Despertando la demo, puede tardar hasta un minuto</p>
         <p className="meta">{fase.texto}</p>
