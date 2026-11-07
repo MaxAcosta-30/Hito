@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hito · Rediseño visual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@500;600&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Public+Sans:wght@400;600&family=JetBrains+Mono:wght@500;700&family=Syne:wght@600;800&family=DM+Sans:opsz,wght@9..40,400;9..40,600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* Maqueta para elegir dirección (no es código de la app). Tres direcciones, mismo contenido. */
+* { box-sizing: border-box; }
+body { margin: 0; font: 15px/1.5 system-ui, sans-serif; background: #e9e6df; color: #222; }
+.indice { max-width: 1200px; margin: 0 auto; padding: 40px 24px 8px; }
+.indice h1 { font: 700 34px/1.1 Fraunces, serif; margin: 0 0 8px; }
+.indice p { max-width: 70ch; margin: 4px 0; }
+.indice ol { padding-left: 20px; }
+
+.dir { padding: 56px 24px; }
+.dir > .marco { max-width: 1200px; margin: 0 auto; }
+.ficha { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 24px; margin: 20px 0 28px; }
+@media (max-width: 860px) { .ficha { grid-template-columns: 1fr; } }
+.ficha > div { border-radius: 10px; padding: 18px; background: var(--hoja); color: var(--tinta); border: 1px solid var(--linea); }
+.rotulo { font: 600 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--suave); margin-bottom: 12px; }
+.muestras { display: flex; gap: 8px; flex-wrap: wrap; }
+.muestra { width: 64px; }
+.muestra i { display: block; height: 44px; border-radius: 6px; border: 1px solid var(--linea); }
+.muestra small { display: block; font: 500 10px/1.3 var(--mono); margin-top: 4px; color: var(--suave); }
+.logos { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.favs { display: flex; align-items: end; gap: 10px; }
+.favs span { display: grid; place-items: center; border-radius: 6px; background: var(--fondo); border: 1px solid var(--linea); }
+
+.titulo-dir { color: var(--tinta-dir, #222); }
+.titulo-dir h2 { font: 700 30px/1.1 var(--display); margin: 0; letter-spacing: -0.02em; }
+.titulo-dir p { margin: 6px 0 0; max-width: 75ch; color: var(--suave-dir, #555); }
+
+/* Marco de navegador para la landing y el escritorio */
+.ventana { border-radius: 12px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,.18); margin-bottom: 28px; }
+.ventana .barra-nav { height: 30px; background: #d9d5cc; display: flex; align-items: center; gap: 6px; padding: 0 12px; }
+.ventana .barra-nav i { width: 10px; height: 10px; border-radius: 50%; background: #b9b3a6; }
+.lienzo { background: var(--fondo); color: var(--tinta); }
+
+/* Landing */
+.landing nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 40px; }
+.landing nav .acciones { display: flex; gap: 18px; align-items: center; font: 600 14px var(--texto); }
+.btn { font: 600 15px var(--texto); padding: 12px 18px; border-radius: var(--radio); border: 1px solid transparent; display: inline-block; }
+.btn.prim { background: var(--acento); color: var(--sobre-acento); }
+.btn.sec { border-color: var(--linea-fuerte); color: var(--tinta); }
+.hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 24px; padding: 30px 40px 56px; align-items: center; min-height: 520px; }
+@media (max-width: 860px) { .hero { grid-template-columns: 1fr; padding: 20px; } .landing nav { padding: 16px 20px; } }
+.hero h3 { font: var(--peso-display) var(--tam-display)/0.95 var(--display); letter-spacing: var(--tracking); margin: 0 0 18px; }
+.hero h3 em { font-style: var(--em-estilo); color: var(--acento); }
+.hero p { font: 400 18px/1.5 var(--texto); color: var(--suave); max-width: 44ch; margin: 0 0 24px; }
+.hero .botones { display: flex; gap: 12px; flex-wrap: wrap; }
+.hero .nota { font: 500 12px var(--mono); color: var(--suave); margin-top: 16px; }
+
+/* Escritorio: tabla + gráfica */
+.escritorio { display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; padding: 28px 40px 36px; }
+@media (max-width: 860px) { .escritorio { grid-template-columns: 1fr; padding: 20px; } }
+.panel { background: var(--hoja); border: 1px solid var(--linea); border-radius: var(--radio-hoja); padding: 18px 20px; }
+table { width: 100%; border-collapse: collapse; font: 400 14px var(--texto); }
+th { text-align: left; font: 600 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--suave); padding: 0 8px 10px; border-bottom: 1px solid var(--linea-fuerte); }
+td { padding: 11px 8px; border-bottom: 1px solid var(--linea); vertical-align: middle; }
+td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+tbody tr:hover td { background: var(--resalte); }
+.sello { font: 600 10px/1 var(--mono); letter-spacing: .12em; padding: 4px 6px; border: 1.5px solid currentColor; border-radius: 3px; display: inline-block; transform: rotate(var(--giro-sello)); white-space: nowrap; }
+.s-ok { color: var(--acento); } .s-pag { color: var(--verde); } .s-ven { color: var(--rojo); } .s-pen { color: var(--suave); border-style: dotted; }
+.cifra { font: 700 40px/1 var(--mono); letter-spacing: -0.02em; margin: 6px 0 4px; }
+
+/* Animación firma: los hitos se sellan uno a uno (se repite cada 9 s) */
+.firma { width: 100%; height: auto; display: block; }
+.estampa { transform-box: fill-box; transform-origin: center; opacity: 0; animation: estampar 9s cubic-bezier(.2,1.4,.4,1) infinite; }
+.e1 { animation-delay: .6s; } .e2 { animation-delay: 1.6s; } .e3 { animation-delay: 2.6s; } .e4 { animation-delay: 3.6s; }
+@keyframes estampar {
+  0% { opacity: 0; transform: scale(1.8) rotate(var(--giro, -8deg)); }
+  4% { opacity: 1; transform: scale(1) rotate(var(--giro, -8deg)); }
+  88% { opacity: 1; transform: scale(1) rotate(var(--giro, -8deg)); }
+  94%, 100% { opacity: 0; transform: scale(1) rotate(var(--giro, -8deg)); }
+}
+.trazo { stroke-dasharray: 900; stroke-dashoffset: 900; animation: trazar 9s ease-out infinite; }
+@keyframes trazar { 0% { stroke-dashoffset: 900; } 45%, 88% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+.luz { opacity: .25; animation: encender 9s ease-out infinite; }
+.l1 { animation-delay: .6s; } .l2 { animation-delay: 1.6s; } .l3 { animation-delay: 2.6s; } .l4 { animation-delay: 3.6s; }
+@keyframes encender { 0% { opacity: .25; } 4%, 88% { opacity: 1; } 100% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .estampa, .luz { animation: none; opacity: 1; } .trazo { animation: none; stroke-dashoffset: 0; } }
+
+/* ============ Dirección A · Cotización firmada 2.0 ============ */
+.a { --fondo: #F4EEE2; --hoja: #FBF8F1; --tinta: #1B2547; --suave: #6A6355; --acento: #2347A6; --sobre-acento: #fff; --rojo: #B23A2E; --verde: #2F6B3F;
+  --linea: rgba(27,37,71,.12); --linea-fuerte: rgba(27,37,71,.25); --resalte: rgba(35,71,166,.05);
+  --display: 'Fraunces', serif; --texto: 'Source Sans 3', sans-serif; --mono: 'IBM Plex Mono', monospace;
+  --peso-display: 700; --tam-display: 84px; --tracking: -0.035em; --em-estilo: italic; --radio: 4px; --radio-hoja: 8px; --giro-sello: -3deg;
+  background: #ece5d6; --tinta-dir: #1B2547; --suave-dir: #6A6355; }
+/* ============ Dirección B · Libro mayor ============ */
+.b { --fondo: #EDF1EA; --hoja: #F7F9F4; --tinta: #10231B; --suave: #4F6358; --acento: #0F6B4A; --sobre-acento: #F7F9F4; --rojo: #B5442C; --verde: #0F6B4A;
+  --linea: rgba(16,35,27,.12); --linea-fuerte: rgba(16,35,27,.3); --resalte: rgba(199,125,18,.08); --ambar: #C77D12;
+  --display: 'Bricolage Grotesque', sans-serif; --texto: 'Public Sans', sans-serif; --mono: 'JetBrains Mono', monospace;
+  --peso-display: 800; --tam-display: 92px; --tracking: -0.05em; --em-estilo: normal; --radio: 2px; --radio-hoja: 2px; --giro-sello: 0deg;
+  background: #dfe6da; --tinta-dir: #10231B; --suave-dir: #4F6358; }
+.b .lienzo { background-image: repeating-linear-gradient(to bottom, transparent 0 31px, rgba(16,35,27,.07) 31px 32px); }
+/* ============ Dirección C · Ruta nocturna ============ */
+.c { --fondo: #14161F; --hoja: #1C1F2B; --tinta: #EDE7DA; --suave: #A39D90; --acento: #FF6B3D; --sobre-acento: #14161F; --rojo: #FF8A7A; --verde: #7FD1B9;
+  --linea: rgba(237,231,218,.1); --linea-fuerte: rgba(237,231,218,.22); --resalte: rgba(255,107,61,.07);
+  --display: 'Syne', sans-serif; --texto: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
+  --peso-display: 800; --tam-display: 80px; --tracking: -0.03em; --em-estilo: normal; --radio: 999px; --radio-hoja: 14px; --giro-sello: -2deg;
+  background: #0d0f15; --tinta-dir: #EDE7DA; --suave-dir: #A39D90; }
+</style>
+</head>
+<body>
+
+<header class="indice">
+  <h1>Hito · Rediseño visual</h1>
+  <p><b>Brief.</b> Un reclutador o un freelancer llega por primera vez. En 3 segundos debe sentir <b>alivio</b> («por fin sé cuánto me deben»). Personalidad: <b>notarial</b> (formal y humano). Debe recordar: <b>cada entrega aprobada queda sellada</b>. El elemento firma sale de lo real: los sellos y la cifra «Te deben».</p>
+  <p><b>Logo.</b> «Hito» significa <i>mojón</i>: la piedra que marca un tramo del camino. Las tres direcciones usan un mojón con su propio estilo.</p>
+  <p>Cada dirección muestra: logo y favicon, paleta, tipografía, la landing pública con la animación de hitos que se sellan (2D/SVG) y el escritorio con tabla y gráfica. Elige una (o combina partes).</p>
+  <ol><li>A · Cotización firmada 2.0 — evoluciona lo que ya tienes.</li><li>B · Libro mayor — contable, rayado, cifras protagonistas.</li><li>C · Ruta nocturna — oscura, expresiva, el camino de hitos como héroe.</li></ol>
+</header>
+
+<!-- ======================= A ======================= -->
+<section class="dir a">
+ <div class="marco">
+  <div class="titulo-dir"><h2>A · Cotización firmada 2.0</h2><p>Editorial sobre papel. Evoluciona la dirección actual: serif con más carácter (Fraunces), sellos más grandes y una hoja de cotización que se va firmando. Riesgo bajo: el resto de la app casi no cambia.</p></div>
+  <div class="ficha">
+   <div><div class="rotulo">Logo y favicon</div>
+    <div class="logos">
+     <svg width="190" height="56" viewBox="0 0 190 56" aria-label="Logo Hito, dirección A"><g transform="rotate(-6 26 28)"><path d="M10 50V22a16 16 0 0 1 32 0v28z" fill="none" stroke="#2347A6" stroke-width="3.5"/><path d="M6 50h40" stroke="#2347A6" stroke-width="3.5"/><path d="M19 32l6 6 10-12" fill="none" stroke="#2347A6" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></g><text x="62" y="40" font-family="Fraunces" font-weight="700" font-size="34" fill="#1B2547" letter-spacing="-1">Hito</text></svg>
+     <div class="favs"><span style="width:48px;height:48px"><svg width="34" height="34" viewBox="0 0 52 56"><path d="M10 50V22a16 16 0 0 1 32 0v28z" fill="#2347A6"/><path d="M19 32l6 6 10-12" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span style="width:24px;height:24px"><svg width="16" height="16" viewBox="0 0 52 56"><path d="M10 50V22a16 16 0 0 1 32 0v28z" fill="#2347A6"/><path d="M19 32l6 6 10-12" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg></span></div>
+    </div></div>
+   <div><div class="rotulo">Paleta</div><div class="muestras">
+     <div class="muestra"><i style="background:#F4EEE2"></i><small>papel F4EEE2</small></div><div class="muestra"><i style="background:#1B2547"></i><small>tinta 1B2547</small></div><div class="muestra"><i style="background:#2347A6"></i><small>firma 2347A6</small></div><div class="muestra"><i style="background:#B23A2E"></i><small>sello B23A2E</small></div></div></div>
+   <div><div class="rotulo">Tipografía</div><div style="font:700 34px/1 Fraunces;letter-spacing:-.03em">Te deben</div><div style="font:400 15px 'Source Sans 3';margin:6px 0">Source Sans 3 para texto y formularios.</div><div style="font:600 18px 'IBM Plex Mono'">$76,000.00</div></div>
+  </div>
+
+  <div class="ventana"><div class="barra-nav"><i></i><i></i><i></i></div>
+   <div class="lienzo landing">
+    <nav><svg width="120" height="36" viewBox="0 0 190 56"><g transform="rotate(-6 26 28)"><path d="M10 50V22a16 16 0 0 1 32 0v28z" fill="none" stroke="#2347A6" stroke-width="3.5"/><path d="M6 50h40" stroke="#2347A6" stroke-width="3.5"/><path d="M19 32l6 6 10-12" fill="none" stroke="#2347A6" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></g><text x="62" y="40" font-family="Fraunces" font-weight="700" font-size="34" fill="#1B2547">Hito</text></svg><div class="acciones"><span>Cómo funciona</span><span>Entrar</span><span class="btn prim">Probar la demo</span></div></nav>
+    <div class="hero">
+     <div><h3>Cada entrega <em>aprobada</em>, cada cobro claro.</h3><p>Acuerda los hitos con tu cliente, registra cada entrega y aprobación y mira en un solo lugar cuánto te deben.</p><div class="botones"><span class="btn prim">Probar la demo · sin registro</span><span class="btn sec">Crear cuenta</span></div><div class="nota">Hecho con .NET 10 · React · PostgreSQL</div></div>
+     <svg class="firma" viewBox="0 0 520 440" aria-hidden="true">
+      <rect x="30" y="20" width="460" height="400" rx="8" fill="#FBF8F1" stroke="rgba(27,37,71,.15)"/>
+      <text x="60" y="66" font-family="IBM Plex Mono" font-size="11" letter-spacing="2" fill="#6A6355">COTIZACIÓN · TIENDA EN LÍNEA</text>
+      <g font-family="Source Sans 3" font-size="17" fill="#1B2547"><text x="60" y="118" font-weight="600">Diseño de marca</text><text x="60" y="178" font-weight="600">Landing page</text><text x="60" y="238" font-weight="600">Tienda en línea</text><text x="60" y="298" font-weight="600">Capacitación</text></g>
+      <g font-family="IBM Plex Mono" font-size="15" fill="#1B2547" text-anchor="end"><text x="300" y="118">$8,000.00</text><text x="300" y="178">$12,000.00</text><text x="300" y="238">$20,000.00</text><text x="300" y="298">$4,000.00</text></g>
+      <g stroke="rgba(27,37,71,.12)"><line x1="60" x2="460" y1="140" y2="140"/><line x1="60" x2="460" y1="200" y2="200"/><line x1="60" x2="460" y1="260" y2="260"/><line x1="60" x2="460" y1="320" y2="320"/></g>
+      <g font-family="IBM Plex Mono" font-weight="600" font-size="13" letter-spacing="2">
+       <g class="estampa e1" style="--giro:-7deg"><rect x="335" y="98" width="100" height="28" rx="3" fill="none" stroke="#2F6B3F" stroke-width="2"/><text x="385" y="117" text-anchor="middle" fill="#2F6B3F">PAGADO</text></g>
+       <g class="estampa e2" style="--giro:5deg"><rect x="330" y="158" width="110" height="28" rx="3" fill="none" stroke="#2347A6" stroke-width="2"/><text x="385" y="177" text-anchor="middle" fill="#2347A6">APROBADO</text></g>
+       <g class="estampa e3" style="--giro:-4deg"><rect x="328" y="218" width="114" height="28" rx="3" fill="none" stroke="#6A6355" stroke-width="2" stroke-dasharray="5 3"/><text x="385" y="237" text-anchor="middle" fill="#6A6355">ENTREGADO</text></g>
+      </g>
+      <line x1="60" x2="460" y1="350" y2="350" stroke="#1B2547" stroke-width="1"/><line x1="60" x2="460" y1="354" y2="354" stroke="#1B2547" stroke-width="1"/>
+      <text x="60" y="392" font-family="Fraunces" font-weight="700" font-size="22" fill="#1B2547">Te deben</text>
+      <text x="460" y="394" text-anchor="end" font-family="IBM Plex Mono" font-weight="600" font-size="28" fill="#1B2547">$36,000.00</text>
+      <g class="estampa e4" style="--giro:-12deg"><g transform="translate(372 30)"><rect width="104" height="40" rx="4" fill="none" stroke="#B23A2E" stroke-width="3"/><text x="52" y="27" text-anchor="middle" font-family="IBM Plex Mono" font-weight="600" font-size="17" letter-spacing="3" fill="#B23A2E">FIRMADO</text></g></g>
+     </svg>
+    </div>
+   </div></div>
+
+  <div class="ventana"><div class="barra-nav"><i></i><i></i><i></i></div>
+   <div class="lienzo escritorio">
+    <div class="panel"><div class="rotulo">Proyectos · 3 de 3</div>
+     <table><thead><tr><th>Proyecto</th><th>Cliente</th><th>Estado</th><th class="num">Pagado</th><th class="num">Total</th></tr></thead><tbody>
+      <tr><td><b>Tienda en línea</b></td><td>Panadería Rosales</td><td><span class="sello s-ven">VENCIDO</span></td><td class="num">$8,000.00</td><td class="num">$44,000.00</td></tr>
+      <tr><td><b>App de citas · Fase 1</b></td><td>Clínica Norte</td><td><span class="sello s-ok">ACEPTADO</span></td><td class="num">$0.00</td><td class="num">$40,000.00</td></tr>
+      <tr><td><b>Sitio institucional</b></td><td>Estudio Vega</td><td><span class="sello s-pen">BORRADOR</span></td><td class="num">$0.00</td><td class="num">$29,000.00</td></tr>
+     </tbody></table></div>
+    <div class="panel"><div class="rotulo">Te deben</div><div class="cifra">$76,000.00</div><div style="font:400 13px var(--texto);color:var(--suave)">Cobrado vs. por cobrar, últimos 4 meses</div>
+     <svg viewBox="0 0 300 150" style="width:100%;margin-top:10px" aria-label="Gráfica de barras"><g font-family="IBM Plex Mono" font-size="10" fill="#6A6355"><text x="30" y="145">AGO</text><text x="100" y="145">SEP</text><text x="170" y="145">OCT</text><text x="240" y="145">NOV</text></g>
+      <g fill="#1B2547"><rect x="28" y="90" width="22" height="40"/><rect x="98" y="70" width="22" height="60"/><rect x="168" y="80" width="22" height="50"/><rect x="238" y="104" width="22" height="26"/></g>
+      <g fill="none" stroke="#2347A6" stroke-width="2" stroke-dasharray="4 3"><rect x="54" y="60" width="22" height="70"/><rect x="124" y="50" width="22" height="80"/><rect x="194" y="30" width="22" height="100"/><rect x="264" y="20" width="22" height="110"/></g></svg>
+     <div style="font:500 11px var(--mono);color:var(--suave)">■ cobrado &nbsp; ⬚ por cobrar</div></div>
+   </div></div>
+ </div>
+</section>
+
+<!-- ======================= B ======================= -->
+<section class="dir b">
+ <div class="marco">
+  <div class="titulo-dir"><h2>B · Libro mayor</h2><p>Suizo y contable: papel de libro mayor verde pálido con renglones, grotesca condensada enorme y cifras en mono como protagonistas. Los hitos se «asientan» y el saldo se recalcula. Cambio grande de identidad.</p></div>
+  <div class="ficha">
+   <div><div class="rotulo">Logo y favicon</div>
+    <div class="logos">
+     <svg width="190" height="56" viewBox="0 0 190 56" aria-label="Logo Hito, dirección B"><path d="M8 50V20a14 14 0 0 1 28 0v30z" fill="#0F6B4A"/><path d="M4 50h36M4 54h36" stroke="#10231B" stroke-width="2"/><text x="15" y="40" font-family="JetBrains Mono" font-weight="700" font-size="18" fill="#F7F9F4">H</text><text x="54" y="42" font-family="Bricolage Grotesque" font-weight="800" font-size="36" fill="#10231B" letter-spacing="-2">HITO</text></svg>
+     <div class="favs"><span style="width:48px;height:48px"><svg width="32" height="36" viewBox="0 0 44 56"><path d="M8 50V20a14 14 0 0 1 28 0v30z" fill="#0F6B4A"/><text x="15" y="40" font-family="JetBrains Mono" font-weight="700" font-size="18" fill="#fff">H</text></svg></span><span style="width:24px;height:24px"><svg width="14" height="16" viewBox="0 0 44 56"><path d="M8 50V20a14 14 0 0 1 28 0v30z" fill="#0F6B4A"/></svg></span></div>
+    </div></div>
+   <div><div class="rotulo">Paleta</div><div class="muestras">
+     <div class="muestra"><i style="background:#EDF1EA"></i><small>libro EDF1EA</small></div><div class="muestra"><i style="background:#10231B"></i><small>tinta 10231B</small></div><div class="muestra"><i style="background:#0F6B4A"></i><small>verde 0F6B4A</small></div><div class="muestra"><i style="background:#C77D12"></i><small>ámbar C77D12</small></div></div></div>
+   <div><div class="rotulo">Tipografía</div><div style="font:800 36px/1 'Bricolage Grotesque';letter-spacing:-.05em">TE DEBEN</div><div style="font:400 15px 'Public Sans';margin:6px 0">Public Sans para texto y formularios.</div><div style="font:700 18px 'JetBrains Mono'">$76,000.00</div></div>
+  </div>
+
+  <div class="ventana"><div class="barra-nav"><i></i><i></i><i></i></div>
+   <div class="lienzo landing">
+    <nav><svg width="120" height="36" viewBox="0 0 190 56"><path d="M8 50V20a14 14 0 0 1 28 0v30z" fill="#0F6B4A"/><path d="M4 50h36M4 54h36" stroke="#10231B" stroke-width="2"/><text x="54" y="42" font-family="Bricolage Grotesque" font-weight="800" font-size="36" fill="#10231B" letter-spacing="-2">HITO</text></svg><div class="acciones"><span>Cómo funciona</span><span>Entrar</span><span class="btn prim">Probar la demo</span></div></nav>
+    <div class="hero">
+     <div><h3>LO QUE ACORDASTE, ASENTADO.</h3><p>Hitos, entregas, aprobaciones y pagos en un solo libro. El saldo se calcula solo y el vencido salta a la vista.</p><div class="botones"><span class="btn prim">Probar la demo</span><span class="btn sec">Crear cuenta</span></div><div class="nota">.NET 10 · REACT · POSTGRESQL</div></div>
+     <svg class="firma" viewBox="0 0 520 440" aria-hidden="true">
+      <g font-family="JetBrains Mono" font-size="11" fill="#4F6358" letter-spacing="1.5"><text x="20" y="40">FECHA</text><text x="110" y="40">CONCEPTO</text><text x="340" y="40" text-anchor="end">CARGO</text><text x="500" y="40" text-anchor="end">SALDO</text></g>
+      <line x1="20" x2="500" y1="52" y2="52" stroke="#10231B" stroke-width="2"/>
+      <g font-family="Public Sans" font-size="16" fill="#10231B">
+       <g class="luz l1"><text x="20" y="100" font-family="JetBrains Mono" font-size="13">07 OCT</text><text x="110" y="100">Diseño de marca</text><text x="340" y="100" text-anchor="end" font-family="JetBrains Mono">8,000</text><text x="500" y="100" text-anchor="end" font-family="JetBrains Mono">8,000</text></g>
+       <g class="luz l2"><text x="20" y="160" font-family="JetBrains Mono" font-size="13">01 NOV</text><text x="110" y="160">Landing page</text><text x="340" y="160" text-anchor="end" font-family="JetBrains Mono">12,000</text><text x="500" y="160" text-anchor="end" font-family="JetBrains Mono">20,000</text></g>
+       <g class="luz l3"><text x="20" y="220" font-family="JetBrains Mono" font-size="13">05 NOV</text><text x="110" y="220">Tienda en línea</text><text x="340" y="220" text-anchor="end" font-family="JetBrains Mono">20,000</text><text x="500" y="220" text-anchor="end" font-family="JetBrains Mono">40,000</text></g>
+       <g class="luz l4"><text x="20" y="280" font-family="JetBrains Mono" font-size="13">01 DIC</text><text x="110" y="280">Capacitación</text><text x="340" y="280" text-anchor="end" font-family="JetBrains Mono">4,000</text><text x="500" y="280" text-anchor="end" font-family="JetBrains Mono">44,000</text></g>
+      </g>
+      <g font-family="JetBrains Mono" font-weight="700" font-size="11" letter-spacing="1.5">
+       <g class="estampa e1" style="--giro:0deg"><rect x="200" y="106" width="64" height="18" fill="#0F6B4A"/><text x="232" y="119" text-anchor="middle" fill="#F7F9F4">PAGADO</text></g>
+       <g class="estampa e2" style="--giro:0deg"><rect x="200" y="166" width="78" height="18" fill="#C77D12"/><text x="239" y="179" text-anchor="middle" fill="#10231B">APROBADO</text></g>
+      </g>
+      <line class="trazo" x1="20" x2="500" y1="320" y2="320" stroke="#10231B" stroke-width="2"/><line class="trazo" x1="20" x2="500" y1="326" y2="326" stroke="#10231B" stroke-width="2"/>
+      <text x="20" y="390" font-family="Bricolage Grotesque" font-weight="800" font-size="30" fill="#10231B" letter-spacing="-1">TE DEBEN</text>
+      <text x="500" y="392" text-anchor="end" font-family="JetBrains Mono" font-weight="700" font-size="38" fill="#0F6B4A">36,000</text>
+     </svg>
+    </div>
+   </div></div>
+
+  <div class="ventana"><div class="barra-nav"><i></i><i></i><i></i></div>
+   <div class="lienzo escritorio">
+    <div class="panel"><div class="rotulo">Proyectos · 3 de 3</div>
+     <table><thead><tr><th>Proyecto</th><th>Cliente</th><th>Estado</th><th class="num">Pagado</th><th class="num">Total</th></tr></thead><tbody>
+      <tr><td><b>Tienda en línea</b></td><td>Panadería Rosales</td><td><span class="sello s-ven">VENCIDO</span></td><td class="num">8,000.00</td><td class="num">44,000.00</td></tr>
+      <tr><td><b>App de citas · Fase 1</b></td><td>Clínica Norte</td><td><span class="sello s-ok">ACEPTADO</span></td><td class="num">0.00</td><td class="num">40,000.00</td></tr>
+      <tr><td><b>Sitio institucional</b></td><td>Estudio Vega</td><td><span class="sello s-pen">BORRADOR</span></td><td class="num">0.00</td><td class="num">29,000.00</td></tr>
+     </tbody></table></div>
+    <div class="panel"><div class="rotulo">Te deben</div><div class="cifra" style="color:#0F6B4A">76,000.00</div><div style="font:400 13px var(--texto);color:var(--suave)">Saldo acumulado por mes</div>
+     <svg viewBox="0 0 300 150" style="width:100%;margin-top:10px" aria-label="Gráfica de línea escalonada"><g stroke="rgba(16,35,27,.12)"><line x1="0" x2="300" y1="40" y2="40"/><line x1="0" x2="300" y1="80" y2="80"/><line x1="0" x2="300" y1="120" y2="120"/></g>
+      <path d="M10 120 H80 V96 H150 V70 H220 V44 H290" fill="none" stroke="#0F6B4A" stroke-width="3"/><path d="M10 120 H80 V110 H150 V100 H220 V96 H290" fill="none" stroke="#C77D12" stroke-width="3"/>
+      <g font-family="JetBrains Mono" font-size="10" fill="#4F6358"><text x="30" y="145">AGO</text><text x="100" y="145">SEP</text><text x="170" y="145">OCT</text><text x="240" y="145">NOV</text></g></svg>
+     <div style="font:500 11px var(--mono);color:var(--suave)">— acordado &nbsp; — cobrado</div></div>
+   </div></div>
+ </div>
+</section>
+
+<!-- ======================= C ======================= -->
+<section class="dir c">
+ <div class="marco">
+  <div class="titulo-dir"><h2>C · Ruta nocturna</h2><p>Oscura y expresiva: el proyecto es un camino y cada hito es un mojón que se enciende al aprobarse. Display geométrica (Syne), naranja señal como único acento. La más llamativa para un portafolio; pide más trabajo de contraste.</p></div>
+  <div class="ficha">
+   <div><div class="rotulo">Logo y favicon</div>
+    <div class="logos">
+     <svg width="190" height="56" viewBox="0 0 190 56" aria-label="Logo Hito, dirección C"><path d="M10 50V22a14 14 0 0 1 28 0v28z" fill="#FF6B3D"/><circle cx="24" cy="24" r="5" fill="#14161F"/><path d="M2 52c14-4 30-4 44 0" stroke="#EDE7DA" stroke-width="2" fill="none" stroke-dasharray="4 4"/><text x="58" y="40" font-family="Syne" font-weight="800" font-size="34" fill="#EDE7DA" letter-spacing="-1">hito</text></svg>
+     <div class="favs"><span style="width:48px;height:48px"><svg width="30" height="36" viewBox="0 0 48 56"><path d="M10 50V22a14 14 0 0 1 28 0v28z" fill="#FF6B3D"/><circle cx="24" cy="24" r="5" fill="#14161F"/></svg></span><span style="width:24px;height:24px"><svg width="14" height="16" viewBox="0 0 48 56"><path d="M10 50V22a14 14 0 0 1 28 0v28z" fill="#FF6B3D"/></svg></span></div>
+    </div></div>
+   <div><div class="rotulo">Paleta</div><div class="muestras">
+     <div class="muestra"><i style="background:#14161F"></i><small>noche 14161F</small></div><div class="muestra"><i style="background:#EDE7DA"></i><small>hueso EDE7DA</small></div><div class="muestra"><i style="background:#FF6B3D"></i><small>señal FF6B3D</small></div><div class="muestra"><i style="background:#7FD1B9"></i><small>menta 7FD1B9</small></div></div></div>
+   <div><div class="rotulo">Tipografía</div><div style="font:800 34px/1 Syne;letter-spacing:-.03em">te deben</div><div style="font:400 15px 'DM Sans';margin:6px 0">DM Sans para texto y formularios.</div><div style="font:500 18px 'DM Mono'">$76,000.00</div></div>
+  </div>
+
+  <div class="ventana"><div class="barra-nav"><i></i><i></i><i></i></div>
+   <div class="lienzo landing">
+    <nav><svg width="120" height="36" viewBox="0 0 190 56"><path d="M10 50V22a14 14 0 0 1 28 0v28z" fill="#FF6B3D"/><circle cx="24" cy="24" r="5" fill="#14161F"/><text x="58" y="40" font-family="Syne" font-weight="800" font-size="34" fill="#EDE7DA">hito</text></svg><div class="acciones"><span>Cómo funciona</span><span>Entrar</span><span class="btn prim">Probar la demo</span></div></nav>
+    <div class="hero">
+     <div><h3>cada tramo <em>aprobado</em>, cada cobro claro.</h3><p>Tu proyecto es un camino. Cada hito se enciende cuando tu cliente lo aprueba y el panel te dice cuánto falta por cobrar.</p><div class="botones"><span class="btn prim">Probar la demo</span><span class="btn sec">Crear cuenta</span></div><div class="nota">.net 10 · react · postgresql</div></div>
+     <svg class="firma" viewBox="0 0 520 440" aria-hidden="true">
+      <path d="M30 400 C 140 380, 120 300, 220 280 S 360 250, 340 170 S 430 70, 500 50" fill="none" stroke="rgba(237,231,218,.15)" stroke-width="22" stroke-linecap="round"/>
+      <path class="trazo" d="M30 400 C 140 380, 120 300, 220 280 S 360 250, 340 170 S 430 70, 500 50" fill="none" stroke="#EDE7DA" stroke-width="2" stroke-dasharray="6 8"/>
+      <g font-family="DM Mono" font-size="12" fill="#A39D90">
+       <g class="luz l1"><path d="M96 372V350a12 12 0 0 1 24 0v22z" fill="#7FD1B9"/><text x="70" y="408">diseño · pagado</text></g>
+       <g class="luz l2"><path d="M208 274V252a12 12 0 0 1 24 0v22z" fill="#FF6B3D"/><text x="240" y="292">landing · aprobado</text></g>
+       <g class="luz l3"><path d="M334 168V146a12 12 0 0 1 24 0v22z" fill="#EDE7DA"/><text x="368" y="176">tienda · entregado</text></g>
+       <g class="luz l4"><path d="M470 62V40a12 12 0 0 1 24 0v22z" fill="none" stroke="#EDE7DA" stroke-width="2" stroke-dasharray="3 3"/><text x="386" y="30">capacitación</text></g>
+      </g>
+      <g class="estampa e2" style="--giro:-6deg"><g transform="translate(40 60)"><text font-family="Syne" font-weight="800" font-size="20" fill="#EDE7DA">te deben</text><text y="46" font-family="DM Mono" font-size="40" fill="#FF6B3D">$36,000</text></g></g>
+     </svg>
+    </div>
+   </div></div>
+
+  <div class="ventana"><div class="barra-nav"><i></i><i></i><i></i></div>
+   <div class="lienzo escritorio">
+    <div class="panel"><div class="rotulo">Proyectos · 3 de 3</div>
+     <table><thead><tr><th>Proyecto</th><th>Cliente</th><th>Estado</th><th class="num">Pagado</th><th class="num">Total</th></tr></thead><tbody>
+      <tr><td><b>Tienda en línea</b></td><td>Panadería Rosales</td><td><span class="sello s-ven">VENCIDO</span></td><td class="num">$8,000.00</td><td class="num">$44,000.00</td></tr>
+      <tr><td><b>App de citas · Fase 1</b></td><td>Clínica Norte</td><td><span class="sello s-ok">ACEPTADO</span></td><td class="num">$0.00</td><td class="num">$40,000.00</td></tr>
+      <tr><td><b>Sitio institucional</b></td><td>Estudio Vega</td><td><span class="sello s-pen">BORRADOR</span></td><td class="num">$0.00</td><td class="num">$29,000.00</td></tr>
+     </tbody></table></div>
+    <div class="panel"><div class="rotulo">Te deben</div><div class="cifra" style="color:#FF6B3D">$76,000.00</div><div style="font:400 13px var(--texto);color:var(--suave)">Cobrado vs. por cobrar, últimos 4 meses</div>
+     <svg viewBox="0 0 300 150" style="width:100%;margin-top:10px" aria-label="Gráfica de barras redondeadas"><g fill="#7FD1B9"><rect x="28" y="90" width="22" height="40" rx="11"/><rect x="98" y="70" width="22" height="60" rx="11"/><rect x="168" y="80" width="22" height="50" rx="11"/><rect x="238" y="104" width="22" height="26" rx="11"/></g><g fill="#FF6B3D"><rect x="54" y="60" width="22" height="70" rx="11"/><rect x="124" y="50" width="22" height="80" rx="11"/><rect x="194" y="30" width="22" height="100" rx="11"/><rect x="264" y="20" width="22" height="110" rx="11"/></g>
+      <g font-family="DM Mono" font-size="10" fill="#A39D90"><text x="30" y="145">ago</text><text x="100" y="145">sep</text><text x="170" y="145">oct</text><text x="240" y="145">nov</text></g></svg>
+     <div style="font:500 11px var(--mono);color:var(--suave)">● cobrado &nbsp; ● por cobrar</div></div>
+   </div></div>
+ </div>
+</section>
+</body>
+</html>
