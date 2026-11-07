@@ -1,0 +1,23 @@
+name: Mantener la API despierta de día
+
+# Render Free apaga la API tras 15 min sin tráfico y el arranque en frío tarda hasta ~1 min.
+# De 7:00 a 23:00 (hora de México, UTC−6) se la llama cada 10 min: ~496 de las 750 h gratis al mes.
+# De noche se deja dormir para tener margen. GitHub puede retrasar los flujos programados: no es una garantía.
+on:
+  schedule:
+    - cron: "*/10 13-23 * * *" # 7:00–17:59 en México
+    - cron: "*/10 0-4 * * *" # 18:00–22:59 en México
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      # /health/live no toca la base: solo mantiene el proceso encendido.
+      - name: Llamar a /health/live
+        env:
+          API_URL: ${{ vars.API_URL }}
+        run: curl -s -o /dev/null -w "HTTP %{http_code} en %{time_total}s\n" --max-time 120 "$API_URL/health/live"
