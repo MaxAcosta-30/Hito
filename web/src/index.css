@@ -14,8 +14,6 @@
   /* acento: el único color vibrante. Solo relleno: botón principal, sello APROBADO, logo. */
   --acento: #ff6b82;
   --sobre-acento: #1d1f26;
-  --ambar: var(--acento);
-  --sobre-ambar: var(--sobre-acento);
   --sello-pagado: #1d1f26;
   --sello-vencido: #c21d1a;
   --sobre-peligro: #ffffff;
@@ -534,11 +532,16 @@ a.renglon:hover b {
   color: var(--sello-cambios);
 }
 
+/* Aceptado: el alcance quedó comprometido, pero aún no se mueve dinero: contorno sólido */
+.sello.aceptado {
+  color: var(--tinta);
+}
+
 /* Asentados: el estado que mueve dinero va relleno */
 .sello.aprobado {
-  color: var(--sobre-ambar);
-  background: var(--ambar);
-  border-color: var(--ambar);
+  color: var(--sobre-acento);
+  background: var(--acento);
+  border-color: var(--acento);
 }
 
 .sello.pagado {
@@ -1292,7 +1295,7 @@ i.serie-acordado {
 }
 
 .relleno-aprobado {
-  fill: var(--ambar);
+  fill: var(--acento);
 }
 
 .texto-pagado,
@@ -1306,7 +1309,7 @@ i.serie-acordado {
 }
 
 .texto-aprobado {
-  fill: var(--sobre-ambar);
+  fill: var(--sobre-acento);
 }
 
 .libro-te-deben {
@@ -1377,7 +1380,7 @@ i.serie-acordado {
 @media (hover: hover) and (pointer: fine) {
   .btn.primario:hover:not(:disabled) {
     background: color-mix(in srgb, var(--acento) 88%, var(--tinta));
-    box-shadow: 0 2px 0 color-mix(in srgb, var(--tinta) 30%, transparent);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--acento) 30%, transparent);
   }
 
   .btn.secundario:hover:not(:disabled) {
@@ -2562,7 +2565,7 @@ html {
 }
 
 .firma-acta dt {
-  font: 700 15px var(--f-mono);
+  font-weight: 700;
 }
 
 .firma-acta dd {

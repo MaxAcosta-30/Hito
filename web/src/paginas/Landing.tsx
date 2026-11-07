@@ -10,7 +10,7 @@ const pasos = [
   {
     paso: 'Acuerda',
     texto: 'Escribe los hitos con monto y fecha. Tu cliente los acepta desde un enlace, sin crear cuenta, y quedan sellados. ¿Cambió algo? Va una versión nueva.',
-    sello: { texto: 'ACEPTADO', clase: 'aprobado' },
+    sello: { texto: 'ACEPTADO', clase: 'aceptado' },
   },
   {
     paso: 'Entrega',

@@ -39,9 +39,9 @@ Max pidió aplicar la técnica de una **base neutra tranquila + un solo acento v
 | `--firma` | `#1D1F26` | `#FF6B82` (6.0:1) | enlaces, foco y subrayados. En claro es tinta porque el coral como texto no llega a AA (2.6:1) |
 | `--sello-pagado` | relleno tinta | relleno Mellow | PAGADO: neutro, "ya está" |
 | `--sello-vencido` / `--sello-cambios` | `#C21D1A` (5.7:1) / `#9A4F0E` (5.7:1) | `#FF8A7A` / Butter Yellow `#F4CD00` | rojo solo para urgencia |
-| series de la gráfica | acordado `#3F6FB5`, cobrado `#E8506A` | `#5B8FD6`, `#E5627A` | validadas con dataviz (daltonismo ΔE ≥ 12.6) |
+| series de la gráfica | acordado `#555966` punteado (referencia), cobrado `#E8506A` | `#A6AAB6` punteado, `#E5627A` | validadas con dataviz (daltonismo ΔE ≥ 8.9; el punteado y la etiqueta directa son la segunda codificación) |
 
-- **Landing cinemática** en ambos modos: grafito `#15161B` con resplandor coral arriba, un toque azul abajo y viñeta. El botón de la demo es lo más brillante de la pantalla.
+- **Landing cinemática** en ambos modos: grafito `#15161B` con la luz cálida de una lámpara y viñeta (mundo "El expediente sellado", ver `DESIGN.md`).
 - Favicon, íconos de la PWA y logo: H Raven sobre cuadro coral.
 
 ## Rediseño "Libro mayor" (2026-11-06)
