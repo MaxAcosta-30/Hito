@@ -14,3 +14,9 @@ Se revisó una lista de buenas prácticas de UI/UX contra Hito. Max aprobó 4 me
 - `Confirmar` sobre el `<dialog>` nativo reemplaza los 4 `window.confirm`. Dice qué se pierde y qué se conserva, y el foco inicial va a "Volver" (`data-foco-inicial`), así un Enter accidental no destruye nada. Crear una versión y generar un enlace nuevo usan el mismo diálogo, pero con botón primario.
 - Si la acción falla, el diálogo se cierra para que el error se vea en la hoja.
 - Probado con Playwright: foco en "Volver", Escape no ejecuta nada, enviar → enlace nuevo → revocar → cancelar, y ningún diálogo nativo del navegador.
+
+**3 · Aviso de privacidad** (rama `ui/privacidad`)
+- Página `/privacidad`, pública y fuera de la sesión. No espera a que despierte la API porque es texto fijo. Se enlaza desde Entrar, Registro y la vista del cliente.
+- Solo describe lo que el código hace: una sola cookie (`hito_renovacion`, `httpOnly`), nada en `localStorage`, sin analítica ni correos, contraseña y token del enlace solo como hash, y datos en Oregón (Supabase y Render) con la página servida desde Vercel. La demo se borra tras 24 h.
+- Es un texto informativo de un proyecto de portafolio, **no asesoría legal**. El contacto es el perfil de GitHub de Max; si quiere un correo de contacto, se cambia ahí.
+- Probado con Playwright: carga con la API "dormida" y los enlaces llegan desde Entrar y Registro.

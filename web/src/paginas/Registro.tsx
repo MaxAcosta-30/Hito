@@ -69,6 +69,9 @@ export function Registro() {
       <p className="pie-formulario">
         ¿Ya tienes cuenta? <Link to="/entrar">Entra</Link>
       </p>
+      <p className="pie-formulario">
+        <Link to="/privacidad">Aviso de privacidad</Link>
+      </p>
     </main>
   )
 }

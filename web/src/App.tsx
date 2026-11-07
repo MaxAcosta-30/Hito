@@ -12,12 +12,14 @@ import { ProyectoDetalle } from './paginas/ProyectoDetalle'
 import { ProyectoFormulario } from './paginas/ProyectoFormulario'
 import { Proyectos } from './paginas/Proyectos'
 import { Entrar } from './paginas/Entrar'
+import { Privacidad } from './paginas/Privacidad'
 import { Registro } from './paginas/Registro'
 import { VistaCliente } from './paginas/VistaCliente'
 
 export default function App() {
   const [api, setApi] = useState<'despertando' | 'lista' | 'error'>('despertando')
   const [intento, setIntento] = useState(0)
+  const { pathname } = useLocation()
 
   // Render Free se apaga sin tráfico: antes de todo, esperar a que la API responda.
   useEffect(() => {
@@ -27,6 +29,9 @@ export default function App() {
     })
     return () => control.abort()
   }, [intento])
+
+  // El aviso de privacidad es texto fijo: no espera a que despierte la API.
+  if (pathname === '/privacidad') return <Privacidad />
 
   if (api !== 'lista') {
     return (

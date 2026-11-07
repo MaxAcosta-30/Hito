@@ -979,3 +979,22 @@ a.renglon:hover b {
 .botonera .separado {
   margin-left: auto;
 }
+
+/* Aviso de privacidad: texto largo, legible */
+.privacidad h2 {
+  font-size: 20px;
+  margin-top: 28px;
+}
+
+.privacidad p,
+.privacidad li {
+  max-width: 65ch;
+}
+
+.privacidad ul {
+  padding-left: 20px;
+}
+
+.privacidad li + li {
+  margin-top: 8px;
+}
