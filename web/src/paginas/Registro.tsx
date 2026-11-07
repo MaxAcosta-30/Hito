@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router'
 import { api, ErrorApi, type Sesion } from '../api/cliente'
 import { useSesion } from '../auth/contexto'
 import { Campo } from '../componentes/Campo'
+import { Logo } from '../componentes/Logo'
 import { useEnfocarError } from '../componentes/useEnfocarError'
 import { reglas, useValidacion } from '../validacion'
 
@@ -47,7 +48,9 @@ export function Registro() {
 
   return (
     <main className="contenido angosto">
-      <h1 className="marca-grande">Hito</h1>
+      <h1 className="marca-grande">
+        <Logo grande />
+      </h1>
       <p className="meta">Cada entrega aprobada, cada cobro claro.</p>
       <form ref={formulario} className="hoja" onSubmit={enviar} noValidate>
         <h2>Crear cuenta</h2>

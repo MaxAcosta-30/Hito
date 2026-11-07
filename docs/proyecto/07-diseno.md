@@ -26,6 +26,40 @@
 
 **Foco por pantalla.** Panel: la cifra "Te deben". Detalle: la hoja de hitos. Cliente: la única decisión pendiente, en una barra fija abajo. Cada vista tiene **una** acción primaria.
 
+## Rediseño "Libro mayor" (2026-11-06)
+
+Max eligió la dirección **B · Libro mayor** entre tres propuestas ([`diseno/rediseno.html`](diseno/rediseno.html)). Reemplaza la paleta y la tipografía de "Cotización firmada". Las reglas de foco, estados, sellos y dinero de este documento siguen vigentes.
+
+- **Idea:** las cifras son protagonistas, el papel es de libro contable con renglones y cada hito se "asienta".
+- **Logo:** un mojón, que es el significado literal de "hito", asentado sobre doble raya contable (`web/src/componentes/Logo.tsx` y `web/public/favicon.svg`).
+- Se cambiaron los valores de los tokens existentes, no sus nombres, así que las pantallas no tuvieron que reescribirse.
+
+**Tokens** (oscuro = "libro de noche", diseñado aparte):
+
+| Token | Claro | Oscuro | Uso |
+|---|---|---|---|
+| `--papel` | `#EDF1EA` | `#0E1813` | fondo, con pauta de renglones cada 32 px (`--pauta`) |
+| `--hoja` | `#F7F9F4` | `#14221B` | superficies |
+| `--campo` | `#E6EBE2` | `#0B140F` | interior de inputs |
+| `--tinta` | `#10231B` | `#E4EBE2` | texto principal |
+| `--grafito` | `#4F6358` | `#9DB0A4` | texto secundario |
+| `--firma` | `#0F6B4A` | `#5FC79B` | acento único: acción primaria, foco, enlaces y logo |
+| `--ambar` | `#C77D12` | `#E0A341` | solo como **relleno** del sello APROBADO, con texto `--sobre-ambar` (en claro, como texto no llega a AA: 3.1:1) |
+| `--sello-pagado` | `#0F6B4A` | `#5FC79B` | PAGADO, relleno |
+| `--sello-vencido` | `#B5442C` | `#F08A73` | VENCIDO, errores y acciones destructivas |
+| `--sello-cambios` | `#9A4F0E` | `#E0A341` | CAMBIOS |
+
+Contraste medido el 2026-11-06: todos los textos ≥ 4.5:1 en ambos modos (grafito sobre papel 5.6, botón verde 6.2, sello ámbar 5.0).
+
+**Tipografía** (autoalojada con `@fontsource`):
+- **Bricolage Grotesque 800:** títulos, con tracking negativo (−0.03em) y el logo (−0.04em).
+- **Public Sans 400/600:** cuerpo y formularios.
+- **JetBrains Mono 500/700** con `tabular-nums`: todos los montos y los sellos.
+
+**Forma:** radios rectos (control 2, hoja 3, diálogo 6). Los sellos son rectos y sin rotación; los que mueven dinero (APROBADO y PAGADO) van rellenos.
+
+## Reglas previas ("Cotización firmada", 2026-11-05)
+
 **Tokens** (nombres del mundo del producto; oscuro = "escritorio de noche"):
 
 | Token | Claro | Oscuro | Uso |

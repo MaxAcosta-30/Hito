@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router'
 import { api, ErrorApi, type Sesion } from '../api/cliente'
 import { useSesion } from '../auth/contexto'
 import { Campo } from '../componentes/Campo'
+import { Logo } from '../componentes/Logo'
 
 export function Entrar() {
   const { iniciar } = useSesion()
@@ -36,7 +37,9 @@ export function Entrar() {
 
   return (
     <main className="contenido angosto">
-      <h1 className="marca-grande">Hito</h1>
+      <h1 className="marca-grande">
+        <Logo grande />
+      </h1>
       <p className="meta">Cada entrega aprobada, cada cobro claro.</p>
       <div className="hoja demo">
         <p>¿Solo quieres verlo? Entra a una cuenta de ejemplo con clientes, proyectos y cobros. Se borra sola en 24 horas.</p>
