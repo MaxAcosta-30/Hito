@@ -1,56 +1,60 @@
-/* Dirección "Libro mayor": papel contable, cifras protagonistas. Reglas en docs/proyecto/07-diseno.md. */
+/* Paleta "Grafito + Coral Rose": base neutra tranquila y un solo acento vibrante. Reglas en docs/proyecto/07-diseno.md. */
 :root {
-  --papel: #edf1ea;
-  --hoja: #f7f9f4;
-  --campo: #e6ebe2;
-  --tinta: #10231b;
-  --grafito: #4f6358;
-  --renglon: rgba(16, 35, 27, 0.12);
-  --renglon-fuerte: rgba(16, 35, 27, 0.28);
-  --pauta: rgba(16, 35, 27, 0.055);
-  --firma: #0f6b4a;
-  --sobre-firma: #f7f9f4;
-  --ambar: #c77d12;
-  --sobre-ambar: #10231b;
-  --sello-pagado: #0f6b4a;
-  --sello-vencido: #b5442c;
+  --papel: #f1f2f6;
+  --hoja: #f9f9f9;
+  --campo: #e7e8ee;
+  --tinta: #1d1f26;
+  --grafito: #555966;
+  --renglon: rgba(29, 31, 38, 0.12);
+  --renglon-fuerte: rgba(29, 31, 38, 0.28);
+  --pauta: rgba(29, 31, 38, 0.045);
+  /* firma: enlaces, foco y subrayados. En claro es tinta: el coral como texto no llega a AA (2.6:1). */
+  --firma: #1d1f26;
+  --sobre-firma: #f9f9f9;
+  /* acento: el único color vibrante. Solo relleno: botón principal, sello APROBADO, logo. */
+  --acento: #ff6b82;
+  --sobre-acento: #1d1f26;
+  --ambar: var(--acento);
+  --sobre-ambar: var(--sobre-acento);
+  --sello-pagado: #1d1f26;
+  --sello-vencido: #c21d1a;
   --sobre-peligro: #ffffff;
   --sello-cambios: #9a4f0e;
-  --sombra-hoja: 0 1px 0 rgba(16, 35, 27, 0.06);
+  --sombra-hoja: 0 1px 2px rgba(29, 31, 38, 0.06);
   /* Series de gráfica: validadas con dataviz (banda de luminosidad, croma y daltonismo) */
-  --serie-cobrado: #0a7650;
-  --serie-acordado: #c77d12;
-  --r-control: 2px;
-  --r-hoja: 3px;
-  --r-dialogo: 6px;
+  --serie-cobrado: #e8506a;
+  --serie-acordado: #3f6fb5;
+  --r-control: 4px;
+  --r-hoja: 6px;
+  --r-dialogo: 10px;
   --f-display: 'Bricolage Grotesque', system-ui, sans-serif;
   --f-texto: 'Public Sans', system-ui, sans-serif;
   --f-mono: 'JetBrains Mono', ui-monospace, monospace;
   color-scheme: light dark;
 }
 
-/* Oscuro: "libro de noche", diseñado aparte y no invertido */
+/* Oscuro: grafito, diseñado aparte. Aquí el coral sí funciona como texto (6.0:1). */
 @media (prefers-color-scheme: dark) {
   :root {
-    --papel: #0e1813;
-    --hoja: #14221b;
-    --campo: #0b140f;
-    --tinta: #e4ebe2;
-    --grafito: #9db0a4;
-    --renglon: rgba(228, 235, 226, 0.1);
-    --renglon-fuerte: rgba(228, 235, 226, 0.24);
-    --pauta: rgba(228, 235, 226, 0.035);
-    --firma: #5fc79b;
-    --sobre-firma: #0e1813;
-    --ambar: #e0a341;
-    --sobre-ambar: #0e1813;
-    --sello-pagado: #5fc79b;
-    --sello-vencido: #f08a73;
-    --sobre-peligro: #0e1813;
-    --sello-cambios: #e0a341;
+    --papel: #15161b;
+    --hoja: #1d1f26;
+    --campo: #121318;
+    --tinta: #f1f2f6;
+    --grafito: #a6aab6;
+    --renglon: rgba(241, 242, 246, 0.1);
+    --renglon-fuerte: rgba(241, 242, 246, 0.24);
+    --pauta: rgba(241, 242, 246, 0.03);
+    --firma: #ff6b82;
+    --sobre-firma: #15161b;
+    --acento: #ff6b82;
+    --sobre-acento: #15161b;
+    --sello-pagado: #f1f2f6;
+    --sello-vencido: #ff8a7a;
+    --sobre-peligro: #15161b;
+    --sello-cambios: #f4cd00;
     --sombra-hoja: none;
-    --serie-cobrado: #3fa277;
-    --serie-acordado: #c4852a;
+    --serie-cobrado: #e5627a;
+    --serie-acordado: #5b8fd6;
   }
 }
 
@@ -208,8 +212,8 @@ a.btn {
 }
 
 .btn.primario {
-  background: var(--firma);
-  color: var(--sobre-firma);
+  background: var(--acento);
+  color: var(--sobre-acento);
 }
 
 .btn.secundario {
@@ -883,17 +887,17 @@ a.renglon:hover b {
   :root {
     --papel: #ffffff;
     --hoja: #ffffff;
-    --tinta: #10231b;
-    --grafito: #4f6358;
-    --renglon: rgba(16, 35, 27, 0.2);
-    --renglon-fuerte: rgba(16, 35, 27, 0.35);
+    --tinta: #1d1f26;
+    --grafito: #555966;
+    --renglon: rgba(29, 31, 38, 0.2);
+    --renglon-fuerte: rgba(29, 31, 38, 0.35);
     --pauta: transparent;
-    --firma: #0f6b4a;
-    --sobre-firma: #f7f9f4;
-    --ambar: #c77d12;
-    --sobre-ambar: #10231b;
-    --sello-pagado: #0f6b4a;
-    --sello-vencido: #b5442c;
+    --firma: #1d1f26;
+    --sobre-firma: #ffffff;
+    --acento: #ff6b82;
+    --sobre-acento: #1d1f26;
+    --sello-pagado: #1d1f26;
+    --sello-vencido: #c21d1a;
     --sello-cambios: #9a4f0e;
     --sombra-hoja: none;
     color-scheme: light;
@@ -1241,9 +1245,41 @@ i.serie-acordado {
   }
 }
 
-/* ============ Landing pública ("Libro mayor") ============ */
+/* ============ Landing pública: cinemática y oscura en ambos modos ============ */
 .landing {
+  --papel: #15161b;
+  --hoja: #1d1f26;
+  --campo: #121318;
+  --tinta: #f1f2f6;
+  --grafito: #a6aab6;
+  --renglon: rgba(241, 242, 246, 0.1);
+  --renglon-fuerte: rgba(241, 242, 246, 0.24);
+  --pauta: transparent;
+  --firma: #ff6b82;
+  --sobre-firma: #15161b;
+  --sobre-acento: #15161b;
+  --sello-pagado: #f1f2f6;
+  color-scheme: dark;
   min-height: 100vh;
+  color: var(--tinta);
+  /* Resplandor del acento arriba a la derecha y viñeta: la atmósfera "cinemática" */
+  background:
+    radial-gradient(60% 50% at 78% 18%, color-mix(in srgb, var(--acento) 20%, transparent), transparent 65%),
+    radial-gradient(45% 40% at 8% 70%, color-mix(in srgb, #5b8fd6 12%, transparent), transparent 70%),
+    radial-gradient(140% 100% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.5)),
+    #15161b;
+}
+
+.landing .hero-libro {
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), 0 0 0 1px var(--renglon);
+}
+
+.landing .btn.primario {
+  box-shadow: 0 0 28px color-mix(in srgb, var(--acento) 45%, transparent);
+}
+
+.landing-hero h1 span {
+  text-shadow: 0 0 36px color-mix(in srgb, var(--acento) 45%, transparent);
 }
 
 .landing-nav {
@@ -1515,8 +1551,9 @@ i.serie-acordado {
 
 /* Del lado del cliente: banda a todo lo ancho (rompe la retícula) */
 .landing-cliente {
-  background: var(--tinta);
-  color: var(--papel);
+  background: color-mix(in srgb, var(--hoja) 70%, transparent);
+  border-block: 1px solid var(--renglon);
+  color: var(--tinta);
   display: grid;
   gap: 32px;
   align-items: center;
@@ -1530,7 +1567,7 @@ i.serie-acordado {
 
 .landing-cliente .rotulo,
 .landing-cliente p {
-  color: color-mix(in srgb, var(--papel) 78%, transparent);
+  color: var(--grafito);
 }
 
 .landing-cliente p {
@@ -1543,7 +1580,8 @@ i.serie-acordado {
   height: auto;
   justify-self: center;
   border-radius: 24px;
-  border: 8px solid color-mix(in srgb, var(--papel) 12%, transparent);
+  border: 8px solid #2a2d36;
+  box-shadow: 0 0 60px color-mix(in srgb, var(--acento) 18%, transparent);
 }
 
 @media (min-width: 900px) {
@@ -1598,7 +1636,7 @@ i.serie-acordado {
 /* Hover solo con puntero fino: en el celular un toque no deja el botón "pegado" en hover */
 @media (hover: hover) and (pointer: fine) {
   .btn.primario:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--firma) 86%, var(--tinta));
+    background: color-mix(in srgb, var(--acento) 88%, var(--tinta));
     box-shadow: 0 2px 0 color-mix(in srgb, var(--tinta) 30%, transparent);
   }
 
@@ -1894,7 +1932,7 @@ i.serie-acordado {
 .landing-casos li {
   background: var(--hoja);
   border: 1px solid var(--renglon);
-  border-top: 3px solid var(--firma);
+  border-top: 3px solid var(--acento);
   border-radius: var(--r-hoja);
   padding: 20px;
   display: grid;

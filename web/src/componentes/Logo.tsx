@@ -2,9 +2,9 @@
 export function Simbolo({ tamano = 26, className }: { tamano?: number; className?: string }) {
   return (
     <svg className={className} width={tamano} height={tamano} viewBox="0 0 48 48" aria-hidden="true" focusable="false">
-      <rect width="48" height="48" rx="8" fill="var(--firma)" />
-      <path d="M14 10v28M34 10v28" stroke="var(--sobre-firma)" strokeWidth="6" />
-      <path d="M14 21h20M14 27h20" stroke="var(--sobre-firma)" strokeWidth="3" />
+      <rect width="48" height="48" rx="8" fill="var(--acento)" />
+      <path d="M14 10v28M34 10v28" stroke="var(--sobre-acento)" strokeWidth="6" />
+      <path d="M14 21h20M14 27h20" stroke="var(--sobre-acento)" strokeWidth="3" />
     </svg>
   )
 }
