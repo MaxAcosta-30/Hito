@@ -61,3 +61,8 @@ Max notó que, tras las mejoras de comportamiento, Hito se veía igual. Se propu
 - **Panel vacío:** muestra un libro de "EJEMPLO" tenue.
 - **Carga:** las pantallas internas se descargan bajo demanda (`React.lazy`) y la barra se queda mientras el contenido muestra su esqueleto. El bundle principal bajó de 110.8 a 98.6 kB comprimidos.
 - Todo se desactiva con `prefers-reduced-motion`. Probado con Playwright: la cifra pinta 10 cuadros distintos y termina en $76,000, el sello PAGADO se estampa al pagar y no al cargar, y el flujo e2e sigue en verde.
+
+**PWA instalable** (rama `ui/pwa`)
+- `manifest.webmanifest` (`standalone`, inicia en `/cobros`, colores del papel), íconos de 192 y 512 px, uno adaptable (maskable) con zona segura y `apple-touch-icon` para "Agregar a inicio" en iOS. Generados con Playwright desde el SVG del logo.
+- **Sin service worker:** los criterios de instalación de Chrome (web.dev, consultado el 2026-11-06) piden manifest e íconos, no service worker. Agregarlo traería caché de versiones viejas sin necesidad.
+- **Límites:** es la misma web instalada, no una app nativa (la app móvil sigue fuera de alcance), y sin conexión no funciona.
