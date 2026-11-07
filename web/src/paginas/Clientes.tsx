@@ -49,17 +49,38 @@ export function Clientes() {
           )}
         </div>
       ) : (
-        <div className="hoja">
-          {clientes.data.map((c) => (
-            <RenglonCliente key={c.id} cliente={c} />
-          ))}
-        </div>
+        <>
+          <table className="tabla solo-escritorio">
+            <thead>
+              <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Empresa</th>
+                <th scope="col">Correo</th>
+                <th scope="col">Teléfono</th>
+                <th scope="col">
+                  <span className="solo-lectores">Acciones</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {clientes.data.map((c) => (
+                <FilaCliente key={c.id} cliente={c} />
+              ))}
+            </tbody>
+          </table>
+          <div className="hoja solo-movil">
+            {clientes.data.map((c) => (
+              <RenglonCliente key={c.id} cliente={c} />
+            ))}
+          </div>
+        </>
       )}
     </>
   )
 }
 
-function RenglonCliente({ cliente }: { cliente: Cliente }) {
+// Archivar o restaurar: lo usan la fila de la tabla (escritorio) y el renglón (móvil).
+function useArchivar(cliente: Cliente) {
   const queryClient = useQueryClient()
   const toast = useToast()
   const accion = cliente.archivadoEn ? 'restaurar' : 'archivar'
@@ -70,6 +91,35 @@ function RenglonCliente({ cliente }: { cliente: Cliente }) {
       toast(accion === 'archivar' ? `${cliente.nombre} quedó archivado` : `${cliente.nombre} volvió a activos`)
     },
   })
+  return { accion, cambiar }
+}
+
+function FilaCliente({ cliente }: { cliente: Cliente }) {
+  const { accion, cambiar } = useArchivar(cliente)
+  return (
+    <tr>
+      <td>
+        <Link to={`/clientes/${cliente.id}`}>{cliente.nombre}</Link>
+      </td>
+      <td>{cliente.empresa || '—'}</td>
+      <td>{cliente.email || '—'}</td>
+      <td className="mono">{cliente.telefono || '—'}</td>
+      <td className="acciones-fila">
+        <button className="btn texto" onClick={() => cambiar.mutate()} disabled={cambiar.isPending} aria-label={`${accion === 'archivar' ? 'Archivar' : 'Restaurar'} a ${cliente.nombre}`}>
+          {accion === 'archivar' ? 'Archivar' : 'Restaurar'}
+        </button>
+        {cambiar.isError && (
+          <span className="mensaje-error" role="alert">
+            {mensajeDeError(cambiar.error)}
+          </span>
+        )}
+      </td>
+    </tr>
+  )
+}
+
+function RenglonCliente({ cliente }: { cliente: Cliente }) {
+  const { accion, cambiar } = useArchivar(cliente)
   const contacto = [cliente.empresa, cliente.email, cliente.telefono].filter(Boolean).join(' · ')
 
   return (

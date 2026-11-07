@@ -23,7 +23,7 @@ public sealed class CobrosTests(ApiConBase fixture) : IClassFixture<ApiConBase>
         var aprobado = p.Versiones[0].Hitos.Single(h => h.Titulo == "Aprobado").Id;
         await max.PostAsJsonAsync($"/proyectos/{p.Id}/hitos/{aprobado}/entregar", new { evidenciaUrl = "https://x.mx" });
         await cliente.PostAsync($"/publico/{token}/hitos/{aprobado}/aprobar", null);
-        await max.PostAsJsonAsync($"/proyectos/{p.Id}/hitos/{aprobado}/pagos", new { monto = 2000m, fecha = hoy.ToString("yyyy-MM-dd") });
+        await max.PostAsJsonAsync($"/proyectos/{p.Id}/hitos/{aprobado}/pagos", new { monto = 2000m, fecha = hoy.AddDays(-1).ToString("yyyy-MM-dd") });
         // Un borrador no cuenta.
         await CrearAsync(max, HitoConFecha("Borrador", 99999m, hoy));
 
@@ -37,6 +37,12 @@ public sealed class CobrosTests(ApiConBase fixture) : IClassFixture<ApiConBase>
         Assert.Equal(["Atrasado", "Aprobado"], atencion.Select(a => a.GetProperty("titulo").GetString()));
         Assert.Equal("Vencido", atencion[0].GetProperty("motivo").GetString());
         Assert.Equal("Panadería Rosales", atencion[0].GetProperty("cliente").GetString());
+
+        // La gráfica cuadra con lo registrado: al día de hoy venció lo atrasado y se cobró el anticipo.
+        var historial = panel.GetProperty("historial").EnumerateArray().ToList();
+        Assert.Equal(6, historial.Count);
+        Assert.Equal(4000m, historial[^1].GetProperty("acordado").GetDecimal());
+        Assert.Equal(2000m, historial[^1].GetProperty("cobrado").GetDecimal());
     }
 
     [Fact]

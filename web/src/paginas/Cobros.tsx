@@ -2,6 +2,7 @@ import { Link } from 'react-router'
 import { usePanel, type HitoQueAtender } from '../api/cobros'
 import { useClientes } from '../api/clientes'
 import { ErrorCarga } from '../componentes/Estados'
+import { GraficaCobros } from '../componentes/GraficaCobros'
 import { Sello } from '../componentes/Sello'
 import { dinero, fechaCorta } from '../formato'
 
@@ -50,6 +51,13 @@ export function Cobros() {
           </div>
         </div>
       </div>
+      {p.historial.some((m) => m.acordado > 0 || m.cobrado > 0) && (
+        <div className="hoja">
+          <div className="rotulo">Acordado vs. cobrado</div>
+          <p className="meta">Acumulado de los últimos 6 meses. Si la línea de cobrado se queda abajo, hay cobros atrasados.</p>
+          <GraficaCobros historial={p.historial} />
+        </div>
+      )}
       <div className="hoja">
         <div className="rotulo">Necesita tu atención</div>
         {p.atencion.length === 0 ? (

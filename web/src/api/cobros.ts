@@ -16,6 +16,9 @@ export type HitoQueAtender = {
   motivo: MotivoDeAtencion
 }
 
+// Acumulados al cierre de cada mes (el mes en curso se corta en "hoy").
+export type MesDeCobro = { mes: string; acordado: number; cobrado: number }
+
 export type Panel = {
   porCobrar: number
   aprobadoSinPagar: number
@@ -23,6 +26,7 @@ export type Panel = {
   proyectosActivos: number
   hoy: string
   atencion: HitoQueAtender[]
+  historial: MesDeCobro[]
 }
 
 export const usePanel = () => useQuery({ queryKey: ['cobros'], queryFn: () => api<Panel>('/cobros') })
