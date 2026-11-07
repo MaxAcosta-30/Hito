@@ -874,14 +874,18 @@ a.renglon:hover b {
   :root {
     --papel: #ffffff;
     --hoja: #ffffff;
-    --tinta: #1d2b4f;
-    --grafito: #4f4a40;
-    --renglon: rgba(29, 43, 79, 0.2);
-    --renglon-fuerte: rgba(29, 43, 79, 0.35);
-    --firma: #2347a6;
-    --sello-pagado: #2f6b3f;
-    --sello-vencido: #b23a2e;
-    --sello-cambios: #8f5400;
+    --tinta: #10231b;
+    --grafito: #4f6358;
+    --renglon: rgba(16, 35, 27, 0.2);
+    --renglon-fuerte: rgba(16, 35, 27, 0.35);
+    --pauta: transparent;
+    --firma: #0f6b4a;
+    --sobre-firma: #f7f9f4;
+    --ambar: #c77d12;
+    --sobre-ambar: #10231b;
+    --sello-pagado: #0f6b4a;
+    --sello-vencido: #b5442c;
+    --sello-cambios: #9a4f0e;
     --sombra-hoja: none;
     color-scheme: light;
   }
