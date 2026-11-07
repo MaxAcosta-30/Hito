@@ -77,3 +77,9 @@ Max notó que, tras las mejoras de comportamiento, Hito se veía igual. Se propu
 - 36.7 s, 1920×1080, H.264 sin audio (sin música para no arriesgar licencias; LinkedIn reproduce en silencio). Archivo y portada en `~/Desktop/Proyectos/hito-promo/` (fuera del repositorio: es difusión, no producto).
 - Se grabó la app real con Playwright dentro de un escenario con marcos de navegador y celular: landing → demo con un clic y cifra que sube → compartir el enlace → el cliente aprueba en el celular → pago con sello que se estampa → cierre con la URL. Lo reproducen `escenario.html` y `grabar.mjs` en esa carpeta.
 - **Hallazgos al grabar:** el escenario debe servirse desde el mismo origen que la app (con `file://` Chrome frenaba el iframe), y los botones de un `<dialog>` modal dentro de un iframe escalado se pulsan con un clic del DOM.
+
+**Hover que agranda y entradas tipo libro** (rama `ui/hover-y-entradas`)
+- Max pidió más efectos como el libro de la landing y "que al pasar el cursor algo se haga más grande".
+- **Panel de cobros:** la cifra "Te deben" sube, debajo se traza una doble raya contable y el desglose se asienta escalonado. En el detalle del proyecto, la doble raya del total se traza al cargar.
+- **Hover que agranda** (solo con puntero fino y sin movimiento reducido): botones 1.03 (y 0.97 al presionar), tarjeta del saldo 1.01 con elevación, desglose 1.04, renglones 1.012, filas 1.006, sellos 1.12, el logo se levanta, y en la landing el libro se endereza, los pasos suben con su número en ámbar y la captura del celular se acerca.
+- **Hallazgo:** las entradas con `animation-fill-mode: both` bloqueaban el `transform` del hover. Se cambiaron a `backwards`: el elemento queda oculto durante el retraso y libre al terminar. Medido con Playwright: tarjeta `matrix(1.01…)`, fila `1.006`, botón `1.03`, desglose `1.04`.
