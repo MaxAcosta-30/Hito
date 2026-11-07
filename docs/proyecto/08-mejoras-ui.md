@@ -74,7 +74,7 @@ Max notó que, tras las mejoras de comportamiento, Hito se veía igual. Se propu
 
 ## Video promocional (2026-11-06)
 
-- 36.7 s, 1920×1080, H.264 sin audio (sin música para no arriesgar licencias; LinkedIn reproduce en silencio). Archivo y portada en `~/Desktop/Proyectos/hito-promo/` (fuera del repositorio: es difusión, no producto).
+- 40 s, 1920×1080, H.264 sin audio (sin música para no arriesgar licencias; LinkedIn reproduce en silencio). Archivo y portada en `~/Desktop/Proyectos/hito-promo/` (fuera del repositorio: es difusión, no producto).
 - Se grabó la app real con Playwright dentro de un escenario con marcos de navegador y celular: landing → demo con un clic y cifra que sube → compartir el enlace → el cliente aprueba en el celular → pago con sello que se estampa → cierre con la URL. Lo reproducen `escenario.html` y `grabar.mjs` en esa carpeta.
 - **Hallazgos al grabar:** el escenario debe servirse desde el mismo origen que la app (con `file://` Chrome frenaba el iframe), y los botones de un `<dialog>` modal dentro de un iframe escalado se pulsan con un clic del DOM.
 
