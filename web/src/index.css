@@ -1259,6 +1259,8 @@ i.serie-acordado {
   --sobre-firma: #15161b;
   --sobre-acento: #15161b;
   --sello-pagado: #f1f2f6;
+  --sello-vencido: #ff8a7a;
+  --sello-cambios: #f4cd00;
   color-scheme: dark;
   min-height: 100vh;
   color: var(--tinta);
