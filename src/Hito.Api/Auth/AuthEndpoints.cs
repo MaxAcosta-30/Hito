@@ -9,6 +9,8 @@ public static class AuthEndpoints
 {
     public const string NombreCookie = "hito_renovacion";
     public const string PoliticaRegistro = "registro";
+    public const string PoliticaEntrar = "entrar";
+    public const string PoliticaRenovar = "renovar";
 
     public sealed record RegistroSolicitud(string? Nombre, string? Email, string? Contrasena);
     public sealed record EntrarSolicitud(string? Email, string? Contrasena);
@@ -19,8 +21,8 @@ public static class AuthEndpoints
     {
         var auth = app.MapGroup("/auth");
         auth.MapPost("/registro", Registrar).RequireRateLimiting(PoliticaRegistro);
-        auth.MapPost("/entrar", Entrar);
-        auth.MapPost("/renovar", Renovar);
+        auth.MapPost("/entrar", Entrar).RequireRateLimiting(PoliticaEntrar);
+        auth.MapPost("/renovar", Renovar).RequireRateLimiting(PoliticaRenovar);
         auth.MapPost("/salir", Salir);
         auth.MapGet("/yo", Yo).RequireAuthorization();
     }
