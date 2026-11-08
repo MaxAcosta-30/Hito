@@ -2679,3 +2679,16 @@ html {
 .hoja-saldo .desglose {
   grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
 }
+
+/* Proyecto cancelado: el sello queda tachado, en gris */
+.sello.cancelado {
+  color: var(--grafito);
+  border-style: dotted;
+  text-decoration: line-through;
+}
+
+/* En el renglón móvil el sello del proyecto queda a la derecha, bajo el monto */
+.renglon > .sello {
+  justify-self: end;
+  align-self: center;
+}

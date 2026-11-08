@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { EstadoHito } from '../api/proyectos'
+import type { EstadoHito, EstadoProyecto } from '../api/proyectos'
 
 const sellos: Record<EstadoHito, { texto: string; clase: string }> = {
   Pendiente: { texto: 'PENDIENTE', clase: 'pendiente' },
@@ -27,4 +27,19 @@ export function Sello({ estado, vencido = false }: { estado: EstadoHito; vencido
       </span>
     </span>
   )
+}
+
+// El estado del proyecto con la misma gramática: punteado = por empezar, discontinuo = en manos del
+// cliente, contorno = alcance comprometido, relleno = terminado; cancelado va tachado.
+const sellosProyecto: Record<EstadoProyecto, { texto: string; clase: string }> = {
+  Borrador: { texto: 'BORRADOR', clase: 'pendiente' },
+  Enviado: { texto: 'ENVIADO', clase: 'entregado' },
+  Aceptado: { texto: 'ACEPTADO', clase: 'aceptado' },
+  Completado: { texto: 'COMPLETADO', clase: 'pagado' },
+  Cancelado: { texto: 'CANCELADO', clase: 'cancelado' },
+}
+
+export function SelloProyecto({ estado }: { estado: EstadoProyecto }) {
+  const sello = sellosProyecto[estado]
+  return <span className={`sello ${sello.clase}`}>{sello.texto}</span>
 }

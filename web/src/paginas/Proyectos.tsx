@@ -3,6 +3,7 @@ import { usePrecarga } from '../api/precarga'
 import { consultaProyecto, useProyectos, type EstadoProyecto, type ProyectoResumen } from '../api/proyectos'
 import { ErrorCarga, Esqueleto } from '../componentes/Estados'
 import { dinero, fechaCorta } from '../formato'
+import { SelloProyecto } from '../componentes/Sello'
 
 const estados: EstadoProyecto[] = ['Borrador', 'Enviado', 'Aceptado', 'Completado', 'Cancelado']
 
@@ -106,7 +107,9 @@ export function Proyectos() {
                       </Link>
                     </td>
                     <td>{p.cliente.nombre}</td>
-                    <td>{p.estado}</td>
+                    <td>
+                      <SelloProyecto estado={p.estado} />
+                    </td>
                     <td className="num">v{p.version}</td>
                     <td>{fechaCorta(p.actualizadoEn)}</td>
                     <td className="num">{dinero(p.total)}</td>
@@ -120,8 +123,9 @@ export function Proyectos() {
                   <b>{p.nombre}</b>
                   <span className="monto">{dinero(p.total)}</span>
                   <small>
-                    {p.cliente.nombre} · {p.estado} · versión {p.version} · {fechaCorta(p.actualizadoEn)}
+                    {p.cliente.nombre} · versión {p.version} · {fechaCorta(p.actualizadoEn)}
                   </small>
+                  <SelloProyecto estado={p.estado} />
                 </Link>
               ))}
             </div>
