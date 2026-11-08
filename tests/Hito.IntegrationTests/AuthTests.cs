@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Hito.IntegrationTests;
 
@@ -127,6 +128,42 @@ public sealed class AuthTests(ApiConBase fixture) : IClassFixture<ApiConBase>
         Assert.Equal(HttpStatusCode.BadRequest, malCorreo.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, repetido.StatusCode);
         Assert.Contains("Ya existe una cuenta", await repetido.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
+    public async Task Entrar_tiene_limite_por_ip_y_cada_ip_cuenta_aparte()
+    {
+        await using var app = fixture.Api.WithWebHostBuilder(b => b.UseSetting("Auth:EntradasPorMinuto", "2"));
+        var api = app.CreateClient();
+        Task<HttpResponseMessage> Entrar(string ip)
+        {
+            var solicitud = new HttpRequestMessage(HttpMethod.Post, "/auth/entrar")
+            {
+                Content = JsonContent.Create(new { email = NuevoEmail(), contrasena = "no-es-la-buena-123" }),
+            };
+            solicitud.Headers.Add("X-Forwarded-For", ip);
+            return api.SendAsync(solicitud);
+        }
+
+        var codigos = new List<HttpStatusCode>();
+        for (var i = 0; i < 3; i++) codigos.Add((await Entrar("203.0.113.7")).StatusCode);
+        var otraIp = (await Entrar("198.51.100.20")).StatusCode;
+
+        Assert.Equal([HttpStatusCode.Unauthorized, HttpStatusCode.Unauthorized, HttpStatusCode.TooManyRequests], codigos);
+        Assert.Equal(HttpStatusCode.Unauthorized, otraIp);
+    }
+
+    [Fact]
+    public async Task Renovar_tiene_limite_por_ip()
+    {
+        await using var app = fixture.Api.WithWebHostBuilder(b => b.UseSetting("Auth:RenovacionesPorMinuto", "1"));
+        var api = app.CreateClient();
+
+        var primera = await api.PostAsync("/auth/renovar", null);
+        var segunda = await api.PostAsync("/auth/renovar", null);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, primera.StatusCode);
+        Assert.Equal(HttpStatusCode.TooManyRequests, segunda.StatusCode);
     }
 
     private static string NuevoEmail() => $"{Guid.NewGuid():N}@prueba.mx";

@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
 using Hito.Api.Auth;
 using Hito.Api.Clientes;
@@ -66,6 +67,22 @@ builder.Services.AddRateLimiter(options =>
         limite.Window = TimeSpan.FromMinutes(1);
         limite.QueueLimit = 0;
     });
+    // Límite por IP al entrar: el bloqueo por cuenta (5 fallos) no frena probar una contraseña contra muchas cuentas.
+    options.AddPolicy(AuthEndpoints.PoliticaEntrar, http => RateLimitPartition.GetFixedWindowLimiter(
+        IpCliente(http), _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = builder.Configuration.GetValue("Auth:EntradasPorMinuto", 10),
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0,
+        }));
+    // Renovar no se puede adivinar (token de 256 bits), pero cada intento consulta la base: se limita igual.
+    options.AddPolicy(AuthEndpoints.PoliticaRenovar, http => RateLimitPartition.GetFixedWindowLimiter(
+        IpCliente(http), _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = builder.Configuration.GetValue("Auth:RenovacionesPorMinuto", 30),
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0,
+        }));
     // Límite global de demos por minuto: cada una crea un usuario y datos en la base gratuita.
     options.AddFixedWindowLimiter(DemoEndpoints.Politica, limite =>
     {
@@ -110,3 +127,11 @@ app.MapCobros();
 app.MapDemo();
 
 app.Run();
+
+// IP del cliente para los límites por IP. Vercel y Render la ponen al inicio de X-Forwarded-For.
+// Quien llame directo a Render puede falsearla: por eso el bloqueo por cuenta sigue siendo la defensa de fondo.
+static string IpCliente(HttpContext http)
+{
+    var primera = http.Request.Headers["X-Forwarded-For"].ToString().Split(',', 2)[0].Trim();
+    return primera.Length > 0 ? primera : http.Connection.RemoteIpAddress?.ToString() ?? "desconocida";
+}

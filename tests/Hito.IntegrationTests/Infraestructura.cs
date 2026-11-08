@@ -26,6 +26,8 @@ public sealed class HitoApi(string connectionString) : WebApplicationFactory<Pro
         builder.UseSetting("ConnectionStrings:Hito", connectionString);
         builder.UseSetting("Jwt:Clave", "clave-solo-para-pruebas-de-integracion-0123456789");
         builder.UseSetting("Auth:RegistrosPorMinuto", "1000");
+        builder.UseSetting("Auth:EntradasPorMinuto", "1000");
+        builder.UseSetting("Auth:RenovacionesPorMinuto", "1000");
         builder.UseSetting("Publico:PeticionesPorMinuto", "1000");
         builder.UseSetting("Demo:PorMinuto", "1000");
     }
