@@ -1578,8 +1578,6 @@ i.serie-acordado {
   }
 
   /* Tarjetas del panel y del libro: se acercan un poco */
-  .hoja-saldo,
-  .desglose > div,
   a.renglon,
   .tabla tbody tr {
     transition:
@@ -1588,14 +1586,6 @@ i.serie-acordado {
       background-color 150ms ease;
   }
 
-  .hoja-saldo:hover {
-    transform: translateY(-2px) scale(1.01);
-    box-shadow: 0 10px 28px color-mix(in srgb, var(--tinta) 12%, transparent);
-  }
-
-  .desglose > div:hover {
-    transform: scale(1.04);
-  }
 
   a.renglon:hover {
     transform: scale(1.012);
@@ -2658,4 +2648,34 @@ html {
 .archivo-cuerpo :focus-visible,
 .cliente-hoja :focus-visible {
   outline-color: #1d1f26;
+}
+
+/* Panel de cobros: el saldo es la carpeta del expediente. "Te deben" es su pestaña coral
+   y la cifra tiene escenario; las tarjetas no clicables ya no crecen al pasar el cursor. */
+.hoja-saldo {
+  position: relative;
+  margin-top: 30px;
+  border-top-left-radius: 0;
+}
+
+.hoja-saldo > .rotulo:first-child {
+  position: absolute;
+  top: -30px;
+  left: -1px;
+  padding: 7px 16px 6px;
+  border-radius: 8px 8px 0 0;
+  background: var(--acento);
+  color: var(--sobre-acento);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.hoja-saldo .cifra {
+  font-size: clamp(40px, 7vw, 56px);
+  margin-top: 4px;
+}
+
+/* "Aprobado sin pagar" necesita más ancho que "Vencido": así no se parte en el celular */
+.hoja-saldo .desglose {
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
 }
