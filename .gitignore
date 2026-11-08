@@ -480,3 +480,7 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Impeccable: capturas de revisión y caché del hook (locales)
+.impeccable/review/
+.impeccable/hook.cache.json

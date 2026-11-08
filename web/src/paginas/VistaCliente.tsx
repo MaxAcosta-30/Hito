@@ -6,6 +6,7 @@ import { mensajeDeError } from '../api/errores'
 import { useVistaCliente, type HitoPublico, type VersionPublica, type VistaCliente as Vista } from '../api/publico'
 import { CampoArea } from '../componentes/Campo'
 import { Dialogo } from '../componentes/Dialogo'
+import { IconoSalida } from '../componentes/Iconos'
 import { ErrorCarga } from '../componentes/Estados'
 import { Sello } from '../componentes/Sello'
 import { useEnfocarError } from '../componentes/useEnfocarError'
@@ -58,9 +59,10 @@ export function VistaCliente() {
   return (
     <main className="contenido cliente">
       <header className="cliente-cabecera">
-        <div className="meta">{v.porAceptar ? `${v.freelancer} te envió este alcance` : `Proyecto con ${v.freelancer}`}</div>
         <h1>{v.proyecto}</h1>
-        <div className="meta">Para {v.cliente}</div>
+        <div className="meta">
+          {v.porAceptar ? `${v.freelancer} te envió este alcance` : `Proyecto con ${v.freelancer}`} · para {v.cliente}
+        </div>
       </header>
 
       {exito && (
@@ -155,7 +157,7 @@ function RevisarEntrega({ hito, token, freelancer, onRespuesta }: { hito: HitoPu
     <div className="acciones revisar">
       {hito.evidenciaUrl && (
         <a className="btn secundario ancho" href={hito.evidenciaUrl} target="_blank" rel="noopener noreferrer">
-          Ver la entrega ↗
+          Ver la entrega <IconoSalida />
         </a>
       )}
       {aprobar.isError && (
