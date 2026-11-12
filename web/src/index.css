@@ -2351,8 +2351,7 @@ html {
   margin-top: 10px;
 }
 
-.archivo-bajada,
-.firma-bajada {
+.archivo-bajada {
   color: var(--exp-texto-2);
   font-size: 18px;
   max-width: 52ch;
@@ -2481,21 +2480,35 @@ html {
   }
 }
 
-/* Del lado del cliente: el celular apoyado sobre una hoja del escritorio */
+/* Del lado del cliente: el celular apoyado sobre una hoja del escritorio.
+   La composición va centrada en la página y la hoja no deja papel vacío (revisión 2026-11-11). */
 .cliente-seccion {
   display: grid;
+  max-width: 1080px;
+  text-align: center;
+}
+
+.cliente-seccion h2 {
+  margin-inline: auto;
+}
+
+/* Menos aire entre el bloque del cliente y el acta */
+.cliente-seccion,
+.firma {
+  padding-top: clamp(56px, 6vw, 88px);
 }
 
 .cliente-hoja {
-  padding: clamp(26px, 4vw, 52px) clamp(22px, 4vw, 52px) clamp(80px, 10vw, 52px);
+  padding: clamp(28px, 4vw, 44px) clamp(22px, 4vw, 44px) clamp(80px, 10vw, 44px);
   rotate: 0.8deg;
 }
 
 .cliente-hoja p {
-  margin: 0;
+  margin: 0 auto;
   color: var(--grafito);
-  font-size: 18px;
-  max-width: 46ch;
+  font-size: clamp(19px, 1.2vw + 14px, 22px);
+  line-height: 1.5;
+  max-width: 34ch;
 }
 
 .cliente-celular {
@@ -2523,24 +2536,42 @@ html {
   }
 
   .cliente-hoja {
-    grid-column: 1 / 9;
+    grid-column: 1 / 10;
     grid-row: 1;
-    padding-right: 30%;
+    padding-right: 34%;
   }
 
   .cliente-celular {
-    grid-column: 7 / 12;
+    grid-column: 8 / 13;
     grid-row: 1;
     margin-top: 0;
-    translate: 0 36px;
+    translate: 0 24px;
   }
 }
 
-/* Quién lo hizo: un acta con nombre al pie */
+/* Quién lo hizo: un acta con nombre al pie, centrada en la página (revisión 2026-11-11) */
+.firma {
+  text-align: center;
+}
+
+.firma h2 {
+  margin-inline: auto;
+}
+
+.firma-bajada {
+  margin: 0 auto;
+  color: var(--exp-texto-2);
+  font-size: clamp(19px, 1.2vw + 14px, 22px);
+  line-height: 1.5;
+  max-width: 44ch;
+}
+
 .firma-acta {
-  margin: 28px 0 0;
-  padding: 10px 26px;
-  max-width: 860px;
+  margin: 28px auto 0;
+  padding: 8px 28px;
+  max-width: 900px;
+  text-align: left;
+  font-size: 18px;
 }
 
 .firma-acta div {
@@ -2571,19 +2602,19 @@ html {
 
 .firma-pie {
   display: flex;
-  align-items: end;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
   gap: 24px;
-  flex-wrap: wrap;
-  max-width: 860px;
-  margin-top: 36px;
+  max-width: 900px;
+  margin: 32px auto 0;
 }
 
 .firma-linea {
   display: grid;
+  justify-items: center;
   gap: 6px;
   min-width: 240px;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--exp-texto-2);
 }
 
@@ -2594,7 +2625,7 @@ html {
   padding-bottom: 6px;
   border-bottom: 2px solid #f1f2f6;
   rotate: -1.5deg;
-  transform-origin: left;
+  transform-origin: center;
 }
 
 .firma-pie .btn.contorno {
